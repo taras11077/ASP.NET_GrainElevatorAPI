@@ -1,0 +1,6 @@
+@GrainElevatorAPI_HostAddress = http://localhost:5012
+
+GET {{GrainElevatorAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
