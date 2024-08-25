@@ -1,11 +1,15 @@
 ﻿namespace GrainElevatorAPI.Core.Models;
 
-public enum Role
+public class Role
 {
-    Admin,
-    Director,
-    Laboratory,
-    Production,
-    Accounting,
-    HrManager
+    public int Id { get; set; }
+    public string Title { get; set; }
 }
+
+
+// Admin,
+// Director,
+// Laboratory,
+// Production,
+// Accounting,
+// HrManager
