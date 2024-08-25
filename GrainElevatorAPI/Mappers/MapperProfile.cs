@@ -9,12 +9,12 @@ public class MapperProfile : Profile
 {
     public MapperProfile()
     {
-        CreateMap<Employee, UserDTO>()
+        CreateMap<Employee, EmployeeDTO>()
             // .ForMember(dest => dest.Nickname,
             //     opt => opt.MapFrom(
             //         src => src.UserName))  -  якщо назви полів моделі і ДТО не співпадають
             .ReverseMap();
 
-        CreateMap<Employee, CreateUserRequest>().ReverseMap();
+        CreateMap<Employee, CreateEmployeeRequest>().ReverseMap();
     }
 }

@@ -5,9 +5,9 @@ namespace GrainElevator.Storage;
 
 public class Repository : IRepository
 {
-    private readonly GrainElevatorAPIContext _context;
+    private readonly GrainElevatorApiContext _context;
 
-    public Repository(GrainElevatorAPIContext context)
+    public Repository(GrainElevatorApiContext context)
     {
         _context = context;
     }
