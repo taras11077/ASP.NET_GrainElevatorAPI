@@ -7,9 +7,9 @@ public class Role
 }
 
 
-// Admin,
-// Director,
-// Laboratory,
-// Production,
-// Accounting,
-// HrManager
+// admin
+// CEO
+// Laboratory
+// technologist
+// accountant
+// HR

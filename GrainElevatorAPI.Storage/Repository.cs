@@ -26,14 +26,23 @@ public class Repository : IRepository
         return updated.Entity;
     }
 
-    public Task<T> Delete<T>(int id) where T : class
+    public async Task Delete<T>(int id) where T : class
     {
-        throw new NotImplementedException();
+        var entity = await _context.Set<T>().FindAsync(id);
+        if (entity != null)
+        {
+            _context.Set<T>().Remove(entity);
+            await _context.SaveChangesAsync();
+        }
+        else
+        {
+            throw new ArgumentException("Entity not found");
+        }
     }
 
-    public Task<T> GetById<T>(int id) where T : class
+    public async Task<T> GetById<T>(int id) where T : class
     {
-        throw new NotImplementedException();
+        return await _context.Set<T>().FindAsync(id);
     }
 
     public IQueryable<T> GetAll<T>() where T : class

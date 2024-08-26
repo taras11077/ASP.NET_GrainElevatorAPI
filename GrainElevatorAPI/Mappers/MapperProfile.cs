@@ -15,6 +15,8 @@ public class MapperProfile : Profile
             //         src => src.UserName))  -  якщо назви полів моделі і ДТО не співпадають
             .ReverseMap();
 
-        CreateMap<Employee, CreateEmployeeRequest>().ReverseMap();
+        CreateMap<Employee, EmployeeRegisterRequest>().ReverseMap();
+        CreateMap<Role, RoleDTO>();
+
     }
 }

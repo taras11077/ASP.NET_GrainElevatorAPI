@@ -1,6 +1,7 @@
 using System.Text;
 using GrainElevator.Storage;
 using GrainElevatorAPI.Core.Interfaces;
+using GrainElevatorAPI.Core.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,7 +17,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddScoped<IRepository, Repository>();
-//builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IEmployeeService, EmployeeService>();
+builder.Services.AddTransient<IRoleService, RoleService>();
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>

@@ -1,7 +1,7 @@
 ﻿namespace GrainElevatorAPI.Requests;
 using System.ComponentModel.DataAnnotations;
 
-public class CreateEmployeeRequest
+public class EmployeeLoginRequest 
 {
     [Required(ErrorMessage = "Email is required.")]
     [EmailAddress(ErrorMessage = "Invalid Email format.")]
