@@ -35,7 +35,6 @@ public class EmployeeController : ControllerBase
         }
         catch (Exception ex)
         {
-            // Логирование ошибки
             return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
         }
     }
@@ -55,7 +54,6 @@ public class EmployeeController : ControllerBase
         }
         catch (Exception ex)
         {
-            // Логирование ошибки
             return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
         }
     }
@@ -83,7 +81,6 @@ public class EmployeeController : ControllerBase
         }
         catch (Exception ex)
         {
-            // Логирование ошибки
             return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
         }
     }
@@ -104,7 +101,6 @@ public class EmployeeController : ControllerBase
         }
         catch (Exception ex)
         {
-            // Логирование ошибки
             return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
         }
     }
@@ -120,7 +116,6 @@ public class EmployeeController : ControllerBase
         }
         catch (Exception ex)
         {
-            // Логирование ошибки
             return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
         }
     }
