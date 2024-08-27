@@ -12,33 +12,88 @@ public class ProductTitleService : IProductTitleService
         _repository = repository;
     }
     
-    public Task<ProductTitle> AddProductTitle(string title)
+ public async Task<ProductTitle> AddProductTitleAsync(string title)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var newProductTitle = new ProductTitle{ Title = title };
+            
+            return await _repository.Add(newProductTitle);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Помилка при додаванні Назви продукту", ex);
+        }
     }
 
-    public Task<ProductTitle> GetProductTitleById(int id)
+    public async Task<ProductTitle> GetProductTitleByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _repository.GetById<ProductTitle>(id);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при отриманні Назви продукту з ID {id}", ex);
+        }
     }
 
-    public Task<ProductTitle> UpdateProductTitle(ProductTitle productTitle)
+    public async Task<ProductTitle> UpdateProductTitleAsync(ProductTitle productTitle)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _repository.Update(productTitle);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при оновленні Назви продукту з ID  {productTitle.Id}", ex);
+        }
     }
 
-    public Task<bool> DeleteProductTitle(int id)
+    public async Task<bool> DeleteProductTitleAsync(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var productTitle = await _repository.GetById<ProductTitle>(id);
+            if (productTitle != null)
+            {
+                await _repository.Delete<ProductTitle>(id);
+                return true;
+            }
+            return false;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при видаленні Назви продукту з ID {id}", ex);
+        }
     }
 
-    public IEnumerable<ProductTitle> GetProductTitle(int page, int size)
+    public IEnumerable<ProductTitle> GetProductTitles(int page, int size)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return _repository.GetAll<ProductTitle>()
+                .Skip((page - 1) * size)
+                .Take(size)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Помилка при отриманні списку Назв продукту", ex);
+        }
     }
 
     public IEnumerable<ProductTitle> SearchProductTitle(string title)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return _repository.GetAll<ProductTitle>()
+                .Where(r => r.Title.ToLower().Contains(title.ToLower()))
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при отриманні Назви продукту з назвою {title}", ex);
+        }
     }
 }

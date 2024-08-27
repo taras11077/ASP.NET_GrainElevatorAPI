@@ -4,10 +4,10 @@ namespace GrainElevatorAPI.Core.Interfaces;
 
 public interface IProductTitleService
 {
-    Task<ProductTitle> AddProductTitle(string  title);
-    Task<ProductTitle> GetProductTitleById(int id);
-    Task<ProductTitle> UpdateProductTitle(ProductTitle productTitle);
-    Task<bool> DeleteProductTitle(int id);
-    IEnumerable<ProductTitle> GetProductTitle(int page, int size);
+    Task<ProductTitle> AddProductTitleAsync(string  title);
+    Task<ProductTitle> GetProductTitleByIdAsync(int id);
+    Task<ProductTitle> UpdateProductTitleAsync(ProductTitle productTitle);
+    Task<bool> DeleteProductTitleAsync(int id);
+    IEnumerable<ProductTitle> GetProductTitles(int page, int size);
     IEnumerable<ProductTitle> SearchProductTitle(string title);
 }

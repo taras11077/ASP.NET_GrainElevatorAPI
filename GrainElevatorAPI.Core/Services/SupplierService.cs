@@ -23,7 +23,7 @@ public class SupplierService : ISupplierService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при додаванні постачальника", ex);
+            throw new Exception("Помилка при додаванні Постачальника", ex);
         }
     }
 
@@ -35,7 +35,7 @@ public class SupplierService : ISupplierService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні постачальника з ID {id}", ex);
+            throw new Exception($"Помилка при отриманні Постачальника з ID {id}", ex);
         }
     }
 
@@ -47,7 +47,7 @@ public class SupplierService : ISupplierService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при оновленні постачальника з ID  {supplier.Id}", ex);
+            throw new Exception($"Помилка при оновленні Постачальника з ID  {supplier.Id}", ex);
         }
     }
 
@@ -65,7 +65,7 @@ public class SupplierService : ISupplierService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні постачальника з ID {id}", ex);
+            throw new Exception($"Помилка при видаленні Постачальника з ID {id}", ex);
         }
     }
 
@@ -80,7 +80,7 @@ public class SupplierService : ISupplierService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при отриманні списку постачальників", ex);
+            throw new Exception("Помилка при отриманні списку Постачальників", ex);
         }
     }
 
@@ -94,7 +94,7 @@ public class SupplierService : ISupplierService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні постачальника з назвою {title}", ex);
+            throw new Exception($"Помилка при отриманні Постачальника з назвою {title}", ex);
         }
     }
 }
