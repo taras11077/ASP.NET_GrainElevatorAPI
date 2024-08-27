@@ -25,7 +25,7 @@ public class RoleController : ControllerBase
     {
         try
         {
-            var createdRole = await _roleService.AddRole(request.Title);
+            var createdRole = await _roleService.AddRoleAsync(request.Title);
             return CreatedAtAction(nameof(GetRole), new { id = createdRole.Id }, createdRole);
         }
         catch (Exception ex)
@@ -55,7 +55,7 @@ public class RoleController : ControllerBase
     {
         try
         {
-            var role = await _roleService.GetRoleById(id);
+            var role = await _roleService.GetRoleByIdAsync(id);
             if (role == null)
             {
                 return NotFound($"Роль з ID {id} не знайдено.");
@@ -74,7 +74,7 @@ public class RoleController : ControllerBase
     {
         try
         {
-            var success = await _roleService.DeleteRole(id);
+            var success = await _roleService.DeleteRoleAsync(id);
             if (!success)
             {
                 return NotFound($"Роль з ID {{id}} не знайдено.");

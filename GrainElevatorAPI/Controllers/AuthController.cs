@@ -29,7 +29,7 @@ public class AuthController : Controller
         {
             var userDb = await _authService.Register(request.Email, request.Password, request.RoleId);
             
-            var role = await _roleService.GetRoleById(userDb.RoleId);
+            var role = await _roleService.GetRoleByIdAsync(userDb.RoleId);
             if (role == null)
             {
                 return BadRequest("Роль не знайдено.");
@@ -59,7 +59,7 @@ public class AuthController : Controller
                 return Unauthorized("Неправільний нікнейм або пароль.");
             }
             
-            var role = await _roleService.GetRoleById(user.RoleId);
+            var role = await _roleService.GetRoleByIdAsync(user.RoleId);
             if (role == null)
             {
                 return BadRequest("Роль не знайдено.");

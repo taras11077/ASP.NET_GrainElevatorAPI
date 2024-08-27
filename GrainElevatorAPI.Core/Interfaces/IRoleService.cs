@@ -4,11 +4,11 @@ namespace GrainElevatorAPI.Core.Interfaces;
 
 public interface IRoleService
 {
-    Task<Role> AddRole(string  title);
-    Task<Role> GetRoleById(int id);
-    Task<Role> UpdateRole(Role role);
+    Task<Role> AddRoleAsync(string  title);
+    Task<Role> GetRoleByIdAsync(int id);
+    Task<Role> UpdateRoleAsync(Role role);
     
-    Task<bool> DeleteRole(int id);
+    Task<bool> DeleteRoleAsync(int id);
     
     IEnumerable<Role> GetRoles(int page, int size);
     IEnumerable<Role> SearchRoles(string title);

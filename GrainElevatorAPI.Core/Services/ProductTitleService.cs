@@ -5,6 +5,13 @@ namespace GrainElevatorAPI.Core.Services;
 
 public class ProductTitleService : IProductTitleService
 {
+    private readonly IRepository _repository;
+
+    public ProductTitleService(IRepository repository)
+    {
+        _repository = repository;
+    }
+    
     public Task<ProductTitle> AddProductTitle(string title)
     {
         throw new NotImplementedException();

@@ -5,6 +5,14 @@ namespace GrainElevatorAPI.Core.Services;
 
 public class InputInvoiceService : IInputInvoiceService
 {
+    private readonly IRepository _repository;
+
+    public InputInvoiceService(IRepository repository)
+    {
+        _repository = repository;
+    }
+    
+    
     public Task<InputInvoice> AddInputInvoice(string title)
     {
         throw new NotImplementedException();

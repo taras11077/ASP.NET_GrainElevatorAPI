@@ -24,7 +24,6 @@ public class EmployeeService : IEmployeeService
         }
         catch (Exception ex)
         {
-            // Логирование ошибки
             throw new Exception($"Помилка при отриманні співробітника з ID {id}", ex);
         }
     }
@@ -40,7 +39,6 @@ public class EmployeeService : IEmployeeService
         }
         catch (Exception ex)
         {
-            // Логирование ошибки
             throw new Exception("Помилка при отриманні списку співробітників", ex);
         }
     }
@@ -54,7 +52,6 @@ public class EmployeeService : IEmployeeService
         }
         catch (Exception ex)
         {
-            // Логирование ошибки
             throw new Exception($"Помилка при оновленні співробітника з ID  {employee.Id}", ex);
         }
     }
@@ -73,7 +70,6 @@ public class EmployeeService : IEmployeeService
         }
         catch (Exception ex)
         {
-            // Логирование ошибки
             throw new Exception($"Помилка при видаленні співробітника з ID {id}", ex);
         }
         
@@ -87,7 +83,6 @@ public class EmployeeService : IEmployeeService
         }
         catch (Exception ex)
         {
-            // Логирование ошибки
             throw new Exception("Помилка під час виконання пошуку співробітників", ex);
         }
     }

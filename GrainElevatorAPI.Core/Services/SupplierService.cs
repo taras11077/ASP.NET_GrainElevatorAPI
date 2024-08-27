@@ -5,33 +5,96 @@ namespace GrainElevatorAPI.Core.Services;
 
 public class SupplierService : ISupplierService
 {
-    public Task<Supplier> AddSupplier(string title)
+    private readonly IRepository _repository;
+
+    public SupplierService(IRepository repository)
     {
-        throw new NotImplementedException();
+        _repository = repository;
+    }
+    
+    
+    public async Task<Supplier> AddSupplierAsync(string title)
+    {
+        try
+        {
+            var newSupplier = new Supplier{ Title = title };
+            
+            return await _repository.Add(newSupplier);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Помилка при додаванні постачальника", ex);
+        }
     }
 
-    public Task<Supplier> GetSupplierById(int id)
+    public async Task<Supplier> GetSupplierByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _repository.GetById<Supplier>(id);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при отриманні постачальника з ID {id}", ex);
+        }
     }
 
-    public Task<Supplier> UpdateSupplier(Supplier supplier)
+    public async Task<Supplier> UpdateSupplierAsync(Supplier supplier)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _repository.Update(supplier);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при оновленні постачальника з ID  {supplier.Id}", ex);
+        }
     }
 
-    public Task<bool> DeleteSupplier(int id)
+    public async Task<bool> DeleteSupplierAsync(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var supplier = await _repository.GetById<Supplier>(id);
+            if (supplier != null)
+            {
+                await _repository.Delete<Supplier>(id);
+                return true;
+            }
+            return false;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при видаленні постачальника з ID {id}", ex);
+        }
     }
 
-    public IEnumerable<Supplier> GetSupplier(int page, int size)
+    public IEnumerable<Supplier> GetSuppliers(int page, int size)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return _repository.GetAll<Supplier>()
+                .Skip((page - 1) * size)
+                .Take(size)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Помилка при отриманні списку постачальників", ex);
+        }
     }
 
     public IEnumerable<Supplier> SearchSupplier(string title)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return _repository.GetAll<Supplier>()
+                .Where(r => r.Title.ToLower().Contains(title.ToLower()))
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при отриманні постачальника з назвою {title}", ex);
+        }
     }
 }

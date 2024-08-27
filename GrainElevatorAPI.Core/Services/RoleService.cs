@@ -13,7 +13,7 @@ public class RoleService : IRoleService
     }
     
     
-    public async Task<Role> AddRole(string title)
+    public async Task<Role> AddRoleAsync(string title)
     {
         try
         {
@@ -23,12 +23,11 @@ public class RoleService : IRoleService
         }
         catch (Exception ex)
         {
-            // Логирование ошибки
             throw new Exception("Помилка при додаванні ролі", ex);
         }
     }
 
-    public async Task<Role> GetRoleById(int id)
+    public async Task<Role> GetRoleByIdAsync(int id)
     {
         try
         {
@@ -36,12 +35,11 @@ public class RoleService : IRoleService
         }
         catch (Exception ex)
         {
-            // Логирование ошибки
             throw new Exception($"Помилка при отриманні ролі з ID {id}", ex);
         }
     }
 
-    public async Task<Role> UpdateRole(Role role)
+    public async Task<Role> UpdateRoleAsync(Role role)
     {
         try
         {
@@ -49,12 +47,11 @@ public class RoleService : IRoleService
         }
         catch (Exception ex)
         {
-            // Логирование ошибки
             throw new Exception($"Помилка при оновленні ролі з ID  {role.Id}", ex);
         }
     }
 
-    public async Task<bool> DeleteRole(int id)
+    public async Task<bool> DeleteRoleAsync(int id)
     {
         try
         {
@@ -68,7 +65,6 @@ public class RoleService : IRoleService
         }
         catch (Exception ex)
         {
-            // Логирование ошибки
             throw new Exception($"Помилка при видаленні ролі з ID {id}", ex);
         }
     }
@@ -84,7 +80,6 @@ public class RoleService : IRoleService
         }
         catch (Exception ex)
         {
-            // Логирование ошибки
             throw new Exception("Помилка при отриманні списку ролів", ex);
         }
     }
@@ -99,7 +94,6 @@ public class RoleService : IRoleService
         }
         catch (Exception ex)
         {
-            // Логирование ошибки
             throw new Exception($"Помилка при отриманні ролі з назвою {title}", ex);
         }
     }
