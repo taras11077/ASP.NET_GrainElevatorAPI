@@ -12,7 +12,7 @@ namespace GrainElevatorAPI.Controllers;
 
 [Route("api/employee")]
 [ApiController]
-[Authorize(Roles = "admin")]
+//[Authorize(Roles = "admin")]
 public class EmployeeController : ControllerBase
 {
     private readonly IEmployeeService _employeeService;

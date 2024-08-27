@@ -1,13 +1,14 @@
 using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using GrainElevatorAPI.Requests;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GrainElevatorAPI.Controllers;
 
-[Route("api/role")]
+[Authorize(Roles = "admin")]
 [ApiController]
+[Route("api/role")]
 public class RoleController : ControllerBase
 {
    private readonly IRoleService _roleService;
@@ -54,12 +55,12 @@ public class RoleController : ControllerBase
     {
         try
         {
-            var employee = await _roleService.GetRoleById(id);
-            if (employee == null)
+            var role = await _roleService.GetRoleById(id);
+            if (role == null)
             {
                 return NotFound($"Роль з ID {id} не знайдено.");
             }
-            return Ok(employee);
+            return Ok(role);
         }
         catch (Exception ex)
         {
@@ -87,7 +88,7 @@ public class RoleController : ControllerBase
         }
     }
 
-    // GET: api/Role/search?name=John
+    // GET: api/Role/search?title=admin
     [HttpGet("search")]
     public ActionResult<IEnumerable<Role>> SearchRoles(string title)
     {

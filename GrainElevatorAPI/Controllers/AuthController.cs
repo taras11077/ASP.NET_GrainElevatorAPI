@@ -1,4 +1,5 @@
 using AutoMapper;
+using GrainElevatorAPI.Auth;
 using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Requests;
 using Microsoft.AspNetCore.Mvc;
@@ -10,12 +11,14 @@ namespace GrainElevatorAPI.Controllers;
 public class AuthController : Controller
 {
     private readonly IAuthService _authService;
+    private readonly IRoleService _roleService;
     private readonly IConfiguration _configuration;
 
-    public AuthController(IAuthService authService, IConfiguration configuration)
+    public AuthController(IAuthService authService, IConfiguration configuration, IRoleService roleService)
     {
         _authService = authService;
         _configuration = configuration;
+        _roleService = roleService;
     }
     
 // реєстрація користувача
@@ -25,7 +28,17 @@ public class AuthController : Controller
         return await HandleRequestAsync(request, async () =>
         {
             var userDb = await _authService.Register(request.Email, request.Password, request.RoleId);
-            var jwt = JwtGenerator.GenerateJwt(userDb, _configuration.GetValue<string>("TokenKey")!, DateTime.UtcNow.AddMinutes(5));
+            
+            var role = await _roleService.GetRoleById(userDb.RoleId);
+            if (role == null)
+            {
+                return BadRequest("Роль не знайдено.");
+            }
+            
+            var tokenKey = _configuration.GetValue<string>("TokenKey")!;
+            var expiryDate = DateTime.UtcNow.AddSeconds(_configuration.GetValue<int>("SessionTimeout"));
+            
+            var jwt = JwtGenerator.GenerateJwt(userDb, role.Title, tokenKey, expiryDate);
         
             HttpContext.Session.SetInt32("id", userDb.Id);
 
@@ -40,7 +53,22 @@ public class AuthController : Controller
         return await HandleRequestAsync(request, async () =>
         {
             var user = await _authService.Login(request.Email, request.Password);
-            var jwt = JwtGenerator.GenerateJwt(user, _configuration.GetValue<string>("TokenKey")!, DateTime.UtcNow.AddMinutes(5));
+            
+            if (user == null)
+            {
+                return Unauthorized("Неправільний нікнейм або пароль.");
+            }
+            
+            var role = await _roleService.GetRoleById(user.RoleId);
+            if (role == null)
+            {
+                return BadRequest("Роль не знайдено.");
+            }
+            
+            var tokenKey = _configuration.GetValue<string>("TokenKey")!;
+            var expiryDate = DateTime.UtcNow.AddSeconds(_configuration.GetValue<int>("SessionTimeout"));
+            
+            var jwt = JwtGenerator.GenerateJwt(user, role.Title, tokenKey, expiryDate);
 
             return Created("token", jwt);
         });

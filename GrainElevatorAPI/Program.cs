@@ -1,15 +1,19 @@
 using System.Text;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using GrainElevator.Storage;
 using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("Local");
-builder.Services.AddDbContext<GrainElevatorApiContext>(options => options.UseSqlServer(connectionString));
+
+builder.Services.AddDbContext<GrainElevatorApiContext>(opt =>
+    opt.UseSqlServer(connectionString)
+        .UseLazyLoadingProxies());
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -17,10 +21,14 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddScoped<IRepository, Repository>();
+builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IEmployeeService, EmployeeService>();
 builder.Services.AddTransient<IRoleService, RoleService>();
 
+builder.Services.AddControllers();
+
 builder.Services.AddDistributedMemoryCache();
+
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromSeconds(builder.Configuration.GetValue<int>("SessionTimeout"));
@@ -39,9 +47,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false,
         };
     });
-
-builder.Services.AddControllers();
-
 
 var app = builder.Build();
 
