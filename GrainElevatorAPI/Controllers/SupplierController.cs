@@ -59,7 +59,7 @@ public class SupplierController : ControllerBase
             var supplier = await _supplierService.GetSupplierByIdAsync(id);
             if (supplier == null)
             {
-                return NotFound($"Роль з ID {id} не знайдено.");
+                return NotFound($"Постачальника з ID {id} не знайдено.");
             }
             return Ok(_mapper.Map<SupplierDTO>(supplier));
         }
@@ -83,7 +83,7 @@ public class SupplierController : ControllerBase
         
             if (updatedSupplier == null)
             {
-                return NotFound($"Співробітник з ID {id} не знайдений.");
+                return NotFound($"Постачальника з ID {id} не знайдено.");
             }
 
             return Ok(_mapper.Map<SupplierDTO>(updatedSupplier));
@@ -104,7 +104,7 @@ public class SupplierController : ControllerBase
             var success = await _supplierService.DeleteSupplierAsync(id);
             if (!success)
             {
-                return NotFound($"Роль з ID {{id}} не знайдено.");
+                return NotFound($"Постачальника з ID {{id}} не знайдено.");
             }
 
             return NoContent();

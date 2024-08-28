@@ -22,7 +22,7 @@ public class ProductController : ControllerBase
     
     // POST: api/Product
     [HttpPost]
-    public async Task<ActionResult<Product>> PostSupplier(ProductCreateRequest request)
+    public async Task<ActionResult<Product>> PostProduct(ProductCreateRequest request)
     {
         try
         {
@@ -59,7 +59,7 @@ public class ProductController : ControllerBase
             var product = await _productService.GetProductByIdAsync(id);
             if (product == null)
             {
-                return NotFound($"Роль з ID {id} не знайдено.");
+                return NotFound($"Продукт з ID {id} не знайдено.");
             }
             return Ok(_mapper.Map<ProductDTO>(product));
         }
@@ -71,7 +71,7 @@ public class ProductController : ControllerBase
 
     // PUT: api/Product/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutSupplier(int id, ProductCreateRequest request)
+    public async Task<IActionResult> PutProduct(int id, ProductCreateRequest request)
     {
         try
         {
@@ -83,7 +83,7 @@ public class ProductController : ControllerBase
         
             if (updatedProduct == null)
             {
-                return NotFound($"Співробітник з ID {id} не знайдений.");
+                return NotFound($"Продукт з ID {id} не знайдений.");
             }
 
             return Ok(_mapper.Map<ProductDTO>(updatedProduct));
@@ -104,7 +104,7 @@ public class ProductController : ControllerBase
             var success = await _productService.DeleteProductAsync(id);
             if (!success)
             {
-                return NotFound($"Роль з ID {{id}} не знайдено.");
+                return NotFound($"Продукт з ID {{id}} не знайдено.");
             }
 
             return NoContent();

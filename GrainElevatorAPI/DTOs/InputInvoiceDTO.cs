@@ -10,6 +10,6 @@ public class InputInvoiceDTO
     
     public int? LaboratoryCardId { get; set; }
     public int SupplierId { get; set; }
-    public int ProductTitleId { get; set; }
+    public int ProductId { get; set; }
     public int CreatedById { get; set; } 
 }

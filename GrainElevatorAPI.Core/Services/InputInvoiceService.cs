@@ -25,7 +25,7 @@ public class InputInvoiceService : IInputInvoiceService
         }
     }
 
-    public async Task<InputInvoice> GetInputInvoiceAsync(int id)
+    public async Task<InputInvoice> GetInputInvoiceByIdAsync(int id)
     {
         try
         {
