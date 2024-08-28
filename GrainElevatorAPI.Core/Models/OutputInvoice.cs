@@ -11,12 +11,12 @@ public class OutputInvoice
     public int ProductWeight { get; set; }
     
     public int SupplierId { get; set; }
-    public int ProductTitleId { get; set; }
+    public int ProductId { get; set; }
     public int DepotItemId { get; set; }
     public int? CreatedById { get; set; }
     
     public virtual Supplier Supplier { get; set; }
-    public virtual ProductTitle ProductTitle { get; set; }
+    public virtual Product Product { get; set; }
     public virtual DepotItem DepotItem { get; set; }
     public virtual Employee? CreatedBy { get; set; }
 }

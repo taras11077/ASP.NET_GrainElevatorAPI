@@ -21,7 +21,7 @@ public class RoleController : ControllerBase
 
     // POST: api/Role
     [HttpPost]
-    public async Task<ActionResult<Role>> AddRole(RoleCreateRequest request)
+    public async Task<ActionResult<Role>> PostRole(RoleCreateRequest request)
     {
         try
         {

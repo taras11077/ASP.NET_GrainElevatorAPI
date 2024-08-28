@@ -13,33 +13,86 @@ public class InputInvoiceService : IInputInvoiceService
     }
     
     
-    public Task<InputInvoice> AddInputInvoice(string title)
+    public async Task<InputInvoice> AddInputInvoiceAsync(InputInvoice inputInvoice)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _repository.Add(inputInvoice);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Помилка при додаванні Вхідної накладної", ex);
+        }
     }
 
-    public Task<InputInvoice> GetInputInvoiceById(int id)
+    public async Task<InputInvoice> GetInputInvoiceAsync(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _repository.GetById<InputInvoice>(id);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при отриманні Вхідної накладної з ID {id}", ex);
+        }
     }
 
-    public Task<InputInvoice> UpdateInputInvoice(InputInvoice inputInvoice)
+    public async Task<InputInvoice> UpdateInputInvoiceAsync(InputInvoice inputInvoice)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _repository.Update(inputInvoice);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при оновленні Вхідної накладної з ID  {inputInvoice.Id}", ex);
+        }
     }
 
-    public Task<bool> DeleteInputInvoice(int id)
+    public async Task<bool> DeleteInputInvoiceAsync(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var supplier = await _repository.GetById<InputInvoice>(id);
+            if (supplier != null)
+            {
+                await _repository.Delete<InputInvoice>(id);
+                return true;
+            }
+            return false;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при видаленні Вхідної накладної з ID {id}", ex);
+        }
     }
 
-    public IEnumerable<InputInvoice> GetInputInvoice(int page, int size)
+    public IEnumerable<InputInvoice> GetInputInvoices(int page, int size)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return _repository.GetAll<InputInvoice>()
+                .Skip((page - 1) * size)
+                .Take(size)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Помилка при отриманні списку Вхідних Накладних", ex);
+        }
     }
 
-    public IEnumerable<InputInvoice> SearchInputInvoice(string title)
+    public IEnumerable<InputInvoice> SearchInputInvoice(string invoiceNumber)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return _repository.GetAll<InputInvoice>()
+                .Where(inv => inv.InvoiceNumber.ToLower().Contains(invoiceNumber.ToLower()))
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при отриманні Вхідної накладної за номером {invoiceNumber}", ex);
+        }
     }
 }

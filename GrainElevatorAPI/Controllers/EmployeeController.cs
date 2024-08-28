@@ -10,8 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GrainElevatorAPI.Controllers;
 
-[Route("api/employee")]
 [ApiController]
+[Route("api/employee")]
+
 //[Authorize(Roles = "admin")]
 public class EmployeeController : ControllerBase
 {
@@ -60,7 +61,7 @@ public class EmployeeController : ControllerBase
 
     // PUT: api/Employee/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateEmployee(int id, EmployeeUpdateRequest request)
+    public async Task<IActionResult> PutEmployee(int id, EmployeeUpdateRequest request)
     {
         try
         {

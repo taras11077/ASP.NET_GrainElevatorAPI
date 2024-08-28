@@ -3,7 +3,7 @@
 public class PriceList
 {
     public int Id { get; set; }
-    public string ProductTitle { get; set; } = null!;
+    public string Product { get; set; } = null!;
     public int? CreatedByInt { get; set; }
 
     public virtual ICollection<CompletionReport> CompletionReports { get; set; } = new List<CompletionReport>();

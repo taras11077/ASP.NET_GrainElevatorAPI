@@ -72,6 +72,9 @@ namespace GrainElevator.Storage.Migrations
                     b.Property<int?>("PriceListId")
                         .HasColumnType("int");
 
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ProductTitleId")
                         .HasColumnType("int");
 
@@ -93,7 +96,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("PriceListId");
 
-                    b.HasIndex("ProductTitleId");
+                    b.HasIndex("ProductId");
 
                     b.HasIndex("SupplierId");
 
@@ -108,6 +111,9 @@ namespace GrainElevator.Storage.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ProductTitleId")
                         .HasColumnType("int");
 
@@ -116,7 +122,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductTitleId");
+                    b.HasIndex("ProductId");
 
                     b.HasIndex("SupplierId");
 
@@ -197,6 +203,9 @@ namespace GrainElevator.Storage.Migrations
                     b.Property<int>("PhysicalWeight")
                         .HasColumnType("int");
 
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ProductTitleId")
                         .HasColumnType("int");
 
@@ -215,7 +224,7 @@ namespace GrainElevator.Storage.Migrations
                         .IsUnique()
                         .HasFilter("[LaboratoryCardId] IS NOT NULL");
 
-                    b.HasIndex("ProductTitleId");
+                    b.HasIndex("ProductId");
 
                     b.HasIndex("SupplierId");
 
@@ -280,6 +289,9 @@ namespace GrainElevator.Storage.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ProductTitleId")
                         .HasColumnType("int");
 
@@ -302,7 +314,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("DepotItemId");
 
-                    b.HasIndex("ProductTitleId");
+                    b.HasIndex("ProductId");
 
                     b.HasIndex("SupplierId");
 
@@ -359,6 +371,23 @@ namespace GrainElevator.Storage.Migrations
                     b.ToTable("PriceLists");
                 });
 
+            modelBuilder.Entity("GrainElevatorAPI.Core.Models.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Products");
+                });
+
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.ProductCategory", b =>
                 {
                     b.Property<int>("Id")
@@ -382,23 +411,6 @@ namespace GrainElevator.Storage.Migrations
                     b.HasIndex("DepotItemId");
 
                     b.ToTable("DepotItemCategories");
-                });
-
-            modelBuilder.Entity("GrainElevatorAPI.Core.Models.ProductTitle", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProductTitles");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.ProductionBatch", b =>
@@ -463,6 +475,9 @@ namespace GrainElevator.Storage.Migrations
                     b.Property<int>("PhysicalWeightReg")
                         .HasColumnType("int");
 
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ProductTitleId")
                         .HasColumnType("int");
 
@@ -487,7 +502,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("ProductTitleId");
+                    b.HasIndex("ProductId");
 
                     b.HasIndex("SupplierId");
 
@@ -582,9 +597,9 @@ namespace GrainElevator.Storage.Migrations
                         .WithMany("CompletionReports")
                         .HasForeignKey("PriceListId");
 
-                    b.HasOne("GrainElevatorAPI.Core.Models.ProductTitle", "ProductTitle")
+                    b.HasOne("GrainElevatorAPI.Core.Models.Product", "Product")
                         .WithMany("CompletionReports")
-                        .HasForeignKey("ProductTitleId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -598,16 +613,16 @@ namespace GrainElevator.Storage.Migrations
 
                     b.Navigation("PriceList");
 
-                    b.Navigation("ProductTitle");
+                    b.Navigation("Product");
 
                     b.Navigation("Supplier");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.DepotItem", b =>
                 {
-                    b.HasOne("GrainElevatorAPI.Core.Models.ProductTitle", "ProductTitle")
+                    b.HasOne("GrainElevatorAPI.Core.Models.Product", "Product")
                         .WithMany("DepotItems")
-                        .HasForeignKey("ProductTitleId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -617,7 +632,7 @@ namespace GrainElevator.Storage.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ProductTitle");
+                    b.Navigation("Product");
 
                     b.Navigation("Supplier");
                 });
@@ -645,9 +660,9 @@ namespace GrainElevator.Storage.Migrations
                         .WithOne("InputInvoice")
                         .HasForeignKey("GrainElevatorAPI.Core.Models.InputInvoice", "LaboratoryCardId");
 
-                    b.HasOne("GrainElevatorAPI.Core.Models.ProductTitle", "ProductTitle")
+                    b.HasOne("GrainElevatorAPI.Core.Models.Product", "Product")
                         .WithMany("InputInvoices")
-                        .HasForeignKey("ProductTitleId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -661,7 +676,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.Navigation("LaboratoryCard");
 
-                    b.Navigation("ProductTitle");
+                    b.Navigation("Product");
 
                     b.Navigation("Supplier");
                 });
@@ -689,9 +704,9 @@ namespace GrainElevator.Storage.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GrainElevatorAPI.Core.Models.ProductTitle", "ProductTitle")
+                    b.HasOne("GrainElevatorAPI.Core.Models.Product", "Product")
                         .WithMany("OutputInvoices")
-                        .HasForeignKey("ProductTitleId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -705,7 +720,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.Navigation("DepotItem");
 
-                    b.Navigation("ProductTitle");
+                    b.Navigation("Product");
 
                     b.Navigation("Supplier");
                 });
@@ -770,9 +785,9 @@ namespace GrainElevator.Storage.Migrations
                         .WithMany("Registers")
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("GrainElevatorAPI.Core.Models.ProductTitle", "ProductTitle")
+                    b.HasOne("GrainElevatorAPI.Core.Models.Product", "Product")
                         .WithMany("Registers")
-                        .HasForeignKey("ProductTitleId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -786,7 +801,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.Navigation("CreatedBy");
 
-                    b.Navigation("ProductTitle");
+                    b.Navigation("Product");
 
                     b.Navigation("Supplier");
                 });
@@ -846,7 +861,7 @@ namespace GrainElevator.Storage.Migrations
                     b.Navigation("PriceByOperations");
                 });
 
-            modelBuilder.Entity("GrainElevatorAPI.Core.Models.ProductTitle", b =>
+            modelBuilder.Entity("GrainElevatorAPI.Core.Models.Product", b =>
                 {
                     b.Navigation("CompletionReports");
 

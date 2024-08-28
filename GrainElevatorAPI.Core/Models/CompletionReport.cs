@@ -13,12 +13,12 @@ public class CompletionReport
     public bool IsFinalized { get; set; }
     
     public int SupplierId { get; set; }
-    public int ProductTitleId { get; set; }
+    public int ProductId { get; set; }
     public int? PriceListId { get; set; }
     public int CreatedById { get; set; }
     
     public virtual Supplier Supplier { get; set; }
-    public virtual ProductTitle ProductTitle { get; set; }
+    public virtual Product Product { get; set; }
     public virtual PriceList? PriceList { get; set; }
     public virtual Employee? CreatedBy { get; set; }
     

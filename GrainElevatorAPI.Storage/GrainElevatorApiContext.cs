@@ -20,7 +20,7 @@ public class GrainElevatorApiContext : DbContext
     public DbSet<Role> Roles { get; set; }
     
     public DbSet<Supplier> Suppliers { get; set; }
-    public DbSet<ProductTitle> ProductTitles { get; set; }
+    public DbSet<Product> Products { get; set; }
     
     public DbSet<InputInvoice> InputInvoices { get; set; }
     public DbSet<LaboratoryCard> LaboratoryCards { get; set; }

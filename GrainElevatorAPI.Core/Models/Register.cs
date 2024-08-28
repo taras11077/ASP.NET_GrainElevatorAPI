@@ -14,12 +14,12 @@ public class Register
     public double QuantityesDryingReg { get; set; }
     
     public int SupplierId { get; set; }
-    public int ProductTitleId { get; set; }
+    public int ProductId { get; set; }
     public int? CompletionReportId { get; set; }
     public int? CreatedById { get; set; }
     
     public virtual Supplier Supplier { get; set; } = null!;
-    public virtual ProductTitle ProductTitle { get; set; } = null!;
+    public virtual Product Product { get; set; } = null!;
     public virtual CompletionReport? CompletionReport { get; set; }
     public virtual Employee? CreatedBy { get; set; }
 
