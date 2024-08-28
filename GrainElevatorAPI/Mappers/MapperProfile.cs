@@ -18,6 +18,8 @@ public class MapperProfile : Profile
         CreateMap<Employee, EmployeeRegisterRequest>().ReverseMap();
         CreateMap<Role, RoleDTO>().ReverseMap();;
         CreateMap<Supplier, SupplierDTO>().ReverseMap();
-        CreateMap<Product, ProductDTO>().ReverseMap();;
+        CreateMap<Product, ProductDTO>().ReverseMap();
+        CreateMap<InputInvoice, InputInvoiceCreateRequest>().ReverseMap();
+        CreateMap<InputInvoice, InputInvoiceDTO>().ReverseMap();
     }
 }

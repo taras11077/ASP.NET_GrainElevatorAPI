@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace GrainElevatorAPI.Controllers;
 
-[Authorize(Roles = "admin")]
+//[Authorize(Roles = "admin")]
 [ApiController]
 [Route("api/role")]
 public class RoleController : ControllerBase

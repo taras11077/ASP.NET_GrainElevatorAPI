@@ -9,7 +9,7 @@ public class Role
 
 // admin
 // CEO
-// Laboratory
+// laboratory
 // technologist
 // accountant
 // HR

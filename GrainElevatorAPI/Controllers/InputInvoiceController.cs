@@ -23,7 +23,7 @@ namespace GrainElevatorAPI.Controllers
 
 
 
-        // POST: api/Product
+        // POST: api/InputInvoice
         [HttpPost]
         public async Task<ActionResult<InputInvoice>> PostInputInvoice(InputInvoiceCreateRequest request)
         {
@@ -102,7 +102,7 @@ namespace GrainElevatorAPI.Controllers
         }
 
 
-        // DELETE: api/Product/5
+        // DELETE: api/InputInvoice/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteInputInvoice(int id)
         {
@@ -123,7 +123,7 @@ namespace GrainElevatorAPI.Controllers
         }
 
 
-        // GET: api/Product/search?invoiceNumber=123456
+        // GET: api/InputInvoice/search?invoiceNumber=123456
         [HttpGet("search")]
         public ActionResult<IEnumerable<InputInvoice>> SearchInputInvoices(string invoiceNumber)
         {

@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace GrainElevator.Storage.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ProductTitles",
+                name: "Products",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -21,7 +21,7 @@ namespace GrainElevator.Storage.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductTitles", x => x.Id);
+                    table.PrimaryKey("PK_Products", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -56,16 +56,17 @@ namespace GrainElevator.Storage.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false)
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    LastSeenOnline = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -85,15 +86,15 @@ namespace GrainElevator.Storage.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SupplierId = table.Column<int>(type: "int", nullable: false),
-                    ProductTitleId = table.Column<int>(type: "int", nullable: false)
+                    ProductId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DepotItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DepotItems_ProductTitles_ProductTitleId",
-                        column: x => x.ProductTitleId,
-                        principalTable: "ProductTitles",
+                        name: "FK_DepotItems_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -158,7 +159,7 @@ namespace GrainElevator.Storage.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ProductTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Product = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedByInt = table.Column<int>(type: "int", nullable: true),
                     CreatedById = table.Column<int>(type: "int", nullable: true)
                 },
@@ -205,7 +206,7 @@ namespace GrainElevator.Storage.Migrations
                     ProductCategory = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProductWeight = table.Column<int>(type: "int", nullable: false),
                     SupplierId = table.Column<int>(type: "int", nullable: false),
-                    ProductTitleId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
                     DepotItemId = table.Column<int>(type: "int", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: true)
                 },
@@ -224,9 +225,9 @@ namespace GrainElevator.Storage.Migrations
                         principalTable: "Employees",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_OutputInvoices_ProductTitles_ProductTitleId",
-                        column: x => x.ProductTitleId,
-                        principalTable: "ProductTitles",
+                        name: "FK_OutputInvoices_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -249,7 +250,7 @@ namespace GrainElevator.Storage.Migrations
                     PhysicalWeight = table.Column<int>(type: "int", nullable: false),
                     LaboratoryCardId = table.Column<int>(type: "int", nullable: true),
                     SupplierId = table.Column<int>(type: "int", nullable: false),
-                    ProductTitleId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -267,9 +268,9 @@ namespace GrainElevator.Storage.Migrations
                         principalTable: "LaboratoryCards",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_InputInvoices_ProductTitles_ProductTitleId",
-                        column: x => x.ProductTitleId,
-                        principalTable: "ProductTitles",
+                        name: "FK_InputInvoices_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -292,7 +293,7 @@ namespace GrainElevator.Storage.Migrations
                     PhysicalWeightReport = table.Column<double>(type: "float", nullable: false),
                     IsFinalized = table.Column<bool>(type: "bit", nullable: false),
                     SupplierId = table.Column<int>(type: "int", nullable: false),
-                    ProductTitleId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
                     PriceListId = table.Column<int>(type: "int", nullable: true),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
                 },
@@ -311,9 +312,9 @@ namespace GrainElevator.Storage.Migrations
                         principalTable: "PriceLists",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_CompletionReports_ProductTitles_ProductTitleId",
-                        column: x => x.ProductTitleId,
-                        principalTable: "ProductTitles",
+                        name: "FK_CompletionReports_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -359,7 +360,7 @@ namespace GrainElevator.Storage.Migrations
                     AccWeightReg = table.Column<int>(type: "int", nullable: false),
                     QuantityesDryingReg = table.Column<double>(type: "float", nullable: false),
                     SupplierId = table.Column<int>(type: "int", nullable: false),
-                    ProductTitleId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
                     CompletionReportId = table.Column<int>(type: "int", nullable: true),
                     CreatedById = table.Column<int>(type: "int", nullable: true)
                 },
@@ -377,9 +378,9 @@ namespace GrainElevator.Storage.Migrations
                         principalTable: "Employees",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Registers_ProductTitles_ProductTitleId",
-                        column: x => x.ProductTitleId,
-                        principalTable: "ProductTitles",
+                        name: "FK_Registers_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -460,9 +461,9 @@ namespace GrainElevator.Storage.Migrations
                 column: "PriceListId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CompletionReports_ProductTitleId",
+                name: "IX_CompletionReports_ProductId",
                 table: "CompletionReports",
-                column: "ProductTitleId");
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CompletionReports_SupplierId",
@@ -475,9 +476,9 @@ namespace GrainElevator.Storage.Migrations
                 column: "DepotItemId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DepotItems_ProductTitleId",
+                name: "IX_DepotItems_ProductId",
                 table: "DepotItems",
-                column: "ProductTitleId");
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DepotItems_SupplierId",
@@ -502,9 +503,9 @@ namespace GrainElevator.Storage.Migrations
                 filter: "[LaboratoryCardId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_InputInvoices_ProductTitleId",
+                name: "IX_InputInvoices_ProductId",
                 table: "InputInvoices",
-                column: "ProductTitleId");
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_InputInvoices_SupplierId",
@@ -527,9 +528,9 @@ namespace GrainElevator.Storage.Migrations
                 column: "DepotItemId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OutputInvoices_ProductTitleId",
+                name: "IX_OutputInvoices_ProductId",
                 table: "OutputInvoices",
-                column: "ProductTitleId");
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OutputInvoices_SupplierId",
@@ -568,9 +569,9 @@ namespace GrainElevator.Storage.Migrations
                 column: "CreatedById");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Registers_ProductTitleId",
+                name: "IX_Registers_ProductId",
                 table: "Registers",
-                column: "ProductTitleId");
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Registers_SupplierId",
@@ -623,7 +624,7 @@ namespace GrainElevator.Storage.Migrations
                 name: "PriceLists");
 
             migrationBuilder.DropTable(
-                name: "ProductTitles");
+                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "Suppliers");
