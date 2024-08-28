@@ -71,18 +71,13 @@ public class ProductController : ControllerBase
 
     // PUT: api/Product/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutSupplier(int id, ProductDTO productDto)
+    public async Task<IActionResult> PutSupplier(int id, ProductCreateRequest request)
     {
-        if (id != productDto.Id)
-        {
-            return BadRequest();
-        }
-        
         try
         {
             var productDb = await _productService.GetProductByIdAsync(id);
         
-            productDb.Title = productDto.Title;
+            productDb.Title = request.Title;
         
             var updatedProduct = await _productService.UpdateProductAsync(productDb);
         

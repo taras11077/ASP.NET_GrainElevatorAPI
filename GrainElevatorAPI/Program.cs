@@ -24,6 +24,8 @@ builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IEmployeeService, EmployeeService>();
 builder.Services.AddTransient<IRoleService, RoleService>();
+builder.Services.AddTransient<ISupplierService, SupplierService>();
+builder.Services.AddTransient<IProductService, ProductService>();
 
 builder.Services.AddControllers();
 

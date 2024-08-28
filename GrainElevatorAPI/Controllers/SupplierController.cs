@@ -71,18 +71,13 @@ public class SupplierController : ControllerBase
 
     // PUT: api/Supplier/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutSupplier(int id, SupplierDTO supplierDto)
+    public async Task<IActionResult> PutSupplier(int id, SupplierCreateRequest request)
     {
-        if (id != supplierDto.Id)
-        {
-            return BadRequest();
-        }
-        
         try
         {
             var supplierDb = await _supplierService.GetSupplierByIdAsync(id);
         
-            supplierDb.Title = supplierDto.Title;
+            supplierDb.Title = request.Title;
         
             var updatedSupplier = await _supplierService.UpdateSupplierAsync(supplierDb);
         
@@ -121,7 +116,7 @@ public class SupplierController : ControllerBase
     }
     
     
-    // GET: api/Supplier/search?title=Hortytsya
+    // GET: api/Supplier/search?title=Khortytsia 
     [HttpGet("search")]
     public ActionResult<IEnumerable<Supplier>> SearchRoles(string title)
     {
