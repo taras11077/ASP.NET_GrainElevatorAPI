@@ -4,6 +4,7 @@ using GrainElevatorAPI.Core.Models;
 using GrainElevatorAPI.DTOs;
 using GrainElevatorAPI.Extensions;
 using GrainElevatorAPI.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,11 +22,10 @@ namespace GrainElevatorAPI.Controllers
             _inputInvoiceService = inputInvoiceService;
             _mapper = mapper;
         }
-
-
-
+        
         // POST: api/InputInvoice
         [HttpPost]
+        //[Authorize(Roles = "admin, laboratory")]
         public async Task<ActionResult<InputInvoice>> PostInputInvoice(InputInvoiceCreateRequest request)
         {
             try
@@ -47,6 +47,7 @@ namespace GrainElevatorAPI.Controllers
 
         // GET: api/InputInvoice
         [HttpGet]
+        //[Authorize(Roles = "admin, laboratory")]
         public ActionResult<IEnumerable<InputInvoice>> GetInputInvoice([FromQuery] int page = 1, [FromQuery] int size = 10)
         {
             try
@@ -62,6 +63,7 @@ namespace GrainElevatorAPI.Controllers
 
         // GET: api/InputInvoice/5
         [HttpGet("{id}")]
+        //[Authorize(Roles = "admin, laboratory")]
         public async Task<ActionResult<InputInvoice>> GetInputInvoice(int id)
         {
             try
@@ -82,6 +84,7 @@ namespace GrainElevatorAPI.Controllers
 
         // PUT: api/InputInvoice/5
         [HttpPut("{id}")]
+        //[Authorize(Roles = "admin, laboratory")]
         public async Task<IActionResult> PutInputInvoice(int id, InputInvoiceUpdateRequest request)
         {
             try
@@ -97,7 +100,7 @@ namespace GrainElevatorAPI.Controllers
 
                 if (updatedInputInvoice == null)
                 {
-                    return NotFound($"Прибуткову накладну з ID {id} не знайдений.");
+                    return NotFound($"Прибуткову накладну з ID {id} не знайдено.");
                 }
 
                 return Ok(_mapper.Map<InputInvoiceDTO>(updatedInputInvoice));
@@ -107,10 +110,11 @@ namespace GrainElevatorAPI.Controllers
                 return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
             }
         }
-
-
+        
+        
         // DELETE: api/InputInvoice/5
         [HttpDelete("{id}")]
+        //[Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteInputInvoice(int id)
         {
             try
@@ -118,10 +122,68 @@ namespace GrainElevatorAPI.Controllers
                 var success = await _inputInvoiceService.DeleteInputInvoiceAsync(id);
                 if (!success)
                 {
-                    return NotFound($"Прибуткову накладну з ID {{id}} не знайдено.");
+                    return NotFound($"Прибуткову накладну з ID {id} не знайдено.");
+                }
+                
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            }
+        }
+        
+        // Patch: api/InputInvoice/5
+        [HttpPatch("{id}/soft-remove")]
+        //[Authorize(Roles = "admin, laboratory")]
+        public async Task<IActionResult> SoftDeleteInputInvoice(int id)
+        {
+            try
+            {
+                var inputInvoiceDb = await _inputInvoiceService.GetInputInvoiceByIdAsync(id);
+                
+                inputInvoiceDb.Removed = true;
+                inputInvoiceDb.RemovedAt = DateTime.UtcNow;
+                inputInvoiceDb.RemovedById = (int)HttpContext.Session.GetInt32("EmployeeId");
+                
+                var removedInputInvoice = await _inputInvoiceService.UpdateInputInvoiceAsync(inputInvoiceDb);
+                
+                if (removedInputInvoice == null)
+                {
+                    return NotFound($"Прибуткову накладну з ID {id} не знайдено.");
                 }
 
-                return NoContent();
+                return Ok(_mapper.Map<InputInvoiceDTO>(removedInputInvoice));
+                
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            }
+        }
+        
+        // Patch: api/InputInvoice/5
+        [HttpPatch("{id}/restore")]
+        //[Authorize(Roles = "admin, laboratory")]
+        public async Task<IActionResult> RestoreRemovedInputInvoice(int id)
+        {
+            try
+            {
+                var inputInvoiceDb = await _inputInvoiceService.GetInputInvoiceByIdAsync(id);
+                
+                inputInvoiceDb.Removed = false;
+                inputInvoiceDb.RestoredAt = DateTime.UtcNow;
+                inputInvoiceDb.RestoreById = (int)HttpContext.Session.GetInt32("EmployeeId");
+                
+                var restorededInputInvoice = await _inputInvoiceService.UpdateInputInvoiceAsync(inputInvoiceDb);
+                
+                if (restorededInputInvoice == null)
+                {
+                    return NotFound($"Прибуткову накладну з ID {id} не знайдено.");
+                }
+
+                return Ok(_mapper.Map<InputInvoiceDTO>(restorededInputInvoice));
+                
             }
             catch (Exception ex)
             {
@@ -132,6 +194,7 @@ namespace GrainElevatorAPI.Controllers
 
         // GET: api/InputInvoice/search?invoiceNumber=123456
         [HttpGet("search")]
+        //[Authorize(Roles = "admin, laboratory")]
         public ActionResult<IEnumerable<InputInvoice>> SearchInputInvoices(string invoiceNumber)
         {
             try

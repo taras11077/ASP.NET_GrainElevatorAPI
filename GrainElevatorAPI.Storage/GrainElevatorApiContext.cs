@@ -62,6 +62,12 @@ public class GrainElevatorApiContext : DbContext
             .HasForeignKey(ii => ii.RemovedById)
             .OnDelete(DeleteBehavior.Restrict);
         
+        modelBuilder.Entity<InputInvoice>()
+            .HasOne(ii => ii.RestoreBy)
+            .WithMany()
+            .HasForeignKey(ii => ii.RestoreById)
+            .OnDelete(DeleteBehavior.Restrict);
+        
     }
     
 }
