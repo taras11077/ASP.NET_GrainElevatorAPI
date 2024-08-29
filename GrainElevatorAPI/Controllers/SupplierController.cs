@@ -24,6 +24,11 @@ public class SupplierController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Supplier>> PostSupplier(SupplierCreateRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
         try
         {
             var createdSupplier = await _supplierService.AddSupplierAsync(request.Title);
@@ -73,6 +78,11 @@ public class SupplierController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> PutSupplier(int id, SupplierCreateRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
         try
         {
             var supplierDb = await _supplierService.GetSupplierByIdAsync(id);

@@ -28,6 +28,11 @@ namespace GrainElevatorAPI.Controllers
         //[Authorize(Roles = "admin, laboratory")]
         public async Task<ActionResult<InputInvoice>> PostInputInvoice(InputInvoiceCreateRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             try
             {
                 var newInputInvoice = _mapper.Map<InputInvoice>(request);
@@ -87,6 +92,11 @@ namespace GrainElevatorAPI.Controllers
         //[Authorize(Roles = "admin, laboratory")]
         public async Task<IActionResult> PutInputInvoice(int id, InputInvoiceUpdateRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             try
             {
                 var inputInvoiceDb = await _inputInvoiceService.GetInputInvoiceByIdAsync(id);

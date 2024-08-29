@@ -24,6 +24,11 @@ public class ProductController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Product>> PostProduct(ProductCreateRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
         try
         {
             var createdProduct = await _productService.AddProductAsync(request.Title);
@@ -73,6 +78,11 @@ public class ProductController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> PutProduct(int id, ProductCreateRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
         try
         {
             var productDb = await _productService.GetProductByIdAsync(id);

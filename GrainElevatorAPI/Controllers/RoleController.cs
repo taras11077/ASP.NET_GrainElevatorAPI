@@ -23,6 +23,11 @@ public class RoleController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Role>> PostRole(RoleCreateRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
         try
         {
             var createdRole = await _roleService.AddRoleAsync(request.Title);
