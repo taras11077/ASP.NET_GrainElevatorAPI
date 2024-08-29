@@ -27,9 +27,9 @@ public class AuthController : Controller
     {
         return await HandleRequestAsync(request, async () =>
         {
-            var userDb = await _authService.Register(request.Email, request.Password, request.RoleId);
+            var employeeDb = await _authService.Register(request.Email, request.Password, request.RoleId);
             
-            var role = await _roleService.GetRoleByIdAsync(userDb.RoleId);
+            var role = await _roleService.GetRoleByIdAsync(employeeDb.RoleId);
             if (role == null)
             {
                 return BadRequest("Роль не знайдено.");
@@ -38,9 +38,7 @@ public class AuthController : Controller
             var tokenKey = _configuration.GetValue<string>("TokenKey")!;
             var expiryDate = DateTime.UtcNow.AddSeconds(_configuration.GetValue<int>("SessionTimeout"));
             
-            var jwt = JwtGenerator.GenerateJwt(userDb, role.Title, tokenKey, expiryDate);
-        
-            HttpContext.Session.SetInt32("id", userDb.Id);
+            var jwt = JwtGenerator.GenerateJwt(employeeDb, role.Title, tokenKey, expiryDate);
 
             return Created("token", jwt);
         });
@@ -52,14 +50,14 @@ public class AuthController : Controller
     {
         return await HandleRequestAsync(request, async () =>
         {
-            var user = await _authService.Login(request.Email, request.Password);
+            var employee = await _authService.Login(request.Email, request.Password);
             
-            if (user == null)
+            if (employee == null)
             {
                 return Unauthorized("Неправільний нікнейм або пароль.");
             }
             
-            var role = await _roleService.GetRoleByIdAsync(user.RoleId);
+            var role = await _roleService.GetRoleByIdAsync(employee.RoleId);
             if (role == null)
             {
                 return BadRequest("Роль не знайдено.");
@@ -68,7 +66,9 @@ public class AuthController : Controller
             var tokenKey = _configuration.GetValue<string>("TokenKey")!;
             var expiryDate = DateTime.UtcNow.AddSeconds(_configuration.GetValue<int>("SessionTimeout"));
             
-            var jwt = JwtGenerator.GenerateJwt(user, role.Title, tokenKey, expiryDate);
+            var jwt = JwtGenerator.GenerateJwt(employee, role.Title, tokenKey, expiryDate);
+            
+            HttpContext.Session.SetInt32("EmployeeId", employee.Id);
 
             return Created("token", jwt);
         });

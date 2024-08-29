@@ -39,4 +39,29 @@ public class GrainElevatorApiContext : DbContext
     
     public DbSet<AppDefect> AppDefects { get; set; }
     
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        
+        modelBuilder.Entity<InputInvoice>()
+            .HasOne(ii => ii.CreatedBy)
+            .WithMany(e => e.InputInvoices)
+            .HasForeignKey(ii => ii.CreatedById)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<InputInvoice>()
+            .HasOne(ii => ii.ModifiedBy)
+            .WithMany()
+            .HasForeignKey(ii => ii.ModifiedById)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<InputInvoice>()
+            .HasOne(ii => ii.RemovedBy)
+            .WithMany()
+            .HasForeignKey(ii => ii.RemovedById)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+    }
+    
 }

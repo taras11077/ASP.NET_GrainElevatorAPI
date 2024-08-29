@@ -4,6 +4,7 @@ using GrainElevator.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GrainElevator.Storage.Migrations
 {
     [DbContext(typeof(GrainElevatorApiContext))]
-    partial class GrainElevatorApiContextModelSnapshot : ModelSnapshot
+    [Migration("20240829084439_ChangeInputInvoiceModel")]
+    partial class ChangeInputInvoiceModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -184,11 +187,11 @@ namespace GrainElevator.Storage.Migrations
                     b.Property<DateTime>("ArrivalDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("CreatedById")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateddAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("InvoiceNumber")
                         .IsRequired()
@@ -197,10 +200,10 @@ namespace GrainElevator.Storage.Migrations
                     b.Property<int?>("LaboratoryCardId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("ModifiedAt")
+                    b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ModifiedById")
+                    b.Property<int>("ModifiedById")
                         .HasColumnType("int");
 
                     b.Property<int>("PhysicalWeight")
@@ -209,19 +212,11 @@ namespace GrainElevator.Storage.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<bool?>("Removed")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("RemovedById")
-                        .HasColumnType("int");
-
                     b.Property<int>("SupplierId")
                         .HasColumnType("int");
 
                     b.Property<string>("VehicleNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -235,8 +230,6 @@ namespace GrainElevator.Storage.Migrations
                     b.HasIndex("ModifiedById");
 
                     b.HasIndex("ProductId");
-
-                    b.HasIndex("RemovedById");
 
                     b.HasIndex("SupplierId");
 
@@ -669,17 +662,14 @@ namespace GrainElevator.Storage.Migrations
                     b.HasOne("GrainElevatorAPI.Core.Models.Employee", "ModifiedBy")
                         .WithMany()
                         .HasForeignKey("ModifiedById")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("GrainElevatorAPI.Core.Models.Product", "Product")
                         .WithMany("InputInvoices")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("GrainElevatorAPI.Core.Models.Employee", "RemovedBy")
-                        .WithMany()
-                        .HasForeignKey("RemovedById");
 
                     b.HasOne("GrainElevatorAPI.Core.Models.Supplier", "Supplier")
                         .WithMany("InputInvoices")
@@ -694,8 +684,6 @@ namespace GrainElevator.Storage.Migrations
                     b.Navigation("ModifiedBy");
 
                     b.Navigation("Product");
-
-                    b.Navigation("RemovedBy");
 
                     b.Navigation("Supplier");
                 });

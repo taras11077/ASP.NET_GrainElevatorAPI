@@ -8,8 +8,12 @@ public class InputInvoiceDTO
     public string VehicleNumber { get; set; } 
     public int PhysicalWeight { get; set; }
     
+    public DateTime CreatedAt { get; set; }
+    public DateTime ModifiedAt { get; set; }
+    
     public int? LaboratoryCardId { get; set; }
     public int SupplierId { get; set; }
     public int ProductId { get; set; }
-    public int CreatedById { get; set; } 
+    public int CreatedById { get; set; }
+    public int ModifiedById { get; set; }
 }

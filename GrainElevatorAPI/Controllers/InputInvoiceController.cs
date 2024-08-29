@@ -2,6 +2,7 @@ using AutoMapper;
 using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Models;
 using GrainElevatorAPI.DTOs;
+using GrainElevatorAPI.Extensions;
 using GrainElevatorAPI.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +31,9 @@ namespace GrainElevatorAPI.Controllers
             try
             {
                 var newInputInvoice = _mapper.Map<InputInvoice>(request);
+                
+                newInputInvoice.CreatedAt = DateTime.UtcNow;
+                newInputInvoice.CreatedById = (int)HttpContext.Session.GetInt32("EmployeeId");
                 
                 var createdInputInvoice = await _inputInvoiceService.AddInputInvoiceAsync(newInputInvoice);
                 return CreatedAtAction(nameof(GetInputInvoice), new { id = createdInputInvoice.Id },
@@ -78,13 +82,16 @@ namespace GrainElevatorAPI.Controllers
 
         // PUT: api/InputInvoice/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutInputInvoice(int id, InputInvoiceCreateRequest request)
+        public async Task<IActionResult> PutInputInvoice(int id, InputInvoiceUpdateRequest request)
         {
             try
             {
                 var inputInvoiceDb = await _inputInvoiceService.GetInputInvoiceByIdAsync(id);
-
-                //productDb.Title = request.Title;
+                
+                inputInvoiceDb.UpdateFromRequest(request);
+                
+                inputInvoiceDb.ModifiedAt = DateTime.UtcNow;
+                inputInvoiceDb.ModifiedById = (int)HttpContext.Session.GetInt32("EmployeeId");
 
                 var updatedInputInvoice = await _inputInvoiceService.UpdateInputInvoiceAsync(inputInvoiceDb);
 
