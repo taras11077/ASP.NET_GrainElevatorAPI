@@ -5,7 +5,6 @@ using GrainElevatorAPI.DTOs;
 using GrainElevatorAPI.Extensions;
 using GrainElevatorAPI.Requests;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GrainElevatorAPI.Controllers
@@ -23,7 +22,7 @@ namespace GrainElevatorAPI.Controllers
             _mapper = mapper;
         }
         
-        // POST: api/InputInvoice
+
         [HttpPost]
         //[Authorize(Roles = "admin, laboratory")]
         public async Task<ActionResult<InputInvoice>> PostInputInvoice(InputInvoiceCreateRequest request)
@@ -38,7 +37,7 @@ namespace GrainElevatorAPI.Controllers
                 var newInputInvoice = _mapper.Map<InputInvoice>(request);
                 
                 newInputInvoice.CreatedAt = DateTime.UtcNow;
-                newInputInvoice.CreatedById = (int)HttpContext.Session.GetInt32("EmployeeId");
+                newInputInvoice.CreatedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
                 
                 var createdInputInvoice = await _inputInvoiceService.AddInputInvoiceAsync(newInputInvoice);
                 return CreatedAtAction(nameof(GetInputInvoice), new { id = createdInputInvoice.Id },
@@ -50,7 +49,7 @@ namespace GrainElevatorAPI.Controllers
             }
         }
 
-        // GET: api/InputInvoice
+
         [HttpGet]
         //[Authorize(Roles = "admin, laboratory")]
         public ActionResult<IEnumerable<InputInvoice>> GetInputInvoice([FromQuery] int page = 1, [FromQuery] int size = 10)
@@ -66,7 +65,7 @@ namespace GrainElevatorAPI.Controllers
             }
         }
 
-        // GET: api/InputInvoice/5
+
         [HttpGet("{id}")]
         //[Authorize(Roles = "admin, laboratory")]
         public async Task<ActionResult<InputInvoice>> GetInputInvoice(int id)
@@ -87,7 +86,7 @@ namespace GrainElevatorAPI.Controllers
             }
         }
 
-        // PUT: api/InputInvoice/5
+
         [HttpPut("{id}")]
         //[Authorize(Roles = "admin, laboratory")]
         public async Task<IActionResult> PutInputInvoice(int id, InputInvoiceUpdateRequest request)
@@ -122,9 +121,9 @@ namespace GrainElevatorAPI.Controllers
         }
         
         
-        // DELETE: api/InputInvoice/5
-        [HttpDelete("{id}")]
-        //[Authorize(Roles = "admin")]
+ 
+        [HttpDelete("{id}/hard-remove")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteInputInvoice(int id)
         {
             try
@@ -143,7 +142,7 @@ namespace GrainElevatorAPI.Controllers
             }
         }
         
-        // Patch: api/InputInvoice/5
+
         [HttpPatch("{id}/soft-remove")]
         //[Authorize(Roles = "admin, laboratory")]
         public async Task<IActionResult> SoftDeleteInputInvoice(int id)
@@ -172,7 +171,7 @@ namespace GrainElevatorAPI.Controllers
             }
         }
         
-        // Patch: api/InputInvoice/5
+
         [HttpPatch("{id}/restore")]
         //[Authorize(Roles = "admin, laboratory")]
         public async Task<IActionResult> RestoreRemovedInputInvoice(int id)

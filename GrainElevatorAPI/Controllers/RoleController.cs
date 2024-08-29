@@ -18,8 +18,7 @@ public class RoleController : ControllerBase
         _roleService = roleService;
     }
 
-
-    // POST: api/Role
+    
     [HttpPost]
     public async Task<ActionResult<Role>> PostRole(RoleCreateRequest request)
     {
@@ -38,8 +37,7 @@ public class RoleController : ControllerBase
             return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
         }
     }
-
-    // GET: api/Role
+    
     [HttpGet]
     public ActionResult<IEnumerable<Role>> GetRoles([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
@@ -54,7 +52,7 @@ public class RoleController : ControllerBase
         }
     }
 
-    // GET: api/Role/5
+
     [HttpGet("{id}")]
     public async Task<ActionResult<Role>> GetRole(int id)
     {
@@ -73,7 +71,7 @@ public class RoleController : ControllerBase
         }
     }
 
-    // DELETE: api/Role/5
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteRole(int id)
     {
@@ -93,7 +91,7 @@ public class RoleController : ControllerBase
         }
     }
 
-    // GET: api/Role/search?title=admin
+
     [HttpGet("search")]
     public ActionResult<IEnumerable<Role>> SearchRoles(string title)
     {

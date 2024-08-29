@@ -4,6 +4,7 @@ using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Models;
 using GrainElevatorAPI.DTOs;
 using GrainElevatorAPI.Requests;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GrainElevatorAPI.Controllers;
 
@@ -20,7 +21,7 @@ public class SupplierController : ControllerBase
         _mapper = mapper;
     }
     
-    // POST: api/Supplier
+
     [HttpPost]
     public async Task<ActionResult<Supplier>> PostSupplier(SupplierCreateRequest request)
     {
@@ -34,7 +35,7 @@ public class SupplierController : ControllerBase
             var newSupplier = _mapper.Map<Supplier>(request);
                 
             newSupplier.CreatedAt = DateTime.UtcNow;
-            newSupplier.CreatedById = (int)HttpContext.Session.GetInt32("EmployeeId");
+            newSupplier.CreatedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             
             var createdSupplier = await _supplierService.AddSupplierAsync(newSupplier);
             return CreatedAtAction(nameof(GetSupplier), new { id = createdSupplier.Id }, _mapper.Map<SupplierDTO>(createdSupplier));
@@ -45,7 +46,7 @@ public class SupplierController : ControllerBase
         }
     }
 
-    // GET: api/Supplier
+
     [HttpGet]
     public ActionResult<IEnumerable<Supplier>> GetSuppliers([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
@@ -60,7 +61,7 @@ public class SupplierController : ControllerBase
         }
     }
 
-    // GET: api/Supplier/5
+
     [HttpGet("{id}")]
     public async Task<ActionResult<Supplier>> GetSupplier(int id)
     {
@@ -79,7 +80,7 @@ public class SupplierController : ControllerBase
         }
     }
 
-    // PUT: api/Supplier/5
+
     [HttpPut("{id}")]
     public async Task<IActionResult> PutSupplier(int id, SupplierCreateRequest request)
     {
@@ -110,9 +111,9 @@ public class SupplierController : ControllerBase
     }
 
     
-    // DELETE: api/Supplier/5
-    [HttpDelete("{id}")]
-    //[Authorize(Roles = "admin")]
+
+    [HttpDelete("{id}/hard-remove")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> DeleteSupplier(int id)
     {
         try
@@ -132,7 +133,7 @@ public class SupplierController : ControllerBase
     }
     
      
-     // Patch: api/Supplier/5
+
         [HttpPatch("{id}/soft-remove")]
         //[Authorize(Roles = "admin, laboratory")]
         public async Task<IActionResult> SoftDeleteSupplier(int id)
@@ -149,7 +150,7 @@ public class SupplierController : ControllerBase
                 
                 if (removedSupplier == null)
                 {
-                    return NotFound($"Прибуткову накладну з ID {id} не знайдено.");
+                    return NotFound($"Постачальника з ID {id} не знайдено.");
                 }
 
                 return Ok(_mapper.Map<SupplierDTO>(removedSupplier));
@@ -161,7 +162,7 @@ public class SupplierController : ControllerBase
             }
         }
         
-        // Patch: api/Supplier/5
+
         [HttpPatch("{id}/restore")]
         //[Authorize(Roles = "admin, laboratory")]
         public async Task<IActionResult> RestoreRemovedSupplier(int id)
@@ -178,7 +179,7 @@ public class SupplierController : ControllerBase
                 
                 if (restoredSupplier == null)
                 {
-                    return NotFound($"Прибуткову накладну з ID {id} не знайдено.");
+                    return NotFound($"ППостачальника з ID {id} не знайдено.");
                 }
 
                 return Ok(_mapper.Map<SupplierDTO>(restoredSupplier));
@@ -191,7 +192,7 @@ public class SupplierController : ControllerBase
         }
     
     
-    // GET: api/Supplier/search?title=Khortytsia 
+
     [HttpGet("search")]
     public ActionResult<IEnumerable<Supplier>> SearchRoles(string title)
     {

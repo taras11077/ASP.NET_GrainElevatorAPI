@@ -25,7 +25,7 @@ public class EmployeeController : ControllerBase
         _mapper = mapper;
     }
 
-    // GET: api/Employee
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees(int page = 1, int size = 10)
     {
@@ -40,7 +40,7 @@ public class EmployeeController : ControllerBase
         }
     }
 
-    // GET: api/Employee/5
+
     [HttpGet("{id}")]
     public async Task<ActionResult<Employee>> GetEmployee(int id)
     {
@@ -59,7 +59,7 @@ public class EmployeeController : ControllerBase
         }
     }
 
-    // PUT: api/Employee/5
+
     [HttpPut("{id}")]
     public async Task<IActionResult> PutEmployee(int id, EmployeeUpdateRequest request)
     {
@@ -85,8 +85,8 @@ public class EmployeeController : ControllerBase
             return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
         }
     }
-
-    // DELETE: api/Employee/5
+    
+    
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteEmployee(int id)
     {
@@ -106,7 +106,7 @@ public class EmployeeController : ControllerBase
         }
     }
 
-    // GET: api/Employee/search?name=Vasyl
+
     [HttpGet("search")]
     public async Task<ActionResult<IEnumerable<Employee>>> SearchEmployees(string name)
     {

@@ -3,6 +3,7 @@ using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Models;
 using GrainElevatorAPI.DTOs;
 using GrainElevatorAPI.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GrainElevatorAPI.Controllers;
@@ -20,8 +21,8 @@ public class ProductController : ControllerBase
         _mapper = mapper;
     }
     
-    // POST: api/Product
     [HttpPost]
+    //[Authorize(Roles = "admin")]
     public async Task<ActionResult<Product>> PostProduct(ProductCreateRequest request)
     {
         if (!ModelState.IsValid)
@@ -34,7 +35,7 @@ public class ProductController : ControllerBase
             var newProduct = _mapper.Map<Product>(request);
                 
             newProduct.CreatedAt = DateTime.UtcNow;
-            newProduct.CreatedById = (int)HttpContext.Session.GetInt32("EmployeeId");
+            newProduct.CreatedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             
             var createdProduct = await _productService.AddProductAsync(newProduct);
             return CreatedAtAction(nameof(GetProduct), new { id = createdProduct.Id }, _mapper.Map<ProductDTO>(createdProduct));
@@ -44,8 +45,8 @@ public class ProductController : ControllerBase
             return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
         }
     }
-
-    // GET: api/Product
+    
+    
     [HttpGet]
     public ActionResult<IEnumerable<Product>> GetProducts([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
@@ -59,8 +60,8 @@ public class ProductController : ControllerBase
             return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
         }
     }
-
-    // GET: api/Product/5
+    
+    
     [HttpGet("{id}")]
     public async Task<ActionResult<Product>> GetProduct(int id)
     {
@@ -79,7 +80,7 @@ public class ProductController : ControllerBase
         }
     }
 
-    // PUT: api/Product/5
+ 
     [HttpPut("{id}")]
     public async Task<IActionResult> PutProduct(int id, ProductCreateRequest request)
     {
@@ -110,9 +111,9 @@ public class ProductController : ControllerBase
     }
 
     
-    // DELETE: api/Product/5
-    [HttpDelete("{id}")]
-    //[Authorize(Roles = "admin")]
+
+    [HttpDelete("{id}/hard-remove")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> DeleteProduct(int id)
     {
         try
@@ -131,7 +132,7 @@ public class ProductController : ControllerBase
         }
     }
     
-    // Patch: api/Product/5
+  
     [HttpPatch("{id}/soft-remove")]
     //[Authorize(Roles = "admin, laboratory")]
     public async Task<IActionResult> SoftDeleteProduct(int id)
@@ -160,7 +161,7 @@ public class ProductController : ControllerBase
         }
     }
     
-    // Patch: api/Product/5
+
     [HttpPatch("{id}/restore")]
     //[Authorize(Roles = "admin, laboratory")]
     public async Task<IActionResult> RestoreRemovedProduct(int id)
@@ -190,7 +191,7 @@ public class ProductController : ControllerBase
     }
     
     
-    // GET: api/Product/search?title=Hortytsya
+ 
     [HttpGet("search")]
     public ActionResult<IEnumerable<Product>> SearchProducts(string title)
     {
