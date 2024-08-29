@@ -31,7 +31,12 @@ public class SupplierController : ControllerBase
         
         try
         {
-            var createdSupplier = await _supplierService.AddSupplierAsync(request.Title);
+            var newSupplier = _mapper.Map<Supplier>(request);
+                
+            newSupplier.CreatedAt = DateTime.UtcNow;
+            newSupplier.CreatedById = (int)HttpContext.Session.GetInt32("EmployeeId");
+            
+            var createdSupplier = await _supplierService.AddSupplierAsync(newSupplier);
             return CreatedAtAction(nameof(GetSupplier), new { id = createdSupplier.Id }, _mapper.Map<SupplierDTO>(createdSupplier));
         }
         catch (Exception ex)
@@ -107,6 +112,7 @@ public class SupplierController : ControllerBase
     
     // DELETE: api/Supplier/5
     [HttpDelete("{id}")]
+    //[Authorize(Roles = "admin")]
     public async Task<IActionResult> DeleteSupplier(int id)
     {
         try
@@ -114,7 +120,7 @@ public class SupplierController : ControllerBase
             var success = await _supplierService.DeleteSupplierAsync(id);
             if (!success)
             {
-                return NotFound($"Постачальника з ID {{id}} не знайдено.");
+                return NotFound($"Постачальника з ID {id} не знайдено.");
             }
 
             return NoContent();
@@ -124,6 +130,65 @@ public class SupplierController : ControllerBase
             return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
         }
     }
+    
+     
+     // Patch: api/Supplier/5
+        [HttpPatch("{id}/soft-remove")]
+        //[Authorize(Roles = "admin, laboratory")]
+        public async Task<IActionResult> SoftDeleteSupplier(int id)
+        {
+            try
+            {
+                var supplierDb = await _supplierService.GetSupplierByIdAsync(id);
+                
+                supplierDb.Removed = true;
+                supplierDb.RemovedAt = DateTime.UtcNow;
+                supplierDb.RemovedById = (int)HttpContext.Session.GetInt32("EmployeeId");
+                
+                var removedSupplier = await _supplierService.UpdateSupplierAsync(supplierDb);
+                
+                if (removedSupplier == null)
+                {
+                    return NotFound($"Прибуткову накладну з ID {id} не знайдено.");
+                }
+
+                return Ok(_mapper.Map<SupplierDTO>(removedSupplier));
+                
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            }
+        }
+        
+        // Patch: api/Supplier/5
+        [HttpPatch("{id}/restore")]
+        //[Authorize(Roles = "admin, laboratory")]
+        public async Task<IActionResult> RestoreRemovedSupplier(int id)
+        {
+            try
+            {
+                var supplierDb = await _supplierService.GetSupplierByIdAsync(id);
+                
+                supplierDb.Removed = false;
+                supplierDb.RestoredAt = DateTime.UtcNow;
+                supplierDb.RestoreById = (int)HttpContext.Session.GetInt32("EmployeeId");
+                
+                var restoredSupplier = await _supplierService.UpdateSupplierAsync(supplierDb);
+                
+                if (restoredSupplier == null)
+                {
+                    return NotFound($"Прибуткову накладну з ID {id} не знайдено.");
+                }
+
+                return Ok(_mapper.Map<SupplierDTO>(restoredSupplier));
+                
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            }
+        }
     
     
     // GET: api/Supplier/search?title=Khortytsia 

@@ -13,13 +13,11 @@ public class SupplierService : ISupplierService
     }
     
     
-    public async Task<Supplier> AddSupplierAsync(string title)
+    public async Task<Supplier> AddSupplierAsync(Supplier supplier)
     {
         try
         {
-            var newSupplier = new Supplier{ Title = title };
-            
-            return await _repository.Add(newSupplier);
+            return await _repository.Add(supplier);
         }
         catch (Exception ex)
         {

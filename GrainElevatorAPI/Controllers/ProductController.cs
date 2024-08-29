@@ -31,7 +31,12 @@ public class ProductController : ControllerBase
         
         try
         {
-            var createdProduct = await _productService.AddProductAsync(request.Title);
+            var newProduct = _mapper.Map<Product>(request);
+                
+            newProduct.CreatedAt = DateTime.UtcNow;
+            newProduct.CreatedById = (int)HttpContext.Session.GetInt32("EmployeeId");
+            
+            var createdProduct = await _productService.AddProductAsync(newProduct);
             return CreatedAtAction(nameof(GetProduct), new { id = createdProduct.Id }, _mapper.Map<ProductDTO>(createdProduct));
         }
         catch (Exception ex)
@@ -107,6 +112,7 @@ public class ProductController : ControllerBase
     
     // DELETE: api/Product/5
     [HttpDelete("{id}")]
+    //[Authorize(Roles = "admin")]
     public async Task<IActionResult> DeleteProduct(int id)
     {
         try
@@ -118,6 +124,64 @@ public class ProductController : ControllerBase
             }
 
             return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+        }
+    }
+    
+    // Patch: api/Product/5
+    [HttpPatch("{id}/soft-remove")]
+    //[Authorize(Roles = "admin, laboratory")]
+    public async Task<IActionResult> SoftDeleteProduct(int id)
+    {
+        try
+        {
+            var productDb = await _productService.GetProductByIdAsync(id);
+            
+            productDb.Removed = true;
+            productDb.RemovedAt = DateTime.UtcNow;
+            productDb.RemovedById = (int)HttpContext.Session.GetInt32("EmployeeId");
+            
+            var removedProduct = await _productService.UpdateProductAsync(productDb);
+            
+            if (removedProduct == null)
+            {
+                return NotFound($"Продукт з ID {id} не знайдено.");
+            }
+
+            return Ok(_mapper.Map<ProductDTO>(removedProduct));
+            
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+        }
+    }
+    
+    // Patch: api/Product/5
+    [HttpPatch("{id}/restore")]
+    //[Authorize(Roles = "admin, laboratory")]
+    public async Task<IActionResult> RestoreRemovedProduct(int id)
+    {
+        try
+        {
+            var productDb = await _productService.GetProductByIdAsync(id);
+            
+            productDb.Removed = false;
+            productDb.RestoredAt = DateTime.UtcNow;
+            productDb.RestoreById = (int)HttpContext.Session.GetInt32("EmployeeId");
+            
+            var restoredProduct = await _productService.UpdateProductAsync(productDb);
+            
+            if (restoredProduct == null)
+            {
+                return NotFound($"Продукт з ID {id} не знайдено.");
+            }
+
+            return Ok(_mapper.Map<ProductDTO>(restoredProduct));
+            
         }
         catch (Exception ex)
         {

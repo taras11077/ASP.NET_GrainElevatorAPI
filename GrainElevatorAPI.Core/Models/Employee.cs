@@ -23,6 +23,8 @@ public class Employee
     public virtual ICollection<OutputInvoice> OutputInvoices { get; set; } = new List<OutputInvoice>();
     public virtual ICollection<PriceList> PriceLists { get; set; } = new List<PriceList>();
     public virtual ICollection<Register> Registers { get; set; } = new List<Register>();
+    public virtual ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
+    public virtual ICollection<Product> Products { get; set; } = new List<Product>();
     
     public Employee(string email, string passwordHash, int roleId)
     {

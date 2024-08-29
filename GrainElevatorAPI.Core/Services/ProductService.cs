@@ -12,13 +12,11 @@ public class ProductService : IProductService
         _repository = repository;
     }
     
- public async Task<Product> AddProductAsync(string title)
+ public async Task<Product> AddProductAsync(Product product)
     {
         try
         {
-            var newProductTitle = new Product{ Title = title };
-            
-            return await _repository.Add(newProductTitle);
+            return await _repository.Add(product);
         }
         catch (Exception ex)
         {

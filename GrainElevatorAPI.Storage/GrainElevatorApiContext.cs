@@ -68,6 +68,57 @@ public class GrainElevatorApiContext : DbContext
             .HasForeignKey(ii => ii.RestoreById)
             .OnDelete(DeleteBehavior.Restrict);
         
+        
+        modelBuilder.Entity<Supplier>()
+            .HasOne(ii => ii.CreatedBy)
+            .WithMany(e => e.Suppliers)
+            .HasForeignKey(ii => ii.CreatedById)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Supplier>()
+            .HasOne(ii => ii.ModifiedBy)
+            .WithMany()
+            .HasForeignKey(ii => ii.ModifiedById)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<Supplier>()
+            .HasOne(ii => ii.RemovedBy)
+            .WithMany()
+            .HasForeignKey(ii => ii.RemovedById)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<Supplier>()
+            .HasOne(ii => ii.RestoreBy)
+            .WithMany()
+            .HasForeignKey(ii => ii.RestoreById)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        
+        
+        modelBuilder.Entity<Product>()
+            .HasOne(ii => ii.CreatedBy)
+            .WithMany(e => e.Products)
+            .HasForeignKey(ii => ii.CreatedById)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Product>()
+            .HasOne(ii => ii.ModifiedBy)
+            .WithMany()
+            .HasForeignKey(ii => ii.ModifiedById)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<Product>()
+            .HasOne(ii => ii.RemovedBy)
+            .WithMany()
+            .HasForeignKey(ii => ii.RemovedById)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<Product>()
+            .HasOne(ii => ii.RestoreBy)
+            .WithMany()
+            .HasForeignKey(ii => ii.RestoreById)
+            .OnDelete(DeleteBehavior.Restrict);
+        
     }
     
 }
