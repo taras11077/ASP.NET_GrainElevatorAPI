@@ -190,23 +190,61 @@ namespace GrainElevatorAPI.Controllers
                 return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
             }
         }
-
-
-        // GET: api/InputInvoice/search?invoiceNumber=123456
+        
+        
         [HttpGet("search")]
         //[Authorize(Roles = "admin, laboratory")]
-        public ActionResult<IEnumerable<InputInvoice>> SearchInputInvoices(string invoiceNumber)
+        public ActionResult<IEnumerable<InputInvoiceDTO>> SearchInputInvoices(
+            [FromQuery] int? id = null,
+            [FromQuery] string invoiceNumber = null,
+            [FromQuery] DateTime? arrivalDate = null,
+            [FromQuery] string vehicleNumber = null,
+            [FromQuery] int? supplierId = null,
+            [FromQuery] int? productId = null,
+            [FromQuery] int? createdById = null,
+            [FromQuery] bool? removed = null,
+            [FromQuery] int page = 1,
+            [FromQuery] int size = 10)
         {
             try
             {
-                var inputInvoices = _inputInvoiceService.SearchInputInvoice(invoiceNumber);
-                return Ok(_mapper.Map<IEnumerable<InputInvoiceDTO>>(inputInvoices));
+                var query = _inputInvoiceService.GetInputInvoices(page, size).AsQueryable();
+
+                if (id.HasValue)
+                    query = query.Where(ii => ii.Id == id.Value);
+
+                if (!string.IsNullOrEmpty(invoiceNumber))
+                    query = query.Where(ii => ii.InvoiceNumber == invoiceNumber);
+
+                if (arrivalDate.HasValue)
+                    query = query.Where(ii => ii.ArrivalDate.Date == arrivalDate.Value.Date);
+
+                if (!string.IsNullOrEmpty(vehicleNumber))
+                    query = query.Where(ii => ii.VehicleNumber == vehicleNumber);
+
+                if (supplierId.HasValue)
+                    query = query.Where(ii => ii.SupplierId == supplierId.Value);
+
+                if (productId.HasValue)
+                    query = query.Where(ii => ii.ProductId == productId.Value);
+
+                if (createdById.HasValue)
+                    query = query.Where(ii => ii.CreatedById == createdById.Value);
+
+                if (removed.HasValue)
+                    query = query.Where(ii => ii.Removed == removed.Value);
+
+                var result = query.ToList();
+                return Ok(_mapper.Map<IEnumerable<InputInvoiceDTO>>(result));
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
             }
         }
+        
+        
+        
     }
 
 }
