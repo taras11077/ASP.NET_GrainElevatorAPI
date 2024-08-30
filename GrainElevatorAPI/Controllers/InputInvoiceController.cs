@@ -151,7 +151,6 @@ namespace GrainElevatorAPI.Controllers
             {
                 var inputInvoiceDb = await _inputInvoiceService.GetInputInvoiceByIdAsync(id);
                 
-                inputInvoiceDb.Removed = true;
                 inputInvoiceDb.RemovedAt = DateTime.UtcNow;
                 inputInvoiceDb.RemovedById = (int)HttpContext.Session.GetInt32("EmployeeId");
                 
@@ -179,9 +178,9 @@ namespace GrainElevatorAPI.Controllers
             try
             {
                 var inputInvoiceDb = await _inputInvoiceService.GetInputInvoiceByIdAsync(id);
-                
-                inputInvoiceDb.Removed = false;
-                inputInvoiceDb.RestoredAt = DateTime.UtcNow;
+
+				inputInvoiceDb.RemovedAt = null;
+				inputInvoiceDb.RestoredAt = DateTime.UtcNow;
                 inputInvoiceDb.RestoreById = (int)HttpContext.Session.GetInt32("EmployeeId");
                 
                 var restorededInputInvoice = await _inputInvoiceService.UpdateInputInvoiceAsync(inputInvoiceDb);
@@ -211,7 +210,7 @@ namespace GrainElevatorAPI.Controllers
             [FromQuery] int? supplierId = null,
             [FromQuery] int? productId = null,
             [FromQuery] int? createdById = null,
-            [FromQuery] bool? removed = null,
+            [FromQuery] DateTime? removedAt = null,
             [FromQuery] int page = 1,
             [FromQuery] int size = 10)
         {
@@ -240,8 +239,8 @@ namespace GrainElevatorAPI.Controllers
                 if (createdById.HasValue)
                     query = query.Where(ii => ii.CreatedById == createdById.Value);
 
-                if (removed.HasValue)
-                    query = query.Where(ii => ii.Removed == removed.Value);
+                if (removedAt.HasValue)
+                    query = query.Where(ii => ii.RemovedAt == removedAt.Value);
 
                 var result = query.ToList();
                 return Ok(_mapper.Map<IEnumerable<InputInvoiceDTO>>(result));

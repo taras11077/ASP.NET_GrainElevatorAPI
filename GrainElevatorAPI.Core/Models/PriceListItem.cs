@@ -1,31 +1,20 @@
-﻿using GrainElevatorAPI.Core.Calculators;
-using GrainElevatorAPI.Core.Calculators.Impl;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace GrainElevatorAPI.Core.Models;
 
-public class CompletionReport
+public class PriceListItem
 {
 	[Required(ErrorMessage = "Id is required.")]
 	[Range(1, int.MaxValue, ErrorMessage = "Id must be a positive number.")]
 	public int Id { get; set; }
 
-	[MinLength(3, ErrorMessage = "ReportNumber must be at least 3 characters long.")]
-	[MaxLength(9, ErrorMessage = "ReportNumber must be at least 9 characters long.")]
-	public int ReportNumber { get; set; }
+	[Required(ErrorMessage = "OperationTitle is required.")]
+	[MinLength(4, ErrorMessage = "OperationTitle must be at least 4 characters long.")]
+	[MaxLength(20, ErrorMessage = "OperationTitle must be at least 20 characters long.")]
+	public string OperationTitle { get; set; }
 
-	[DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
-	[Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "ReportDate must be between 1900 and 2024.")]
-	public DateTime ReportDate { get; set; }
-
-	[Range(0, double.MaxValue, ErrorMessage = "QuantitiesDrying must be a positive number.")]
-	public double? QuantitiesDrying { get; set; }
-
-	[Range(0, double.MaxValue, ErrorMessage = "ReportPhysicalWeight must be a positive number.")]
-	public double? ReportPhysicalWeight { get; set; }
-
-
-    public bool? IsFinalized { get; set; }
+	[Range(0, double.MaxValue, ErrorMessage = "ProductWeight must be a positive number.")]
+	public double OperationPrice { get; set; }
 
 
 	[DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
@@ -54,24 +43,14 @@ public class CompletionReport
 	public int? RestoreById { get; set; }
 
 
-	[Range(1, int.MaxValue, ErrorMessage = "SupplierId must be a positive number.")]
-	public int SupplierId { get; set; }
 
-	[Range(1, int.MaxValue, ErrorMessage = "ProductId must be a positive number.")]
-	public int ProductId { get; set; }
+	[Range(1, int.MaxValue, ErrorMessage = "ProductWeight must be a positive number.")]
+	public int PriceListId { get; set; }
 
-	[Range(1, int.MaxValue, ErrorMessage = "PriceListId must be a positive number.")]
-	public int? PriceListId { get; set; }
-
-    public virtual Supplier Supplier { get; set; }
-    public virtual Product Product { get; set; }
-    public virtual PriceList? PriceList { get; set; }
-    public virtual Employee? CreatedBy { get; set; }
+    public virtual PriceList PriceList { get; set; }
+    public virtual Employee CreatedBy { get; set; }
     public virtual Employee? ModifiedBy { get; set; }
     public virtual Employee? RemovedBy { get; set; }
     public virtual Employee? RestoreBy { get; set; }
-    
-    public virtual ICollection<Register> Registers { get; set; } = new List<Register>();
-    public virtual ICollection<TechnologicalOperation> TechnologicalOperations { get; set; } = new List<TechnologicalOperation>();
 }
 

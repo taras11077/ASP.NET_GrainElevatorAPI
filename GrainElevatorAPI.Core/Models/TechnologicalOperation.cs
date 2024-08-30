@@ -1,15 +1,63 @@
-﻿namespace GrainElevatorAPI.Core.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GrainElevatorAPI.Core.Models;
 
 public class TechnologicalOperation
 {
-    public int Id { get; set; }
-    public string Title { get; set; }
-    public double Amount { get; set; }
-    public double Price { get; set; }
-    public double TotalCost { get; set; }
+	[Required(ErrorMessage = "ProductWeight is required.")]
+	[Range(1, int.MaxValue, ErrorMessage = "ProductWeight must be a positive number.")]
+	public int Id { get; set; }
 
-    public int CompletionReportId { get; set; }
+	[Required(ErrorMessage = "Title is required.")]
+	[MinLength(4, ErrorMessage = "Title must be at least 4 characters long.")]
+	[MaxLength(20, ErrorMessage = "Title must be at least 20 characters long.")]
+	public string Title { get; set; }
+
+	[Range(0, double.MaxValue, ErrorMessage = "Amount must be a positive number.")]
+	public double Amount { get; set; }
+
+	[Range(0, double.MaxValue, ErrorMessage = "Price must be a positive number.")]
+	public double Price { get; set; }
+
+	[Range(0, double.MaxValue, ErrorMessage = "TotalCost must be a positive number.")]
+	public double TotalCost { get; set; }
+
+
+	[DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
+	[Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "CreatedAt must be between 1900 and 2024.")]
+	public DateTime CreatedAt { get; set; }
+
+	[DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
+	[Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "ModifiedAt must be between 1900 and 2024.")]
+	public DateTime? ModifiedAt { get; set; }
+
+	[DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
+	[Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "RemovedAt must be between 1900 and 2024.")]
+	public DateTime? RemovedAt { get; set; }
+
+	[DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
+	[Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "RestoredAt must be between 1900 and 2024.")]
+	public DateTime? RestoredAt { get; set; }
+
+	[Range(1, int.MaxValue, ErrorMessage = "CreatedById must be a positive number.")]
+	public int CreatedById { get; set; }
+	[Range(1, int.MaxValue, ErrorMessage = "ModifiedById must be a positive number.")]
+	public int? ModifiedById { get; set; }
+	[Range(1, int.MaxValue, ErrorMessage = "RemovedById must be a positive number.")]
+	public int? RemovedById { get; set; }
+	[Range(1, int.MaxValue, ErrorMessage = "RestoreById must be a positive number.")]
+	public int? RestoreById { get; set; }
+
+
+
+	[Range(1, int.MaxValue, ErrorMessage = "ProductWeight must be a positive number.")]
+	public int? CompletionReportId { get; set; }
+
     public virtual CompletionReport CompletionReport { get; set; }
+    public virtual Employee CreatedBy { get; set; }
+    public virtual Employee? ModifiedBy { get; set; }
+    public virtual Employee? RemovedBy { get; set; }
+    public virtual Employee? RestoreBy { get; set; }
 
 }
 

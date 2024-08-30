@@ -18,9 +18,9 @@ public class CompletionReportCalculator : ICompletionReportCalculator
             return 0;
 
         foreach (Register reg in CompletionReport.Registers)
-            CompletionReport.PhysicalWeightReport += (double)reg.PhysicalWeightReg / 1000;
+            CompletionReport.ReportPhysicalWeight += (double)reg.PhysicalWeightReg / 1000;
 
-        return CompletionReport.PhysicalWeightReport;
+        return CompletionReport.ReportPhysicalWeight.Value;
     }
 
     // расчет тонно/процентов сушки по каждой ППП всех Реестров Акта
@@ -39,10 +39,10 @@ public class CompletionReportCalculator : ICompletionReportCalculator
                 //    (reg.ProductionBatches as List<ProductionBatch>)?.ForEach(p =>
                 //    {
                 //        if (p.Shrinkage != 0)
-                CompletionReport.QuantityesDrying += reg.QuantityesDryingReg;
+                CompletionReport.QuantitiesDrying += reg.QuantitiesDryingReg;
             }
 
-            return Math.Round(CompletionReport.QuantityesDrying, 2);
+            return Math.Round(CompletionReport.QuantitiesDrying.Value, 2);
 
         }
         catch (Exception)

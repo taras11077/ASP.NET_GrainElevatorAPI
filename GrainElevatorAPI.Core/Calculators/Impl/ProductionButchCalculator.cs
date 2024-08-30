@@ -17,10 +17,10 @@ public class ProductionButchCalculator : IProductionButchCalculator
 
     public void CalcResultProduction()
     {
-        if (LaboratoryCard.Weediness <= ProductionBatch.WeedinessBase)
+        if (LaboratoryCard.WeedImpurity <= ProductionBatch.WeedImpurityBase)
             ProductionBatch.Waste = 0;
         else
-            ProductionBatch.Waste = (int)(InputInvoice.PhysicalWeight * (1 - (100 - LaboratoryCard.Weediness) / (100 - ProductionBatch.WeedinessBase)));
+            ProductionBatch.Waste = (int)(InputInvoice.PhysicalWeight * (1 - (100 - LaboratoryCard.WeedImpurity) / (100 - ProductionBatch.WeedImpurityBase)));
 
         if (LaboratoryCard.Moisture <= ProductionBatch.MoistureBase)
             ProductionBatch.Shrinkage = 0;

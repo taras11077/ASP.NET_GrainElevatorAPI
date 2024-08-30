@@ -16,15 +16,23 @@ public class Employee
     
     public DateTime LastSeenOnline { get; set; }
     
-    public virtual Role Role { get; set; } = null!;
-    public virtual ICollection<CompletionReport> CompletionReports { get; set; } = new List<CompletionReport>();
-    public virtual ICollection<InputInvoice> InputInvoices { get; set; } = new List<InputInvoice>();
-    public virtual ICollection<LaboratoryCard> LaboratoryCards { get; set; } = new List<LaboratoryCard>();
-    public virtual ICollection<OutputInvoice> OutputInvoices { get; set; } = new List<OutputInvoice>();
-    public virtual ICollection<PriceList> PriceLists { get; set; } = new List<PriceList>();
-    public virtual ICollection<Register> Registers { get; set; } = new List<Register>();
+    public virtual Role Role { get; set; } 
+    
     public virtual ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();
+    public virtual ICollection<InputInvoice> InputInvoices { get; set; } = new List<InputInvoice>();
+    public virtual ICollection<LaboratoryCard> LaboratoryCards { get; set; } = new List<LaboratoryCard>();
+    public virtual ICollection<ProductionBatch> ProductionBatches { get; set; } = new List<ProductionBatch>();
+    public virtual ICollection<Register> Registers { get; set; } = new List<Register>();
+    public virtual ICollection<TechnologicalOperation> TechnologicalOperations { get; set; } = new List<TechnologicalOperation>();
+    public virtual ICollection<CompletionReport> CompletionReports { get; set; } = new List<CompletionReport>();
+    public virtual ICollection<PriceListItem> PriceListItems { get; set; } = new List<PriceListItem>();
+    public virtual ICollection<PriceList> PriceLists { get; set; } = new List<PriceList>();
+    
+    public virtual ICollection<DepotItem> DepotItems { get; set; } = new List<DepotItem>();
+    public virtual ICollection<DepotProductCategory> DepotProductCategories { get; set; } = new List<DepotProductCategory>();
+    public virtual ICollection<OutputInvoice> OutputInvoices { get; set; } = new List<OutputInvoice>();
+    
     
     public Employee(string email, string passwordHash, int roleId)
     {
