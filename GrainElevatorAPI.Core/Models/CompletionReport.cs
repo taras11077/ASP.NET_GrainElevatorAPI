@@ -27,7 +27,7 @@ public class CompletionReport
     public bool? IsFinalized { get; set; }
     
     public virtual ICollection<Register> Registers { get; set; } = new List<Register>();
-    public virtual ICollection<TechnologicalOperation> TechnologicalOperations { get; set; } = new List<TechnologicalOperation>();
+    public virtual ICollection<CompletionReportItem> CompletionReportItems { get; set; } = new List<CompletionReportItem>();
 
     
     [Range(1, int.MaxValue, ErrorMessage = "SupplierId must be a positive number.")]

@@ -1,4 +1,6 @@
-﻿namespace GrainElevatorAPI.Core.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GrainElevatorAPI.Core.Models;
 
 public class Employee
 {
@@ -25,7 +27,7 @@ public class Employee
     public virtual ICollection<LaboratoryCard> LaboratoryCards { get; set; } = new List<LaboratoryCard>();
     public virtual ICollection<ProductionBatch> ProductionBatches { get; set; } = new List<ProductionBatch>();
     public virtual ICollection<Register> Registers { get; set; } = new List<Register>();
-    public virtual ICollection<TechnologicalOperation> TechnologicalOperations { get; set; } = new List<TechnologicalOperation>();
+    public virtual ICollection<CompletionReportItem> CompletionReportItems { get; set; } = new List<CompletionReportItem>();
     public virtual ICollection<CompletionReport> CompletionReports { get; set; } = new List<CompletionReport>();
     public virtual ICollection<PriceListItem> PriceListItems { get; set; } = new List<PriceListItem>();
     public virtual ICollection<PriceList> PriceLists { get; set; } = new List<PriceList>();
@@ -33,6 +35,36 @@ public class Employee
     public virtual ICollection<DepotItem> DepotItems { get; set; } = new List<DepotItem>();
     public virtual ICollection<DepotProductCategory> DepotProductCategories { get; set; } = new List<DepotProductCategory>();
     public virtual ICollection<OutputInvoice> OutputInvoices { get; set; } = new List<OutputInvoice>();
+    
+    
+    
+    
+    [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
+    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "CreatedAt must be between 1900 and 2024.")]
+    public DateTime CreatedAt { get; set; }
+
+    [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
+    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "ModifiedAt must be between 1900 and 2024.")]
+    public DateTime? ModifiedAt { get; set; }
+
+    [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
+    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "RemovedAt must be between 1900 and 2024.")]
+    public DateTime? RemovedAt { get; set; }
+
+    [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
+    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "RestoredAt must be between 1900 and 2024.")]
+    public DateTime? RestoredAt { get; set; }
+    
+    
+    
+    [Range(1, int.MaxValue, ErrorMessage = "CreatedById must be a positive number.")]
+    public int CreatedById { get; set; }
+    [Range(1, int.MaxValue, ErrorMessage = "ModifiedById must be a positive number.")]
+    public int? ModifiedById { get; set; }
+    [Range(1, int.MaxValue, ErrorMessage = "RemovedById must be a positive number.")]
+    public int? RemovedById { get; set; }
+    [Range(1, int.MaxValue, ErrorMessage = "RestoreById must be a positive number.")]
+    public int? RestoreById { get; set; }
     
     
     public Employee(string email, string passwordHash, int roleId)

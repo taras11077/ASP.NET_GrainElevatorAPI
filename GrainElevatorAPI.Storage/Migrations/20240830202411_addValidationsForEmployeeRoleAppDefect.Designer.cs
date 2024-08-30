@@ -4,6 +4,7 @@ using GrainElevator.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GrainElevator.Storage.Migrations
 {
     [DbContext(typeof(GrainElevatorApiContext))]
-    partial class GrainElevatorApiContextModelSnapshot : ModelSnapshot
+    [Migration("20240830202411_addValidationsForEmployeeRoleAppDefect")]
+    partial class addValidationsForEmployeeRoleAppDefect
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,70 +132,6 @@ namespace GrainElevator.Storage.Migrations
                     b.HasIndex("SupplierId");
 
                     b.ToTable("CompletionReports");
-                });
-
-            modelBuilder.Entity("GrainElevatorAPI.Core.Models.CompletionReportItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
-
-                    b.Property<int?>("CompletionReportId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("ModifiedById")
-                        .HasColumnType("int");
-
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("RemovedById")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RestoreById")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("RestoredAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("TechnologicalOperation")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<double>("TotalCost")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompletionReportId");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("ModifiedById");
-
-                    b.HasIndex("RemovedById");
-
-                    b.HasIndex("RestoreById");
-
-                    b.ToTable("CompletionReportItems");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.DepotItem", b =>
@@ -1022,6 +961,70 @@ namespace GrainElevator.Storage.Migrations
                     b.ToTable("Suppliers");
                 });
 
+            modelBuilder.Entity("GrainElevatorAPI.Core.Models.TechnologicalOperation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("CompletionReportId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ModifiedById")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime?>("RemovedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("RemovedById")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RestoreById")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("RestoredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<double>("TotalCost")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompletionReportId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("ModifiedById");
+
+                    b.HasIndex("RemovedById");
+
+                    b.HasIndex("RestoreById");
+
+                    b.ToTable("TechnologicalOperations");
+                });
+
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.AppDefect", b =>
                 {
                     b.HasOne("GrainElevatorAPI.Core.Models.Employee", "CreatedBy")
@@ -1085,44 +1088,6 @@ namespace GrainElevator.Storage.Migrations
                     b.Navigation("RestoreBy");
 
                     b.Navigation("Supplier");
-                });
-
-            modelBuilder.Entity("GrainElevatorAPI.Core.Models.CompletionReportItem", b =>
-                {
-                    b.HasOne("GrainElevatorAPI.Core.Models.CompletionReport", "CompletionReport")
-                        .WithMany("CompletionReportItems")
-                        .HasForeignKey("CompletionReportId");
-
-                    b.HasOne("GrainElevatorAPI.Core.Models.Employee", "CreatedBy")
-                        .WithMany("CompletionReportItems")
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("GrainElevatorAPI.Core.Models.Employee", "ModifiedBy")
-                        .WithMany()
-                        .HasForeignKey("ModifiedById")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("GrainElevatorAPI.Core.Models.Employee", "RemovedBy")
-                        .WithMany()
-                        .HasForeignKey("RemovedById")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("GrainElevatorAPI.Core.Models.Employee", "RestoreBy")
-                        .WithMany()
-                        .HasForeignKey("RestoreById")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("CompletionReport");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("ModifiedBy");
-
-                    b.Navigation("RemovedBy");
-
-                    b.Navigation("RestoreBy");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.DepotItem", b =>
@@ -1634,11 +1599,49 @@ namespace GrainElevator.Storage.Migrations
                     b.Navigation("RestoreBy");
                 });
 
+            modelBuilder.Entity("GrainElevatorAPI.Core.Models.TechnologicalOperation", b =>
+                {
+                    b.HasOne("GrainElevatorAPI.Core.Models.CompletionReport", "CompletionReport")
+                        .WithMany("TechnologicalOperations")
+                        .HasForeignKey("CompletionReportId");
+
+                    b.HasOne("GrainElevatorAPI.Core.Models.Employee", "CreatedBy")
+                        .WithMany("TechnologicalOperations")
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GrainElevatorAPI.Core.Models.Employee", "ModifiedBy")
+                        .WithMany()
+                        .HasForeignKey("ModifiedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("GrainElevatorAPI.Core.Models.Employee", "RemovedBy")
+                        .WithMany()
+                        .HasForeignKey("RemovedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("GrainElevatorAPI.Core.Models.Employee", "RestoreBy")
+                        .WithMany()
+                        .HasForeignKey("RestoreById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CompletionReport");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("ModifiedBy");
+
+                    b.Navigation("RemovedBy");
+
+                    b.Navigation("RestoreBy");
+                });
+
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.CompletionReport", b =>
                 {
-                    b.Navigation("CompletionReportItems");
-
                     b.Navigation("Registers");
+
+                    b.Navigation("TechnologicalOperations");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.DepotItem", b =>
@@ -1650,8 +1653,6 @@ namespace GrainElevator.Storage.Migrations
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.Employee", b =>
                 {
-                    b.Navigation("CompletionReportItems");
-
                     b.Navigation("CompletionReports");
 
                     b.Navigation("DepotItems");
@@ -1677,6 +1678,8 @@ namespace GrainElevator.Storage.Migrations
                     b.Navigation("Roles");
 
                     b.Navigation("Suppliers");
+
+                    b.Navigation("TechnologicalOperations");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.InputInvoice", b =>

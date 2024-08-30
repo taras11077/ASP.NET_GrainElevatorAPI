@@ -4,6 +4,7 @@ using GrainElevator.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GrainElevator.Storage.Migrations
 {
     [DbContext(typeof(GrainElevatorApiContext))]
-    partial class GrainElevatorApiContextModelSnapshot : ModelSnapshot
+    [Migration("20240830204111_renameTableTechnologicalOperation")]
+    partial class renameTableTechnologicalOperation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

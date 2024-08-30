@@ -5,16 +5,16 @@ namespace GrainElevator.Storage;
 
 public class GrainElevatorApiContext : DbContext
 {
-    public GrainElevatorApiContext(DbContextOptions<GrainElevatorApiContext> options) : base(options)
-    {
-        
-    }
-
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // public GrainElevatorApiContext(DbContextOptions<GrainElevatorApiContext> options) : base(options)
     // {
-    //     optionsBuilder.UseSqlServer(
-    //         "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=grainElevatorAPI_db;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+    //     
     // }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer(
+            "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=grainElevatorAPI_db;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+    }
 
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Role> Roles { get; set; }
@@ -28,7 +28,7 @@ public class GrainElevatorApiContext : DbContext
     public DbSet<ProductionBatch> ProductionBatches { get; set; }
     public DbSet<Register> Registers { get; set; }
     
-    public DbSet<TechnologicalOperation> TechnologicalOperations { get; set; }
+    public DbSet<CompletionReportItem> CompletionReportItems { get; set; }
     public DbSet<PriceListItem> PriceListItems { get; set; }
     public DbSet<PriceList> PriceLists { get; set; }
     public DbSet<CompletionReport> CompletionReports { get; set; }
@@ -80,13 +80,13 @@ public class GrainElevatorApiContext : DbContext
         modelBuilder.Entity<Supplier>()
             .HasOne(s =>s.ModifiedBy)
             .WithMany()
-            .HasForeignKey(ii => ii.ModifiedById)
+            .HasForeignKey(s => s.ModifiedById)
             .OnDelete(DeleteBehavior.Restrict);
         
         modelBuilder.Entity<Supplier>()
             .HasOne(s => s.RemovedBy)
             .WithMany()
-            .HasForeignKey(ii => ii.RemovedById)
+            .HasForeignKey(s => s.RemovedById)
             .OnDelete(DeleteBehavior.Restrict);
         
         modelBuilder.Entity<Supplier>()
@@ -150,9 +150,9 @@ public class GrainElevatorApiContext : DbContext
         
         
         modelBuilder.Entity<LaboratoryCard>()
-            .HasOne(l => l.InputInvoice)
-            .WithOne(i => i.LaboratoryCard)
-            .HasForeignKey<LaboratoryCard>(l => l.InputInvoiceId);
+            .HasOne(lc => lc.InputInvoice)
+            .WithOne(ii => ii.LaboratoryCard)
+            .HasForeignKey<LaboratoryCard>(lc => lc.InputInvoiceId);
         
         modelBuilder.Entity<LaboratoryCard>()
             .HasOne(lc => lc.CreatedBy)
@@ -181,7 +181,7 @@ public class GrainElevatorApiContext : DbContext
         
         modelBuilder.Entity<ProductionBatch>()
             .HasOne(pb => pb.LaboratoryCard)
-            .WithOne(l => l.ProductionBatch)
+            .WithOne(lc => lc.ProductionBatch)
             .HasForeignKey<ProductionBatch>(pb => pb.LaboratoryCardId);
         
         modelBuilder.Entity<ProductionBatch>()
@@ -219,7 +219,7 @@ public class GrainElevatorApiContext : DbContext
         modelBuilder.Entity<Register>()
             .HasOne(r => r.ModifiedBy)
             .WithMany()
-            .HasForeignKey(ii => ii.ModifiedById)
+            .HasForeignKey(r => r.ModifiedById)
             .OnDelete(DeleteBehavior.Restrict);
         
         modelBuilder.Entity<Register>()
@@ -236,25 +236,25 @@ public class GrainElevatorApiContext : DbContext
         
         
         
-        modelBuilder.Entity<TechnologicalOperation>()
+        modelBuilder.Entity<CompletionReportItem>()
             .HasOne(to => to.CreatedBy)
-            .WithMany(e => e.TechnologicalOperations)
-            .HasForeignKey(oi => oi.CreatedById)
+            .WithMany(e => e.CompletionReportItems)
+            .HasForeignKey(to => to.CreatedById)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<TechnologicalOperation>()
+        modelBuilder.Entity<CompletionReportItem>()
             .HasOne(to => to.ModifiedBy)
             .WithMany()
             .HasForeignKey(to => to.ModifiedById)
             .OnDelete(DeleteBehavior.Restrict);
         
-        modelBuilder.Entity<TechnologicalOperation>()
+        modelBuilder.Entity<CompletionReportItem>()
             .HasOne(to => to.RemovedBy)
             .WithMany()
             .HasForeignKey(to => to.RemovedById)
             .OnDelete(DeleteBehavior.Restrict);
         
-        modelBuilder.Entity<TechnologicalOperation>()
+        modelBuilder.Entity<CompletionReportItem>()
             .HasOne(to => to.RestoreBy)
             .WithMany()
             .HasForeignKey(to => to.RestoreById)
@@ -265,7 +265,7 @@ public class GrainElevatorApiContext : DbContext
         modelBuilder.Entity<CompletionReport>()
             .HasOne(cr => cr.CreatedBy)
             .WithMany(e => e.CompletionReports)
-            .HasForeignKey(oi => oi.CreatedById)
+            .HasForeignKey(cr => cr.CreatedById)
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<CompletionReport>()

@@ -57,10 +57,10 @@ public class CompletionReportCalculator : ICompletionReportCalculator
     {
         try
         {
-            (CompletionReport.TechnologicalOperations as List<TechnologicalOperation>)?.ForEach(op =>
+            (CompletionReport.CompletionReportItems as List<CompletionReportItem>)?.ForEach(op =>
             {
                 foreach (var p in pl.PriceByOperations)
-                    if (op.Title == p.OperationTitle)
+                    if (op.TechnologicalOperation == p.OperationTitle)
                     {
                         op.Price = p.OperationPrice;
                         op.TotalCost = Math.Round(op.Amount * op.Price, 2);

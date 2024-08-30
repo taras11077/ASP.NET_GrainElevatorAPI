@@ -12,6 +12,7 @@ public class InputInvoice
     [MaxLength(9, ErrorMessage = "InvoiceNumber must be at least 9 characters long.")]
     public string InvoiceNumber { get; set; }
     
+    [Required(ErrorMessage = "ArrivalDate is required.")]
     [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
     [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "ArrivalDate must be between 1900 and 2024.")]
     public DateTime ArrivalDate { get; set; }
