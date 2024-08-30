@@ -21,6 +21,13 @@ public class TechnologicalOperation
 
 	[Range(0, double.MaxValue, ErrorMessage = "TotalCost must be a positive number.")]
 	public double TotalCost { get; set; }
+	
+	
+	[Range(1, int.MaxValue, ErrorMessage = "ProductWeight must be a positive number.")]
+	public int? CompletionReportId { get; set; }
+
+	public virtual CompletionReport CompletionReport { get; set; }
+	
 
 
 	[DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
@@ -38,6 +45,8 @@ public class TechnologicalOperation
 	[DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
 	[Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "RestoredAt must be between 1900 and 2024.")]
 	public DateTime? RestoredAt { get; set; }
+	
+	
 
 	[Range(1, int.MaxValue, ErrorMessage = "CreatedById must be a positive number.")]
 	public int CreatedById { get; set; }
@@ -48,16 +57,11 @@ public class TechnologicalOperation
 	[Range(1, int.MaxValue, ErrorMessage = "RestoreById must be a positive number.")]
 	public int? RestoreById { get; set; }
 
-
-
-	[Range(1, int.MaxValue, ErrorMessage = "ProductWeight must be a positive number.")]
-	public int? CompletionReportId { get; set; }
-
-    public virtual CompletionReport CompletionReport { get; set; }
+	
+	
     public virtual Employee CreatedBy { get; set; }
     public virtual Employee? ModifiedBy { get; set; }
     public virtual Employee? RemovedBy { get; set; }
     public virtual Employee? RestoreBy { get; set; }
-
 }
 

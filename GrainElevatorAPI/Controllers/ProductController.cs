@@ -141,7 +141,6 @@ public class ProductController : ControllerBase
         {
             var productDb = await _productService.GetProductByIdAsync(id);
             
-            productDb.Removed = true;
             productDb.RemovedAt = DateTime.UtcNow;
             productDb.RemovedById = (int)HttpContext.Session.GetInt32("EmployeeId");
             
@@ -170,7 +169,7 @@ public class ProductController : ControllerBase
         {
             var productDb = await _productService.GetProductByIdAsync(id);
             
-            productDb.Removed = false;
+            productDb.RemovedAt = null;
             productDb.RestoredAt = DateTime.UtcNow;
             productDb.RestoreById = (int)HttpContext.Session.GetInt32("EmployeeId");
             

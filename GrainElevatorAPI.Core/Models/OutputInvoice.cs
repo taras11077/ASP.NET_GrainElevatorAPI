@@ -28,6 +28,8 @@ public class OutputInvoice
 	[Required(ErrorMessage = "ProductWeight is required.")]
 	[Range(1, int.MaxValue, ErrorMessage = "ProductWeight must be a positive number.")]
 	public int ProductWeight { get; set; }
+	
+	
 
 	[Range(1, int.MaxValue, ErrorMessage = "SupplierId must be a positive number.")]
 	public int SupplierId { get; set; }
@@ -37,6 +39,12 @@ public class OutputInvoice
 
 	[Range(1, int.MaxValue, ErrorMessage = "DepotItemId must be a positive number.")]
 	public int DepotItemId { get; set; }
+	
+	public virtual Supplier Supplier { get; set; }
+	public virtual Product Product { get; set; }
+	public virtual DepotItem DepotItem { get; set; }
+	
+	
 
 	[DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
 	[Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "CreatedAt must be between 1900 and 2024.")]
@@ -53,6 +61,8 @@ public class OutputInvoice
 	[DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
 	[Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "RestoredAt must be between 1900 and 2024.")]
 	public DateTime? RestoredAt { get; set; }
+	
+	
 
 	[Range(1, int.MaxValue, ErrorMessage = "CreatedById must be a positive number.")]
 	public int CreatedById { get; set; }
@@ -63,9 +73,7 @@ public class OutputInvoice
 	[Range(1, int.MaxValue, ErrorMessage = "RestoreById must be a positive number.")]
 	public int? RestoreById { get; set; }
 
-	public virtual Supplier Supplier { get; set; }
-	public virtual Product Product { get; set; }
-	public virtual DepotItem DepotItem { get; set; }
+	
 	public virtual Employee CreatedBy { get; set; }
 	public virtual Employee? ModifiedBy { get; set; }
 	public virtual Employee? RemovedBy { get; set; }

@@ -23,11 +23,27 @@ public class CompletionReport
 
 	[Range(0, double.MaxValue, ErrorMessage = "ReportPhysicalWeight must be a positive number.")]
 	public double? ReportPhysicalWeight { get; set; }
-
-
+	
     public bool? IsFinalized { get; set; }
+    
+    public virtual ICollection<Register> Registers { get; set; } = new List<Register>();
+    public virtual ICollection<TechnologicalOperation> TechnologicalOperations { get; set; } = new List<TechnologicalOperation>();
 
+    
+    [Range(1, int.MaxValue, ErrorMessage = "SupplierId must be a positive number.")]
+    public int SupplierId { get; set; }
 
+    [Range(1, int.MaxValue, ErrorMessage = "ProductId must be a positive number.")]
+    public int ProductId { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "PriceListId must be a positive number.")]
+    public int? PriceListId { get; set; }
+
+    public virtual Supplier Supplier { get; set; }
+    public virtual Product Product { get; set; }
+    public virtual PriceList? PriceList { get; set; }
+    
+    
 	[DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
 	[Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "CreatedAt must be between 1900 and 2024.")]
 	public DateTime CreatedAt { get; set; }
@@ -52,26 +68,10 @@ public class CompletionReport
 	public int? RemovedById { get; set; }
 	[Range(1, int.MaxValue, ErrorMessage = "RestoreById must be a positive number.")]
 	public int? RestoreById { get; set; }
-
-
-	[Range(1, int.MaxValue, ErrorMessage = "SupplierId must be a positive number.")]
-	public int SupplierId { get; set; }
-
-	[Range(1, int.MaxValue, ErrorMessage = "ProductId must be a positive number.")]
-	public int ProductId { get; set; }
-
-	[Range(1, int.MaxValue, ErrorMessage = "PriceListId must be a positive number.")]
-	public int? PriceListId { get; set; }
-
-    public virtual Supplier Supplier { get; set; }
-    public virtual Product Product { get; set; }
-    public virtual PriceList? PriceList { get; set; }
+	
     public virtual Employee? CreatedBy { get; set; }
     public virtual Employee? ModifiedBy { get; set; }
     public virtual Employee? RemovedBy { get; set; }
     public virtual Employee? RestoreBy { get; set; }
-    
-    public virtual ICollection<Register> Registers { get; set; } = new List<Register>();
-    public virtual ICollection<TechnologicalOperation> TechnologicalOperations { get; set; } = new List<TechnologicalOperation>();
 }
 

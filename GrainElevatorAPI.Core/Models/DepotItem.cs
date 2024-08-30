@@ -2,7 +2,7 @@
 
 namespace GrainElevatorAPI.Core.Models;
 
-public partial class DepotItem
+public class DepotItem
 {
 	[Required(ErrorMessage = "Id is required.")]
 	[Range(1, int.MaxValue, ErrorMessage = "Id must be a positive number.")]
@@ -10,9 +10,14 @@ public partial class DepotItem
 
 	[Range(1, int.MaxValue, ErrorMessage = "SupplierId must be a positive number.")]
 	public int SupplierId { get; set; }
-
 	[Range(1, int.MaxValue, ErrorMessage = "ProductId must be a positive number.")]
 	public int ProductId { get; set; }
+	
+	public virtual Product Product { get; set; }
+	public virtual Supplier Supplier { get; set; }
+	
+	public virtual ICollection<DepotProductCategory> ProductCategories { get; set; } = new List<DepotProductCategory>();
+	public virtual ICollection<OutputInvoice> OutputInvoices { get; set; } = new List<OutputInvoice>();
 	
 	
 
@@ -32,6 +37,8 @@ public partial class DepotItem
 	[Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "RestoredAt must be between 1900 and 2024.")]
 	public DateTime? RestoredAt { get; set; }
 
+	
+	
 	[Range(1, int.MaxValue, ErrorMessage = "CreatedById must be a positive number.")]
 	public int CreatedById { get; set; }
 	[Range(1, int.MaxValue, ErrorMessage = "ModifiedById must be a positive number.")]
@@ -40,13 +47,7 @@ public partial class DepotItem
 	public int? RemovedById { get; set; }
 	[Range(1, int.MaxValue, ErrorMessage = "RestoreById must be a positive number.")]
 	public int? RestoreById { get; set; }
-
-
-	public virtual ICollection<DepotProductCategory> ProductCategories { get; set; } = new List<DepotProductCategory>();
-    public virtual ICollection<OutputInvoice> OutputInvoices { get; set; } = new List<OutputInvoice>();
-
-    public virtual Product Product { get; set; }
-    public virtual Supplier Supplier { get; set; }
+	
     public virtual Employee CreatedBy { get; set; }
     public virtual Employee? ModifiedBy { get; set; }
     public virtual Employee? RemovedBy { get; set; }

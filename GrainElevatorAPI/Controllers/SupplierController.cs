@@ -126,7 +126,6 @@ public class SupplierController : ControllerBase
 		{
 			var supplierDb = await _supplierService.GetSupplierByIdAsync(id);
 
-			supplierDb.Removed = true;
 			supplierDb.RemovedAt = DateTime.UtcNow;
 			supplierDb.RemovedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
 
@@ -151,7 +150,7 @@ public class SupplierController : ControllerBase
 		{
 			var supplierDb = await _supplierService.GetSupplierByIdAsync(id);
 
-			supplierDb.Removed = false;
+			supplierDb.RemovedAt = null;
 			supplierDb.RestoredAt = DateTime.UtcNow;
 			supplierDb.RestoreById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
 

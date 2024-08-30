@@ -23,11 +23,6 @@ public class InputInvoice
     [Required(ErrorMessage = "PhysicalWeight is required.")]
     [Range(1, int.MaxValue, ErrorMessage = "PhysicalWeight must be a positive number.")]
     public int PhysicalWeight { get; set; }
-
-    public DateTime CreatedAt { get; set; }
-    public DateTime? ModifiedAt { get; set; }
-    public DateTime? RemovedAt { get; set; }
-    public DateTime? RestoredAt { get; set; }
     
     [Range(1, int.MaxValue, ErrorMessage = "SupplierId must be a positive number.")]
     public int? LaboratoryCardId { get; set; }
@@ -37,15 +32,38 @@ public class InputInvoice
     
     [Range(1, int.MaxValue, ErrorMessage = "ProductId must be a positive number.")]
     public int ProductId { get; set; }
-
-    public int CreatedById { get; set; }
-    public int? ModifiedById { get; set; }
-    public int? RemovedById { get; set; }
-    public int? RestoreById { get; set; }
-    
     public virtual LaboratoryCard? LaboratoryCard { get; set; }
     public virtual Supplier Supplier { get; set; }
     public virtual Product Product { get; set; }
+
+    
+    [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
+    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "CreatedAt must be between 1900 and 2024.")]
+    public DateTime CreatedAt { get; set; }
+
+    [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
+    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "ModifiedAt must be between 1900 and 2024.")]
+    public DateTime? ModifiedAt { get; set; }
+
+    [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
+    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "RemovedAt must be between 1900 and 2024.")]
+    public DateTime? RemovedAt { get; set; }
+
+    [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
+    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "RestoredAt must be between 1900 and 2024.")]
+    public DateTime? RestoredAt { get; set; }
+    
+    
+    [Range(1, int.MaxValue, ErrorMessage = "CreatedById must be a positive number.")]
+    public int CreatedById { get; set; }
+    [Range(1, int.MaxValue, ErrorMessage = "ModifiedById must be a positive number.")]
+    public int? ModifiedById { get; set; }
+    [Range(1, int.MaxValue, ErrorMessage = "RemovedById must be a positive number.")]
+    public int? RemovedById { get; set; }
+    [Range(1, int.MaxValue, ErrorMessage = "RestoreById must be a positive number.")]
+    public int? RestoreById { get; set; }
+    
+   
     public virtual Employee CreatedBy { get; set; }
     public virtual Employee? ModifiedBy { get; set; }
     public virtual Employee? RemovedBy { get; set; }

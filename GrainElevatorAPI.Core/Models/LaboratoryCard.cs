@@ -28,6 +28,20 @@ public class LaboratoryCard
 
 
     public bool? IsProduction { get; set; }
+    
+    
+    [Required(ErrorMessage = "InputInvoiceId is required.")]
+    [Range(1, int.MaxValue, ErrorMessage = "InputInvoiceId must be a positive number.")]
+    public int InputInvoiceId { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "InputInvoiceId must be a positive number.")]
+    public int? ProductionBatchId { get; set; }
+    
+    public virtual InputInvoice InputInvoice { get; set; }
+    public virtual ProductionBatch? ProductionBatch { get; set; }
+    
+    
+    
 
     [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
     [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "CreatedAt must be between 1900 and 2024.")]
@@ -44,6 +58,8 @@ public class LaboratoryCard
     [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
     [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "RestoredAt must be between 1900 and 2024.")]
     public DateTime? RestoredAt { get; set; }
+    
+    
 
     [Range(1, int.MaxValue, ErrorMessage = "CreatedById must be a positive number.")]
     public int CreatedById { get; set; }
@@ -54,16 +70,8 @@ public class LaboratoryCard
     [Range(1, int.MaxValue, ErrorMessage = "RestoreById must be a positive number.")]
     public int? RestoreById { get; set; }
 
-
-	[Required(ErrorMessage = "InputInvoiceId is required.")]
-    [Range(1, int.MaxValue, ErrorMessage = "InputInvoiceId must be a positive number.")]
-	public int InputInvoiceId { get; set; }
-
-    public int? ProductionBatchId { get; set; }
     
-    public virtual InputInvoice InputInvoice { get; set; }
-    public virtual ProductionBatch? ProductionBatch { get; set; }
-  
+    
     public virtual Employee CreatedBy { get; set; }
     public virtual Employee? ModifiedBy { get; set; }
     public virtual Employee? RemovedBy { get; set; }
