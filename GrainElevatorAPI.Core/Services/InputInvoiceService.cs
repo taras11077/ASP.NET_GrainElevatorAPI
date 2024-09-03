@@ -82,7 +82,7 @@ public class InputInvoiceService : IInputInvoiceService
         }
     }
 
-    public IEnumerable<InputInvoice> SearchInputInvoice(string invoiceNumber)
+    public IEnumerable<InputInvoice> SearchInputInvoices(string invoiceNumber)
     {
         try
         {

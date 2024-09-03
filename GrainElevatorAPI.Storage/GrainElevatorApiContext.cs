@@ -5,16 +5,16 @@ namespace GrainElevator.Storage;
 
 public class GrainElevatorApiContext : DbContext
 {
-    // public GrainElevatorApiContext(DbContextOptions<GrainElevatorApiContext> options) : base(options)
-    // {
-    //     
-    // }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    public GrainElevatorApiContext(DbContextOptions<GrainElevatorApiContext> options) : base(options)
     {
-        optionsBuilder.UseSqlServer(
-            "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=grainElevatorAPI_db;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+        
     }
+
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // {
+    //     optionsBuilder.UseSqlServer(
+    //         "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=grainElevatorAPI_db;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+    // }
 
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Role> Roles { get; set; }
@@ -45,16 +45,16 @@ public class GrainElevatorApiContext : DbContext
         base.OnModelCreating(modelBuilder);
         
         modelBuilder.Entity<Role>()
-            .HasOne(r => r.CreatedBy)
-            .WithMany(e => e.Roles)
-            .HasForeignKey(r => r.CreatedById)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<Role>()
             .HasOne(r =>r.ModifiedBy)
-            .WithMany()
+            .WithMany(e => e.Roles)
             .HasForeignKey(r => r.ModifiedById)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        // modelBuilder.Entity<Role>()
+        //     .HasOne(r => r.CreatedBy)
+        //     .WithMany()
+        //     .HasForeignKey(r => r.CreatedById)
+        //     .OnDelete(DeleteBehavior.Restrict);
         
         modelBuilder.Entity<Role>()
             .HasOne(r => r.RemovedBy)

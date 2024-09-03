@@ -26,5 +26,8 @@ public class MapperProfile : Profile
         
         CreateMap<InputInvoice, InputInvoiceCreateRequest>().ReverseMap();
         CreateMap<InputInvoice, InputInvoiceDTO>().ReverseMap();
+        
+        CreateMap<LaboratoryCard, LaboratoryCardCreateRequest>().ReverseMap();
+        CreateMap<LaboratoryCard, LaboratoryCardDTO>().ReverseMap();
     }
 }

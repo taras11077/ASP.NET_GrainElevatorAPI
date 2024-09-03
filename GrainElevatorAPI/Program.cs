@@ -12,8 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Local");
 
 builder.Services.AddDbContext<GrainElevatorApiContext>(opt =>
-    opt.UseSqlServer(connectionString)
-        .UseLazyLoadingProxies());
+    opt.UseSqlServer(connectionString));
+        //.UseLazyLoadingProxies());
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -27,6 +27,7 @@ builder.Services.AddTransient<IRoleService, RoleService>();
 builder.Services.AddTransient<ISupplierService, SupplierService>();
 builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<IInputInvoiceService, InputInvoiceService>();
+builder.Services.AddTransient<ILaboratoryCardService, LaboratoryCardService>();
 
 builder.Services.AddControllers();
 
