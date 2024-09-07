@@ -4,6 +4,11 @@ namespace GrainElevatorAPI.Requests;
 
 public class LaboratoryCardCreateRequest
 {
+    [Required(ErrorMessage = "InputInvoiceId is required.")]
+    [Range(1, int.MaxValue, ErrorMessage = "InputInvoiceId must be a positive number.")]
+    public int InputInvoiceId { get; set; }
+    
+    
     [Required(ErrorMessage = "InvoiceNumber is required.")]
     [MinLength(3, ErrorMessage = "LaboratoryCard Number must be at least 3 characters long.")]
     [MaxLength(9, ErrorMessage = "LaboratoryCard Number must be at least 9 characters long.")]
