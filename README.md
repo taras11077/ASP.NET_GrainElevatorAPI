@@ -1,5 +1,3 @@
-
-
 # Тема:
 ## Розробка інформаціонної системи контролю та керування виробництвом зернового елеватора.
 
@@ -16,7 +14,10 @@
 Система обліку співробітників підприємства з організацією допусків до процесів відповідно до спеціальності та дозволів, зазначених керивництвом підприємства.
 
 # UseCase діаграма:
-Діаграма знаходится за посиланням: (https://github.com/taras11077/GrainElevatorAPI/blob/master/UseCase%20Elevator.vsdx).
+
+![UseCase діаграма.](https://github.com/taras11077/GrainElevatorAPI/blob/master/UseCase%20Elevator.pdf))
+
+Відкрити діаграму в редакторі: (https://github.com/taras11077/GrainElevatorAPI/blob/masteк/UseCase%20Elevator.vsdx).
 
 # Використовувані технології:
 - Мови:
