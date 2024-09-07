@@ -16,7 +16,7 @@
 Система обліку співробітників підприємства з організацією допусків до процесів відповідно до спеціальності та дозволів, зазначених керивництвом підприємства.
 
 # UseCase діаграма:
-Діаграма знаходится за посиланням: ([https://pages.github.com/](https://github.com/taras11077/GrainElevatorAPI/blob/master/UseCase%20Elevator.vsdx)).
+Діаграма знаходится за посиланням: (https://github.com/taras11077/GrainElevatorAPI/blob/master/UseCase%20Elevator.vsdx).
 
 # Використовувані технології:
 - Мови:
