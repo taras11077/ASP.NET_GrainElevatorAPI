@@ -20,8 +20,8 @@
 
 # Використовувані технології:
 - Мови:
-  -C#
-  -JavaScript
+  - C#
+  - JavaScript
 - Фреймворки/библиотеки:
   - ASP.NET
   - Entity Framework
@@ -30,8 +30,8 @@
   - MSSQL
   - Azure(?)
 - Інструменти розробки:
- - GIT
- - Docker(?)
+  - GIT
+  - Docker(?)
 
   
 
