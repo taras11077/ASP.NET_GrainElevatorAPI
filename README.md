@@ -34,6 +34,13 @@
   - GIT
   - Docker(?)
 
-  
+ # Приблизні зображення інтерфейсу:
+
+ ![interface image1.](https://github.com/taras11077/GrainElevatorAPI/blob/master/screen4.png)
+
+ ![interface image2.](https://github.com/taras11077/GrainElevatorAPI/blob/master/screen5.png)
+
+ ![interface image3.](https://github.com/taras11077/GrainElevatorAPI/blob/master/screen7.png)
+ 
 
 
