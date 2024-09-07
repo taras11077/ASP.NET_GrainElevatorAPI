@@ -17,7 +17,7 @@
 
 ![UseCase діаграма.](https://github.com/taras11077/GrainElevatorAPI/blob/master/UseCase%20Elevator.png)
 
-Відкрити діаграму в редакторі: (https://github.com/taras11077/GrainElevatorAPI/blob/master/UseCase%20Elevator.vsdx)).
+Відкрити діаграму в редакторі: (https://github.com/taras11077/GrainElevatorAPI/blob/master/UseCase%20Elevator.vsdx).
 
 # Використовувані технології:
 - Мови:
