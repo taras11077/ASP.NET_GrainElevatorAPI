@@ -17,7 +17,7 @@
 
 ![UseCase діаграма.](https://github.com/taras11077/GrainElevatorAPI/blob/master/UseCase%20Elevator.pdf))
 
-Діаграма знаходится за посиланням: (https://github.com/taras11077/GrainElevatorAPI/blob/master/UseCase%20Elevator.vsdx).
+Відкрити діаграму в редакторі: (./UseCase%20Elevator.vsdx).
 
 # Використовувані технології:
 - Мови:
