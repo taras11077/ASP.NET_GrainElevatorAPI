@@ -34,7 +34,7 @@
   - GIT
   - Docker(?)
 
- # Приблизні зображення інтерфейсу:
+ # Приклади зображень інтерфейсу:
 
  ![interface image1.](https://github.com/taras11077/GrainElevatorAPI/blob/master/screen4.png)
 
