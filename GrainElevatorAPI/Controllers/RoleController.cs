@@ -92,7 +92,32 @@ public class RoleController : ControllerBase
         }
     } 
     
-    
+    public async Task<IActionResult> PutRole(int id, RoleCreateRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
+        try
+        {
+            var roleDb = await _roleService.GetRoleByIdAsync(id);
+            if (roleDb == null)
+            {
+                return NotFound($"Роль з ID {id} не знайдено.");
+            }
+            
+            roleDb.Title = request.Title;
+            var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            var updatedRole = await _roleService.UpdateRoleAsync(roleDb, modifiedById);
+            
+            return Ok(_mapper.Map<RoleDTO>(updatedRole));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+        }
+    }
     
     [HttpPatch("{id}/soft-remove")]
     //[Authorize(Roles = "admin, laboratory")]
