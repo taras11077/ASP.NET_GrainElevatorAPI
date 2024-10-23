@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using GrainElevatorAPI.Core.Interfaces.ModelInterfaces;
 
 namespace GrainElevatorAPI.Core.Models;
 
-public class InputInvoice
+public class InputInvoice : IInputInvoice
 {
 	[Required(ErrorMessage = "ProductWeight is required.")]
 	[Range(1, int.MaxValue, ErrorMessage = "ProductWeight must be a positive number.")]
@@ -69,8 +70,6 @@ public class InputInvoice
     public virtual Employee? ModifiedBy { get; set; }
     public virtual Employee? RemovedBy { get; set; }
     public virtual Employee? RestoreBy { get; set; }
-
-
- 
+    
 }
 

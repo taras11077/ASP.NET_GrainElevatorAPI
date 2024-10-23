@@ -1,5 +1,6 @@
-﻿namespace GrainElevatorAPI.Requests;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GrainElevatorAPI.Requests;
 
 public class EmployeeRegisterRequest : EmployeeLoginRequest
 {

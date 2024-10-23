@@ -1,4 +1,5 @@
 ﻿using GrainElevatorAPI.Core.Interfaces;
+using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
 
 namespace GrainElevatorAPI.Core.Services;
@@ -13,10 +14,13 @@ public class InputInvoiceService : IInputInvoiceService
     }
     
     
-    public async Task<InputInvoice> AddInputInvoiceAsync(InputInvoice inputInvoice)
+    public async Task<InputInvoice> AddInputInvoiceAsync(InputInvoice inputInvoice, int createdById)
     {
         try
         {
+            inputInvoice.CreatedAt = DateTime.UtcNow;
+            inputInvoice.CreatedById = createdById;
+            
             return await _repository.Add(inputInvoice);
         }
         catch (Exception ex)
@@ -36,11 +40,14 @@ public class InputInvoiceService : IInputInvoiceService
             throw new Exception($"Помилка при отриманні Вхідної накладної з ID {id}", ex);
         }
     }
-
-    public async Task<InputInvoice> UpdateInputInvoiceAsync(InputInvoice inputInvoice)
+    
+    public async Task<InputInvoice> UpdateInputInvoiceAsync(InputInvoice inputInvoice, int modifiedById)
     {
         try
         {
+            inputInvoice.ModifiedAt = DateTime.UtcNow;
+            inputInvoice.ModifiedById = modifiedById;
+            
             return await _repository.Update(inputInvoice);
         }
         catch (Exception ex)
@@ -48,6 +55,38 @@ public class InputInvoiceService : IInputInvoiceService
             throw new Exception($"Помилка при оновленні Вхідної накладної з ID  {inputInvoice.Id}", ex);
         }
     }
+    
+    public async Task<InputInvoice> SoftDeleteInputInvoiceAsync(InputInvoice inputInvoice, int removedById)
+    {
+        try
+        {
+            inputInvoice.RemovedAt = DateTime.UtcNow;
+            inputInvoice.RemovedById = removedById;
+            
+            return await _repository.Update(inputInvoice);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при видаленні Вхідної накладної з ID  {inputInvoice.Id}", ex);
+        }
+    }
+    
+    public async Task<InputInvoice> RestoreRemovedInputInvoiceAsync(InputInvoice inputInvoice, int restoredById)
+    {
+        try
+        {
+            inputInvoice.RemovedAt = null;
+            inputInvoice.RestoredAt = DateTime.UtcNow;
+            inputInvoice.RestoreById = restoredById;
+            
+            return await _repository.Update(inputInvoice);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при відновленні Вхідної накладної з ID  {inputInvoice.Id}", ex);
+        }
+    }
+    
 
     public async Task<bool> DeleteInputInvoiceAsync(int id)
     {
@@ -82,17 +121,52 @@ public class InputInvoiceService : IInputInvoiceService
         }
     }
 
-    public IEnumerable<InputInvoice> SearchInputInvoices(string invoiceNumber)
+    public IEnumerable<InputInvoice> SearchInputInvoices(
+        int? id,
+        string? invoiceNumber,
+        DateTime? arrivalDate,
+        string? vehicleNumber,
+        int? supplierId,
+        int? productId,
+        int? createdById,
+        DateTime? removedAt,
+        int page,
+        int size)
     {
         try
         {
-            return _repository.GetAll<InputInvoice>()
-                .Where(inv => inv.InvoiceNumber.ToLower().Contains(invoiceNumber.ToLower()))
-                .ToList();
+            // отримуємо всі накладні та конвертуємо у IQueryable для фільтрації
+            var query = GetInputInvoices(page, size).AsQueryable();
+            
+            if (id.HasValue)
+                query = query.Where(ii => ii.Id == id.Value);
+
+            if (!string.IsNullOrEmpty(invoiceNumber))
+                query = query.Where(ii => ii.InvoiceNumber == invoiceNumber);
+
+            if (arrivalDate.HasValue)
+                query = query.Where(ii => ii.ArrivalDate.Date == arrivalDate.Value.Date);
+
+            if (!string.IsNullOrEmpty(vehicleNumber))
+                query = query.Where(ii => ii.VehicleNumber == vehicleNumber);
+
+            if (supplierId.HasValue)
+                query = query.Where(ii => ii.SupplierId == supplierId.Value);
+
+            if (productId.HasValue)
+                query = query.Where(ii => ii.ProductId == productId.Value);
+
+            if (createdById.HasValue)
+                query = query.Where(ii => ii.CreatedById == createdById.Value);
+
+            if (removedAt.HasValue)
+                query = query.Where(ii => ii.RemovedAt == removedAt.Value);
+            
+            return query.ToList();
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Вхідної накладної за номером {invoiceNumber}", ex);
+            throw new Exception("Помилка при пошуку вхідних накладних", ex);
         }
     }
 }

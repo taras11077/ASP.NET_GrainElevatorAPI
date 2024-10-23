@@ -1,7 +1,7 @@
 using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Models;
-using Microsoft.AspNetCore.Mvc;
 using GrainElevatorAPI.Requests;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
 namespace GrainElevatorAPI.Controllers;

@@ -1,5 +1,5 @@
 using AutoMapper;
-using GrainElevatorAPI.Core.Interfaces;
+using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
 using GrainElevatorAPI.DTOs;
 using GrainElevatorAPI.Extensions;
@@ -35,11 +35,9 @@ public class InputInvoiceController : ControllerBase
         try
         {
             var newInputInvoice = _mapper.Map<InputInvoice>(request);
+            var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             
-            newInputInvoice.CreatedAt = DateTime.UtcNow;
-            newInputInvoice.CreatedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            
-            var createdInputInvoice = await _inputInvoiceService.AddInputInvoiceAsync(newInputInvoice);
+            var createdInputInvoice = await _inputInvoiceService.AddInputInvoiceAsync(newInputInvoice, createdById);
             return CreatedAtAction(nameof(GetInputInvoice), new { id = createdInputInvoice.Id },
                 _mapper.Map<InputInvoiceDTO>(createdInputInvoice));
         }
@@ -99,18 +97,14 @@ public class InputInvoiceController : ControllerBase
         try
         {
             var inputInvoiceDb = await _inputInvoiceService.GetInputInvoiceByIdAsync(id);
-            
-            inputInvoiceDb.UpdateFromRequest(request);
-            
-            inputInvoiceDb.ModifiedAt = DateTime.UtcNow;
-            inputInvoiceDb.ModifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-
-            var updatedInputInvoice = await _inputInvoiceService.UpdateInputInvoiceAsync(inputInvoiceDb);
-
-            if (updatedInputInvoice == null)
+            if (inputInvoiceDb == null)
             {
                 return NotFound($"Прибуткову накладну з ID {id} не знайдено.");
             }
+            
+            inputInvoiceDb.UpdateFromRequest(request);
+            var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();;
+            var updatedInputInvoice = await _inputInvoiceService.UpdateInputInvoiceAsync(inputInvoiceDb, modifiedById);
 
             return Ok(_mapper.Map<InputInvoiceDTO>(updatedInputInvoice));
         }
@@ -123,7 +117,7 @@ public class InputInvoiceController : ControllerBase
     
 
     [HttpDelete("{id}/hard-remove")]
-    [Authorize(Roles = "admin")]
+    //[Authorize(Roles = "admin")]
     public async Task<IActionResult> DeleteInputInvoice(int id)
     {
         try
@@ -150,19 +144,15 @@ public class InputInvoiceController : ControllerBase
         try
         {
             var inputInvoiceDb = await _inputInvoiceService.GetInputInvoiceByIdAsync(id);
-            
-            inputInvoiceDb.RemovedAt = DateTime.UtcNow;
-            inputInvoiceDb.RemovedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            
-            var removedInputInvoice = await _inputInvoiceService.UpdateInputInvoiceAsync(inputInvoiceDb);
-            
-            if (removedInputInvoice == null)
+            if (inputInvoiceDb == null)
             {
                 return NotFound($"Прибуткову накладну з ID {id} не знайдено.");
             }
 
-            return Ok(_mapper.Map<InputInvoiceDTO>(removedInputInvoice));
+            var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            var removedInputInvoice = await _inputInvoiceService.SoftDeleteInputInvoiceAsync(inputInvoiceDb, removedById);
             
+            return Ok(_mapper.Map<InputInvoiceDTO>(removedInputInvoice));
         }
         catch (Exception ex)
         {
@@ -178,20 +168,15 @@ public class InputInvoiceController : ControllerBase
         try
         {
             var inputInvoiceDb = await _inputInvoiceService.GetInputInvoiceByIdAsync(id);
-
-			inputInvoiceDb.RemovedAt = null;
-			inputInvoiceDb.RestoredAt = DateTime.UtcNow;
-            inputInvoiceDb.RestoreById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            
-            var restorededInputInvoice = await _inputInvoiceService.UpdateInputInvoiceAsync(inputInvoiceDb);
-            
-            if (restorededInputInvoice == null)
+            if (inputInvoiceDb == null)
             {
                 return NotFound($"Прибуткову накладну з ID {id} не знайдено.");
             }
+            
+            var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            var restorededInputInvoice = await _inputInvoiceService.RestoreRemovedInputInvoiceAsync(inputInvoiceDb, restoredById);
 
             return Ok(_mapper.Map<InputInvoiceDTO>(restorededInputInvoice));
-            
         }
         catch (Exception ex)
         {
@@ -216,43 +201,17 @@ public class InputInvoiceController : ControllerBase
     {
         try
         {
-            var query = _inputInvoiceService.GetInputInvoices(page, size).AsQueryable();
+            // Передаємо параметри у сервіс для фільтрації
+            var filteredInvoices = _inputInvoiceService.SearchInputInvoices(
+                id, invoiceNumber, arrivalDate, vehicleNumber, supplierId, productId, createdById, removedAt, page, size);
 
-            if (id.HasValue)
-                query = query.Where(ii => ii.Id == id.Value);
-
-            if (!string.IsNullOrEmpty(invoiceNumber))
-                query = query.Where(ii => ii.InvoiceNumber == invoiceNumber);
-
-            if (arrivalDate.HasValue)
-                query = query.Where(ii => ii.ArrivalDate.Date == arrivalDate.Value.Date);
-
-            if (!string.IsNullOrEmpty(vehicleNumber))
-                query = query.Where(ii => ii.VehicleNumber == vehicleNumber);
-
-            if (supplierId.HasValue)
-                query = query.Where(ii => ii.SupplierId == supplierId.Value);
-
-            if (productId.HasValue)
-                query = query.Where(ii => ii.ProductId == productId.Value);
-
-            if (createdById.HasValue)
-                query = query.Where(ii => ii.CreatedById == createdById.Value);
-
-            if (removedAt.HasValue)
-                query = query.Where(ii => ii.RemovedAt == removedAt.Value);
-
-            var result = query.ToList();
-            return Ok(_mapper.Map<IEnumerable<InputInvoiceDTO>>(result));
+            return Ok(_mapper.Map<IEnumerable<InputInvoiceDTO>>(filteredInvoices));
         }
         catch (Exception ex)
         {
             return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
         }
     }
-    
-    
-    
 }
 
 

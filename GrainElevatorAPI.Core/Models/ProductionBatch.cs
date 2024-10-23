@@ -8,15 +8,7 @@ public class ProductionBatch
 	[Required(ErrorMessage = "Id is required.")]
 	[Range(1, int.MaxValue, ErrorMessage = "Id must be a positive number.")]
 	public int Id { get; set; }
-
-	[Required(ErrorMessage = "WeedImpurityBase is required.")]
-	[Range(0.0, 100.0, ErrorMessage = "WeedImpurityBase value must be between 0.0 and 100.0")]
-	public double WeedImpurityBase { get; set; }
-
-	[Required(ErrorMessage = "MoistureBase is required.")]
-	[Range(0.0, 100.0, ErrorMessage = "MoistureBase value must be between 0.0 and 100.0")]
-	public double MoistureBase { get; set; }
-
+	
 	[Range(1, int.MaxValue, ErrorMessage = "Waste must be a positive number.")]
 	public int? Waste { get; set; }
 
@@ -38,8 +30,6 @@ public class ProductionBatch
 	public virtual Register? Register { get; set; }
 	
 	
-
-	
 	[DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
 	[Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "CreatedAt must be between 1900 and 2024.")]
 	public DateTime CreatedAt { get; set; }
@@ -57,7 +47,6 @@ public class ProductionBatch
 	public DateTime? RestoredAt { get; set; }
 	
 	
-
 	[Range(1, int.MaxValue, ErrorMessage = "CreatedById must be a positive number.")]
 	public int CreatedById { get; set; }
 	[Range(1, int.MaxValue, ErrorMessage = "ModifiedById must be a positive number.")]

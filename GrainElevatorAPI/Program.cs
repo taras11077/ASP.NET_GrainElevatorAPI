@@ -3,17 +3,21 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using GrainElevator.Storage;
+using GrainElevatorAPI.Core.Calculators;
+using GrainElevatorAPI.Core.Calculators.Impl;
 using GrainElevatorAPI.Core.Interfaces;
+using GrainElevatorAPI.Core.Interfaces.ModelInterfaces;
+using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
+using GrainElevatorAPI.Core.Models;
 using GrainElevatorAPI.Core.Services;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("Local");
 
 builder.Services.AddDbContext<GrainElevatorApiContext>(opt =>
-    opt.UseSqlServer(connectionString));
-        //.UseLazyLoadingProxies());
+    opt.UseSqlServer(connectionString)
+        .UseLazyLoadingProxies());
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -28,6 +32,11 @@ builder.Services.AddTransient<ISupplierService, SupplierService>();
 builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<IInputInvoiceService, InputInvoiceService>();
 builder.Services.AddTransient<ILaboratoryCardService, LaboratoryCardService>();
+
+builder.Services.AddTransient<IInputInvoice, InputInvoice>();
+builder.Services.AddTransient<ILaboratoryCard, LaboratoryCard>();
+builder.Services.AddTransient<IRegister, Register>();
+builder.Services.AddTransient<IProductionButchCalculator, StandardProductionButchCalculator>();
 
 builder.Services.AddControllers();
 

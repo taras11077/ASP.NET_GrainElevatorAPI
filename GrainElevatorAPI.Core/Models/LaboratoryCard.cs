@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using GrainElevatorAPI.Core.Interfaces.ModelInterfaces;
 
 namespace GrainElevatorAPI.Core.Models;
 
-public class LaboratoryCard
+public class LaboratoryCard : ILaboratoryCard
 {
 	[Required(ErrorMessage = "Id is required.")]
 	[Range(1, int.MaxValue, ErrorMessage = "Id must be a positive number.")]
