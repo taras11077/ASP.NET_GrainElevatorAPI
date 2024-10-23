@@ -17,6 +17,7 @@ public interface IInputInvoiceService
         string? invoiceNumber,
         DateTime? arrivalDate,
         string? vehicleNumber,
+        int? physicalWeight,
         int? supplierId,
         int? productId,
         int? createdById,

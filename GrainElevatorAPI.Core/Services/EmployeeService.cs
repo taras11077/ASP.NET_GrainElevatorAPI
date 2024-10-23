@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using GrainElevatorAPI.Core.Interfaces;
+using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
 using GrainElevatorAPI.Core.Security;
 

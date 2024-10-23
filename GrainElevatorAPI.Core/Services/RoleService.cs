@@ -1,4 +1,5 @@
 ﻿using GrainElevatorAPI.Core.Interfaces;
+using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
 
 namespace GrainElevatorAPI.Core.Services;
@@ -13,13 +14,14 @@ public class RoleService : IRoleService
     }
     
     
-    public async Task<Role> AddRoleAsync(string title)
+    public async Task<Role> AddRoleAsync(Role role, int createdById)
     {
         try
         {
-            var newRole = new Role{ Title = title };
+            role.CreatedAt = DateTime.UtcNow;
+            role.CreatedById = createdById;
             
-            return await _repository.Add(newRole);
+            return await _repository.Add(role);
         }
         catch (Exception ex)
         {
@@ -35,37 +37,7 @@ public class RoleService : IRoleService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні ролі з ID {id}", ex);
-        }
-    }
-
-    public async Task<Role> UpdateRoleAsync(Role role)
-    {
-        try
-        {
-            return await _repository.Update(role);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Помилка при оновленні ролі з ID  {role.Id}", ex);
-        }
-    }
-
-    public async Task<bool> DeleteRoleAsync(int id)
-    {
-        try
-        {
-            var role = await _repository.GetById<Role>(id);
-            if (role != null)
-            {
-                await _repository.Delete<Role>(id);
-                return true;
-            }
-            return false;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Помилка при видаленні ролі з ID {id}", ex);
+            throw new Exception($"Помилка при отриманні Ролі з ID {id}", ex);
         }
     }
 
@@ -97,4 +69,70 @@ public class RoleService : IRoleService
             throw new Exception($"Помилка при отриманні ролі з назвою {title}", ex);
         }
     }
+    
+    public async Task<Role> UpdateRoleAsync(Role role, int modifiedById)
+    {
+        try
+        {
+            role.ModifiedAt = DateTime.UtcNow;
+            role.ModifiedById = modifiedById;
+            
+            return await _repository.Update(role);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при оновленні ролі з ID  {role.Id}", ex);
+        }
+    }
+    
+    public async Task<Role> SoftDeleteRoleAsync(Role role, int removedById)
+    {
+        try
+        {
+            role.RemovedAt = DateTime.UtcNow;
+            role.RemovedById = removedById;
+            
+            return await _repository.Update(role);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при видаленні Продукції з ID  {role.Id}", ex);
+        }
+    }
+    
+    public async Task<Role> RestoreRemovedRoleAsync(Role role, int restoredById)
+    {
+        try
+        {
+            role.RemovedAt = null;
+            role.RestoredAt = DateTime.UtcNow;
+            role.RestoreById = restoredById;
+            
+            return await _repository.Update(role);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при відновленні Продукції з ID  {role.Id}", ex);
+        }
+    }
+
+    public async Task<bool> DeleteRoleAsync(int id)
+    {
+        try
+        {
+            var role = await _repository.GetById<Role>(id);
+            if (role != null)
+            {
+                await _repository.Delete<Role>(id);
+                return true;
+            }
+            return false;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при видаленні Ролі з ID {id}", ex);
+        }
+    }
+
+   
 }

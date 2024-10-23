@@ -24,7 +24,7 @@ public class InputInvoiceController : ControllerBase
     
 
     [HttpPost]
-    //[Authorize(Roles = "admin, laboratory")]
+    [Authorize(Roles = "admin, laboratory")]
     public async Task<ActionResult<InputInvoice>> PostInputInvoice(InputInvoiceCreateRequest request)
     {
         if (!ModelState.IsValid)
@@ -84,7 +84,36 @@ public class InputInvoiceController : ControllerBase
         }
     }
 
+    [HttpGet("search")]
+    //[Authorize(Roles = "admin, laboratory")]
+    public ActionResult<IEnumerable<InputInvoiceDTO>> SearchInputInvoices(
+        [FromQuery] int? id = null,
+        [FromQuery] string? invoiceNumber = null,
+        [FromQuery] DateTime? arrivalDate = null,
+        [FromQuery] string? vehicleNumber = null,
+        [FromQuery] int? physicalWeight = null,
+        [FromQuery] int? supplierId = null,
+        [FromQuery] int? productId = null,
+        [FromQuery] int? createdById = null,
+        [FromQuery] DateTime? removedAt = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int size = 10)
+    {
+        try
+        {
+            // передаємо параметри у сервіс для фільтрації
+            var filteredInvoices = _inputInvoiceService.SearchInputInvoices(
+                id, invoiceNumber, arrivalDate, vehicleNumber, physicalWeight, supplierId, productId, createdById, removedAt, page, size);
 
+            return Ok(_mapper.Map<IEnumerable<InputInvoiceDTO>>(filteredInvoices));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+        }
+    }
+
+    
     [HttpPut("{id}")]
     //[Authorize(Roles = "admin, laboratory")]
     public async Task<IActionResult> PutInputInvoice(int id, InputInvoiceUpdateRequest request)
@@ -103,7 +132,7 @@ public class InputInvoiceController : ControllerBase
             }
             
             inputInvoiceDb.UpdateFromRequest(request);
-            var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();;
+            var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             var updatedInputInvoice = await _inputInvoiceService.UpdateInputInvoiceAsync(inputInvoiceDb, modifiedById);
 
             return Ok(_mapper.Map<InputInvoiceDTO>(updatedInputInvoice));
@@ -115,28 +144,6 @@ public class InputInvoiceController : ControllerBase
     }
     
     
-
-    [HttpDelete("{id}/hard-remove")]
-    //[Authorize(Roles = "admin")]
-    public async Task<IActionResult> DeleteInputInvoice(int id)
-    {
-        try
-        {
-            var success = await _inputInvoiceService.DeleteInputInvoiceAsync(id);
-            if (!success)
-            {
-                return NotFound($"Прибуткову накладну з ID {id} не знайдено.");
-            }
-            
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
-        }
-    }
-    
-
     [HttpPatch("{id}/soft-remove")]
     //[Authorize(Roles = "admin, laboratory")]
     public async Task<IActionResult> SoftDeleteInputInvoice(int id)
@@ -174,9 +181,9 @@ public class InputInvoiceController : ControllerBase
             }
             
             var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var restorededInputInvoice = await _inputInvoiceService.RestoreRemovedInputInvoiceAsync(inputInvoiceDb, restoredById);
+            var restoredInputInvoice = await _inputInvoiceService.RestoreRemovedInputInvoiceAsync(inputInvoiceDb, restoredById);
 
-            return Ok(_mapper.Map<InputInvoiceDTO>(restorededInputInvoice));
+            return Ok(_mapper.Map<InputInvoiceDTO>(restoredInputInvoice));
         }
         catch (Exception ex)
         {
@@ -184,34 +191,26 @@ public class InputInvoiceController : ControllerBase
         }
     }
     
-    
-    [HttpGet("search")]
-    //[Authorize(Roles = "admin, laboratory")]
-    public ActionResult<IEnumerable<InputInvoiceDTO>> SearchInputInvoices(
-        [FromQuery] int? id = null,
-        [FromQuery] string? invoiceNumber = null,
-        [FromQuery] DateTime? arrivalDate = null,
-        [FromQuery] string? vehicleNumber = null,
-        [FromQuery] int? supplierId = null,
-        [FromQuery] int? productId = null,
-        [FromQuery] int? createdById = null,
-        [FromQuery] DateTime? removedAt = null,
-        [FromQuery] int page = 1,
-        [FromQuery] int size = 10)
+    [HttpDelete("{id}/hard-remove")]
+    //[Authorize(Roles = "admin")]
+    public async Task<IActionResult> DeleteInputInvoice(int id)
     {
         try
         {
-            // Передаємо параметри у сервіс для фільтрації
-            var filteredInvoices = _inputInvoiceService.SearchInputInvoices(
-                id, invoiceNumber, arrivalDate, vehicleNumber, supplierId, productId, createdById, removedAt, page, size);
-
-            return Ok(_mapper.Map<IEnumerable<InputInvoiceDTO>>(filteredInvoices));
+            var success = await _inputInvoiceService.DeleteInputInvoiceAsync(id);
+            if (!success)
+            {
+                return NotFound($"Прибуткову накладну з ID {id} не знайдено.");
+            }
+            
+            return NoContent();
         }
         catch (Exception ex)
         {
             return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
         }
     }
+    
 }
 
 

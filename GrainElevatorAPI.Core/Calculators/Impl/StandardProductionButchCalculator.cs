@@ -7,10 +7,6 @@ public class StandardProductionButchCalculator : IProductionButchCalculator
 {
     public ProductionBatch ProductionBatch { get; private set; }
 
-    public StandardProductionButchCalculator()
-    {
-    }
-
     public void CalcResultProduction(IInputInvoice inputInvoice, ILaboratoryCard laboratoryCard, IRegister register, ProductionBatch productionBatch)
     {
         ProductionBatch = productionBatch;

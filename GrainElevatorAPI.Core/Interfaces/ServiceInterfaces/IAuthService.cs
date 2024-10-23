@@ -1,6 +1,6 @@
 ﻿using GrainElevatorAPI.Core.Models;
 
-namespace GrainElevatorAPI.Core.Interfaces;
+namespace GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 
 public interface IAuthService
 {

@@ -29,6 +29,20 @@ public class InputInvoiceService : IInputInvoiceService
         }
     }
 
+    public IEnumerable<InputInvoice> GetInputInvoices(int page, int size)
+    {
+        try
+        {
+            return _repository.GetAll<InputInvoice>()
+                .Skip((page - 1) * size)
+                .Take(size)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Помилка при отриманні списку Вхідних Накладних", ex);
+        }
+    }
     public async Task<InputInvoice> GetInputInvoiceByIdAsync(int id)
     {
         try
@@ -41,6 +55,56 @@ public class InputInvoiceService : IInputInvoiceService
         }
     }
     
+    
+    public IEnumerable<InputInvoice> SearchInputInvoices(
+        int? id,
+        string? invoiceNumber,
+        DateTime? arrivalDate,
+        string? vehicleNumber,
+        int? physicalWeight,
+        int? supplierId,
+        int? productId,
+        int? createdById,
+        DateTime? removedAt,
+        int page,
+        int size)
+    {
+        try
+        {
+            // отримуємо всі накладні та конвертуємо у IQueryable для фільтрації
+            var query = GetInputInvoices(page, size).AsQueryable();
+            
+            if (id.HasValue)
+                query = query.Where(ii => ii.Id == id.Value);
+
+            if (!string.IsNullOrEmpty(invoiceNumber))
+                query = query.Where(ii => ii.InvoiceNumber == invoiceNumber);
+
+            if (arrivalDate.HasValue)
+                query = query.Where(ii => ii.ArrivalDate.Date == arrivalDate.Value.Date);
+
+            if (!string.IsNullOrEmpty(vehicleNumber))
+                query = query.Where(ii => ii.VehicleNumber == vehicleNumber);
+
+            if (supplierId.HasValue)
+                query = query.Where(ii => ii.SupplierId == supplierId.Value);
+
+            if (productId.HasValue)
+                query = query.Where(ii => ii.ProductId == productId.Value);
+
+            if (createdById.HasValue)
+                query = query.Where(ii => ii.CreatedById == createdById.Value);
+
+            if (removedAt.HasValue)
+                query = query.Where(ii => ii.RemovedAt == removedAt.Value);
+            
+            return query.ToList();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Помилка при пошуку Вхідних накладних", ex);
+        }
+    }
     public async Task<InputInvoice> UpdateInputInvoiceAsync(InputInvoice inputInvoice, int modifiedById)
     {
         try
@@ -87,7 +151,6 @@ public class InputInvoiceService : IInputInvoiceService
         }
     }
     
-
     public async Task<bool> DeleteInputInvoiceAsync(int id)
     {
         try
@@ -105,68 +168,5 @@ public class InputInvoiceService : IInputInvoiceService
             throw new Exception($"Помилка при видаленні Вхідної накладної з ID {id}", ex);
         }
     }
-
-    public IEnumerable<InputInvoice> GetInputInvoices(int page, int size)
-    {
-        try
-        {
-            return _repository.GetAll<InputInvoice>()
-                .Skip((page - 1) * size)
-                .Take(size)
-                .ToList();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Помилка при отриманні списку Вхідних Накладних", ex);
-        }
-    }
-
-    public IEnumerable<InputInvoice> SearchInputInvoices(
-        int? id,
-        string? invoiceNumber,
-        DateTime? arrivalDate,
-        string? vehicleNumber,
-        int? supplierId,
-        int? productId,
-        int? createdById,
-        DateTime? removedAt,
-        int page,
-        int size)
-    {
-        try
-        {
-            // отримуємо всі накладні та конвертуємо у IQueryable для фільтрації
-            var query = GetInputInvoices(page, size).AsQueryable();
-            
-            if (id.HasValue)
-                query = query.Where(ii => ii.Id == id.Value);
-
-            if (!string.IsNullOrEmpty(invoiceNumber))
-                query = query.Where(ii => ii.InvoiceNumber == invoiceNumber);
-
-            if (arrivalDate.HasValue)
-                query = query.Where(ii => ii.ArrivalDate.Date == arrivalDate.Value.Date);
-
-            if (!string.IsNullOrEmpty(vehicleNumber))
-                query = query.Where(ii => ii.VehicleNumber == vehicleNumber);
-
-            if (supplierId.HasValue)
-                query = query.Where(ii => ii.SupplierId == supplierId.Value);
-
-            if (productId.HasValue)
-                query = query.Where(ii => ii.ProductId == productId.Value);
-
-            if (createdById.HasValue)
-                query = query.Where(ii => ii.CreatedById == createdById.Value);
-
-            if (removedAt.HasValue)
-                query = query.Where(ii => ii.RemovedAt == removedAt.Value);
-            
-            return query.ToList();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Помилка при пошуку вхідних накладних", ex);
-        }
-    }
+    
 }

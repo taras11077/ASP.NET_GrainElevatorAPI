@@ -1,4 +1,5 @@
 ﻿using GrainElevatorAPI.Core.Interfaces;
+using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
 
 namespace GrainElevatorAPI.Core.Services;
@@ -12,10 +13,13 @@ public class ProductService : IProductService
         _repository = repository;
     }
     
- public async Task<Product> AddProductAsync(Product product)
+ public async Task<Product> AddProductAsync(Product product, int createdById)
     {
         try
         {
+            product.CreatedAt = DateTime.UtcNow;
+            product.CreatedById = createdById;
+            
             return await _repository.Add(product);
         }
         catch (Exception ex)
@@ -23,49 +27,7 @@ public class ProductService : IProductService
             throw new Exception("Помилка при додаванні Назви продукту", ex);
         }
     }
-
-    public async Task<Product> GetProductByIdAsync(int id)
-    {
-        try
-        {
-            return await _repository.GetById<Product>(id);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Помилка при отриманні Назви продукту з ID {id}", ex);
-        }
-    }
-
-    public async Task<Product> UpdateProductAsync(Product product)
-    {
-        try
-        {
-            return await _repository.Update(product);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Помилка при оновленні Назви продукту з ID  {product.Id}", ex);
-        }
-    }
-
-    public async Task<bool> DeleteProductAsync(int id)
-    {
-        try
-        {
-            var productTitle = await _repository.GetById<Product>(id);
-            if (productTitle != null)
-            {
-                await _repository.Delete<Product>(id);
-                return true;
-            }
-            return false;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Помилка при видаленні Назви продукту з ID {id}", ex);
-        }
-    }
-
+ 
     public IEnumerable<Product> GetProducts(int page, int size)
     {
         try
@@ -81,17 +43,93 @@ public class ProductService : IProductService
         }
     }
 
+    public async Task<Product> GetProductByIdAsync(int id)
+    {
+        try
+        {
+            return await _repository.GetById<Product>(id);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при отриманні Назви продукту з ID {id}", ex);
+        }
+    }
+
     public IEnumerable<Product> SearchProduct(string title)
     {
         try
         {
             return _repository.GetAll<Product>()
-                .Where(r => r.Title.ToLower().Contains(title.ToLower()))
+                .Where(p => p.Title.ToLower().Contains(title.ToLower()))
                 .ToList();
         }
         catch (Exception ex)
         {
             throw new Exception($"Помилка при отриманні Назви продукту з назвою {title}", ex);
+        }
+    }
+    
+    public async Task<Product> UpdateProductAsync(Product product, int modifiedById)
+    {
+        try
+        {
+            product.ModifiedAt = DateTime.UtcNow;
+            product.ModifiedById = modifiedById;
+            
+            return await _repository.Update(product);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при оновленні Назви продукту з ID  {product.Id}", ex);
+        }
+    }
+    
+    public async Task<Product> SoftDeleteProductAsync(Product product, int removedById)
+    {
+        try
+        {
+            product.RemovedAt = DateTime.UtcNow;
+            product.RemovedById = removedById;
+            
+            return await _repository.Update(product);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при видаленні Продукції з ID  {product.Id}", ex);
+        }
+    }
+    
+    public async Task<Product> RestoreRemovedProductAsync(Product product, int restoredById)
+    {
+        try
+        {
+            product.RemovedAt = null;
+            product.RestoredAt = DateTime.UtcNow;
+            product.RestoreById = restoredById;
+            
+            return await _repository.Update(product);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при відновленні Продукції з ID  {product.Id}", ex);
+        }
+    }
+
+    public async Task<bool> DeleteProductAsync(int id)
+    {
+        try
+        {
+            var product = await _repository.GetById<Product>(id);
+            if (product != null)
+            {
+                await _repository.Delete<Product>(id);
+                return true;
+            }
+            return false;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при видаленні Назви продукту з ID {id}", ex);
         }
     }
 }
