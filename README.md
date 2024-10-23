@@ -1,5 +1,5 @@
 # Тема:
-## Розробка інформаціонної системи контролю та керування виробництвом зернового елеватора.
+## Розробка інформаційної системи контролю та керування виробництвом зернового елеватора.
 
 Супровід виробничих процесів:
       приймання, 
@@ -17,7 +17,7 @@
 
 ![UseCase діаграма.](https://github.com/taras11077/GrainElevatorAPI/blob/master/UseCase%20Elevator.png)
 
-Відкрити діаграму в редакторі: (https://github.com/taras11077/GrainElevatorAPI/blob/master/UseCase%20Elevator.vsdx)).
+Відкрити діаграму в редакторі: (https://github.com/taras11077/GrainElevatorAPI/blob/master/UseCase%20Elevator.vsdx).
 
 # Використовувані технології:
 - Мови:
@@ -34,6 +34,13 @@
   - GIT
   - Docker(?)
 
-  
+ # Приклади зображень інтерфейсу:
+
+ ![interface image1.](https://github.com/taras11077/GrainElevatorAPI/blob/master/screen4.png)
+
+ ![interface image2.](https://github.com/taras11077/GrainElevatorAPI/blob/master/screen5.png)
+
+ ![interface image3.](https://github.com/taras11077/GrainElevatorAPI/blob/master/screen7.png)
+ 
 
 
