@@ -3,13 +3,14 @@ using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
 using GrainElevatorAPI.Core.Security;
+using Microsoft.EntityFrameworkCore;
 
 namespace GrainElevatorAPI.Core.Services;
 
 public class EmployeeService : IEmployeeService
 {
     private readonly IRepository _repository;
-    private readonly int roleCount = 6; //TODO
+    //private readonly int roleCount = 6; //TODO
 
     public EmployeeService(IRepository repository)
     {
@@ -28,6 +29,21 @@ public class EmployeeService : IEmployeeService
             throw new Exception($"Помилка при отриманні співробітника з ID {id}", ex);
         }
     }
+
+    public async Task<Employee> GetEmployeeByEmailAsync(string email)
+    {
+        try
+        {
+            return await _repository.GetAll<Employee>()
+                .Where(r => r.Email.ToLower() == email.ToLower())
+                .FirstOrDefaultAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при отриманні Співробітника з електронною поштою {email}", ex);
+        }
+    }
+    
 
     public IEnumerable<Employee> GetAllEmployees(int page, int size)
     {

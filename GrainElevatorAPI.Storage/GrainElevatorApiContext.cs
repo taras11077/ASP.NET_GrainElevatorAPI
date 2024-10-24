@@ -45,25 +45,23 @@ public class GrainElevatorApiContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         
-        // створення ролі
-        var role = new Role
-        {
-            Id = 1,
-            Title = "Admin",
-            CreatedAt = DateTime.UtcNow,
-        };
-        modelBuilder.Entity<Role>().HasData(role);
-        
-        // створення адміна
-        var admin = new Employee
-        {
-            Id = 1,
-            Email = "admin@example.com",
-            PasswordHash = PasswordHasher.HashPassword("Admin@123"),
-            CreatedAt = DateTime.UtcNow,
-            RoleId = 1
-        };
-        modelBuilder.Entity<Employee>().HasData(admin);
+        // // створення ролі
+        // var adminRole = new Role
+        // {
+        //     Title = "Admin",
+        //     CreatedAt = DateTime.UtcNow,
+        // };
+        // modelBuilder.Entity<Role>().HasData(adminRole);
+        //
+        // // створення адміна
+        // var admin = new Employee
+        // {
+        //     Email = "admin@example.com",
+        //     PasswordHash = PasswordHasher.HashPassword("Admin@123"),
+        //     CreatedAt = DateTime.UtcNow,
+        //     RoleId = adminRole.Id
+        // };
+        // modelBuilder.Entity<Employee>().HasData(admin);
         
         
         modelBuilder.Entity<Role>()

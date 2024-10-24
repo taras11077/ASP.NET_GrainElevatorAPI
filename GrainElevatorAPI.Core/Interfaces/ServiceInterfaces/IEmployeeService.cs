@@ -6,6 +6,8 @@ namespace GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 public interface IEmployeeService
 {
     Task<Employee> GetEmployeeByIdAsync(int id);
+    
+    Task<Employee> GetEmployeeByEmailAsync(string email);
     IEnumerable<Employee> GetAllEmployees(int page, int size);
 
     Task<Employee> UpdateEmployeeAsync(Employee employee, string passwordHash, int modifiedById);

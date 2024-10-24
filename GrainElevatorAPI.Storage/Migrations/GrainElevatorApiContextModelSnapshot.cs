@@ -380,17 +380,6 @@ namespace GrainElevator.Storage.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Employees");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2024, 10, 24, 13, 43, 4, 501, DateTimeKind.Utc).AddTicks(7644),
-                            Email = "admin@example.com",
-                            LastSeenOnline = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PasswordHash = "$2a$11$IRJYF0ChvbC/k45Ku7Uii.e5sqoqp0uqKqraqcYR7duH47Z.QTuW.",
-                            RoleId = 1
-                        });
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.InputInvoice", b =>
@@ -981,14 +970,6 @@ namespace GrainElevator.Storage.Migrations
                     b.HasIndex("RestoreById");
 
                     b.ToTable("Roles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2024, 10, 24, 13, 43, 4, 390, DateTimeKind.Utc).AddTicks(1184),
-                            Title = "Admin"
-                        });
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.Supplier", b =>

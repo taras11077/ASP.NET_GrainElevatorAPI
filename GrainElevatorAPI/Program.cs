@@ -64,8 +64,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
-// // Ініціалізація адміністратора
-// await EnsureAdminCreated(app.Services);
+// створення адміністратора під час запуску програми
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        await EnsureAdminCreated(services);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while creating the admin user.");
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {
@@ -87,25 +99,40 @@ app.Run();
 
 
 
-// public static async Task EnsureAdminCreated(IServiceProvider serviceProvider)
-// {
-//     using var scope = serviceProvider.CreateScope();
-//     var context = scope.ServiceProvider.GetRequiredService<GrainElevatorApiContext>();
-//
-//     // Перевіряємо, чи є користувач з роллю "Admin"
-//     if (!context.Employees.Any(e => e.Role == "Admin"))
-//     {
-//         var admin = new Employee
-//         {
-//             Name = "Admin",
-//             Email = "admin@example.com",
-//             PasswordHash = PasswordHasher.HashPassword("Admin@123"),
-//             CreatedById = null,
-//             CreatedAt = DateTime.UtcNow,
-//             Role = "Admin"
-//         };
-//
-//         context.Employees.Add(admin);
-//         await context.SaveChangesAsync();
-//     }
-// }
+async Task EnsureAdminCreated(IServiceProvider services)
+{
+    var configuration = services.GetRequiredService<IConfiguration>();
+    var roleService = services.GetRequiredService<IRoleService>();
+    var authService = services.GetRequiredService<IAuthService>();
+
+    // отримання даних адміністратора з конфігурації
+    var adminEmail = configuration["AdminSettings:AdminEmail"];
+    var adminPassword = configuration["AdminSettings:AdminPassword"];
+
+    // перевірка, чи існує роль Admin
+    var adminRole = await roleService.GetRoleByTitleAsync("Admin");
+    if (adminRole == null)
+    {
+        adminRole = new Role
+        {
+            Title = "Admin",
+            CreatedAt = DateTime.UtcNow
+        };
+        await roleService.CreateRoleAsync(adminRole);
+    }
+
+    // реєстрація адміністратора 
+    try
+    {
+        var adminEmployee = await authService.Register(adminEmail, adminPassword, adminRole.Id);
+        Console.WriteLine($"Адміністратор {adminEmployee.Email} успішно створений.");
+    }
+    catch (InvalidOperationException ex)
+    {
+        Console.WriteLine($"Адміністратор з email {adminEmail} вже існує.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Сталася помилка при створенні адміністратора: {ex.Message}");
+    }
+}

@@ -1,6 +1,7 @@
 ﻿using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GrainElevatorAPI.Core.Services;
 
@@ -13,13 +14,28 @@ public class RoleService : IRoleService
         _repository = repository;
     }
     
-    
-    public async Task<Role> AddRoleAsync(Role role, int createdById)
+    public async Task<Role> CreateRoleAsync(Role role)
     {
         try
         {
             role.CreatedAt = DateTime.UtcNow;
-            role.CreatedById = createdById;
+            return await _repository.Add(role);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Помилка при створенні ролі", ex);
+        }
+    }
+    
+    
+    public async Task<Role> AddRoleAsync(Role role, int? createdById)
+    {
+        try
+        {
+            role.CreatedAt = DateTime.UtcNow;
+            
+            if (createdById.HasValue)
+                role.CreatedById = createdById;
             
             return await _repository.Add(role);
         }
@@ -38,6 +54,20 @@ public class RoleService : IRoleService
         catch (Exception ex)
         {
             throw new Exception($"Помилка при отриманні Ролі з ID {id}", ex);
+        }
+    }
+    
+    public async Task<Role> GetRoleByTitleAsync(string title)
+    {
+        try
+        {
+            return await _repository.GetAll<Role>()
+                .Where(r => r.Title.ToLower() == title.ToLower())
+                .FirstOrDefaultAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при отриманні Ролі з назвою {title}", ex);
         }
     }
 
