@@ -6,11 +6,7 @@ public interface IInputInvoiceService
 {
     Task<InputInvoice> AddInputInvoiceAsync(InputInvoice inputInvoice, int createdById);
     Task<InputInvoice> GetInputInvoiceByIdAsync(int id);
-    Task<InputInvoice> UpdateInputInvoiceAsync(InputInvoice inputInvoice, int modifiedById);
     
-    Task<InputInvoice> SoftDeleteInputInvoiceAsync(InputInvoice inputInvoice, int removedById);
-    Task<InputInvoice> RestoreRemovedInputInvoiceAsync(InputInvoice inputInvoice, int restoredById);
-    Task<bool> DeleteInputInvoiceAsync(int id);
     IEnumerable<InputInvoice> GetInputInvoices(int page, int size);
 
     IEnumerable<InputInvoice> SearchInputInvoices(int? id,
@@ -24,4 +20,10 @@ public interface IInputInvoiceService
         DateTime? removedAt,
         int page,
         int size);
+    Task<InputInvoice> UpdateInputInvoiceAsync(InputInvoice inputInvoice, int modifiedById);
+    
+    Task<InputInvoice> SoftDeleteInputInvoiceAsync(InputInvoice inputInvoice, int removedById);
+    Task<InputInvoice> RestoreRemovedInputInvoiceAsync(InputInvoice inputInvoice, int restoredById);
+    Task<bool> DeleteInputInvoiceAsync(int id);
+    
 }

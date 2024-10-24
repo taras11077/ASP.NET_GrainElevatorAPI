@@ -9,6 +9,7 @@ using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Interfaces.ModelInterfaces;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
+using GrainElevatorAPI.Core.Security;
 using GrainElevatorAPI.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,6 +64,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
+// // Ініціалізація адміністратора
+// await EnsureAdminCreated(app.Services);
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -80,3 +84,28 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+
+// public static async Task EnsureAdminCreated(IServiceProvider serviceProvider)
+// {
+//     using var scope = serviceProvider.CreateScope();
+//     var context = scope.ServiceProvider.GetRequiredService<GrainElevatorApiContext>();
+//
+//     // Перевіряємо, чи є користувач з роллю "Admin"
+//     if (!context.Employees.Any(e => e.Role == "Admin"))
+//     {
+//         var admin = new Employee
+//         {
+//             Name = "Admin",
+//             Email = "admin@example.com",
+//             PasswordHash = PasswordHasher.HashPassword("Admin@123"),
+//             CreatedById = null,
+//             CreatedAt = DateTime.UtcNow,
+//             Role = "Admin"
+//         };
+//
+//         context.Employees.Add(admin);
+//         await context.SaveChangesAsync();
+//     }
+// }

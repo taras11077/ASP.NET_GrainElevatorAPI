@@ -92,6 +92,7 @@ public class RoleController : ControllerBase
         }
     } 
     
+    [HttpPut("{id}")]
     public async Task<IActionResult> PutRole(int id, RoleCreateRequest request)
     {
         if (!ModelState.IsValid)

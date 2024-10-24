@@ -58,7 +58,7 @@ public class Employee
     
     
     [Range(1, int.MaxValue, ErrorMessage = "CreatedById must be a positive number.")]
-    public int CreatedById { get; set; }
+    public int? CreatedById { get; set; }
     [Range(1, int.MaxValue, ErrorMessage = "ModifiedById must be a positive number.")]
     public int? ModifiedById { get; set; }
     [Range(1, int.MaxValue, ErrorMessage = "RemovedById must be a positive number.")]

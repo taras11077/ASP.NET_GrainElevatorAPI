@@ -47,10 +47,10 @@ public class EmployeeController : ControllerBase
     {
         try
         {
-            var employee = await _employeeService.GetEmployeeById(id);
+            var employee = await _employeeService.GetEmployeeByIdAsync(id);
             if (employee == null)
             {
-                return NotFound($"Співробітник з ID {id} не знайдений.");
+                return NotFound($"Співробітника з ID {id} не знайдено.");
             }
             return Ok(_mapper.Map<EmployeeDTO>(employee));
         }
@@ -66,20 +66,65 @@ public class EmployeeController : ControllerBase
     {
         try
         {
-            var employeeDb = await _employeeService.GetEmployeeById(id);
+            var employeeDb = await _employeeService.GetEmployeeByIdAsync(id);
+            if (employeeDb == null)
+            {
+                return NotFound($"Співробітника з ID {id} не знайдено.");
+            }
             
             employeeDb.UpdateFromRequest(request);
             
-            employeeDb.PasswordHash = request.PasswordHash != null ? PasswordHasher.HashPassword(request.PasswordHash) : employeeDb.PasswordHash;
+            var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            var updatedEmployee = await _employeeService.UpdateEmployeeAsync(employeeDb, request.PasswordHash, modifiedById);
             
-            var updatedEmployee = await _employeeService.UpdateEmployee(employeeDb);
-            
-            if (updatedEmployee == null)
+            return Ok(_mapper.Map<EmployeeDTO>(updatedEmployee));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+        }
+    }
+    
+    [HttpPatch("{id}/soft-remove")]
+    //[Authorize(Roles = "admin, laboratory")]
+    public async Task<IActionResult> SoftDeleteEmployee(int id)
+    {
+        try
+        {
+            var employeeDb = await _employeeService.GetEmployeeByIdAsync(id);
+            if (employeeDb == null)
             {
-                return NotFound($"Співробітник з ID {id} не знайдений.");
+                return NotFound($"Співробітника з ID {id} не знайдено.");
             }
 
-            return Ok(_mapper.Map<EmployeeDTO>(updatedEmployee));
+            var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            var removedEmployee = await _employeeService.SoftDeleteEmployeeAsync(employeeDb, removedById);
+            
+            return Ok(_mapper.Map<EmployeeDTO>(removedEmployee));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+        }
+    }
+    
+
+    [HttpPatch("{id}/restore")]
+    //[Authorize(Roles = "admin, laboratory")]
+    public async Task<IActionResult> RestoreRemovedEmployee(int id)
+    {
+        try
+        {
+            var employeeDb = await _employeeService.GetEmployeeByIdAsync(id);
+            if (employeeDb == null)
+            {
+                return NotFound($"Співробітника з ID {id} не знайдено.");
+            }
+            
+            var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            var restoredEmployee = await _employeeService.RestoreRemovedEmployeeAsync(employeeDb, restoredById);
+
+            return Ok(_mapper.Map<EmployeeDTO>(restoredEmployee));
         }
         catch (Exception ex)
         {
@@ -93,10 +138,10 @@ public class EmployeeController : ControllerBase
     {
         try
         {
-            var success = await _employeeService.DeleteEmployee(id);
+            var success = await _employeeService.DeleteEmployeeAsync(id);
             if (!success)
             {
-                return NotFound($"Співробітник з ID {{id}} не знайдений.");
+                return NotFound($"Співробітника з ID {id} не знайдено.");
             }
 
             return NoContent();
@@ -113,7 +158,7 @@ public class EmployeeController : ControllerBase
     {
         try
         {
-            var employees = await _employeeService.GetEmployeesByCondition(e => e.FirstName.Contains(name) || e.LastName.Contains(name));
+            var employees = await _employeeService.GetEmployeesByConditionAsync(e => e.FirstName.Contains(name) || e.LastName.Contains(name));
             return Ok(_mapper.Map<IEnumerable<EmployeeDTO>>(employees));
         }
         catch (Exception ex)

@@ -17,7 +17,7 @@ public class EmployeeService : IEmployeeService
     }
     
     
-    public async Task<Employee> GetEmployeeById(int id)
+    public async Task<Employee> GetEmployeeByIdAsync(int id)
     {
         try
         {
@@ -45,10 +45,14 @@ public class EmployeeService : IEmployeeService
     }
 
     
-    public async Task<Employee> UpdateEmployee(Employee employee)
+    public async Task<Employee> UpdateEmployeeAsync(Employee employee, string passwordHash, int modifiedById)
     {
         try
         {
+            employee.PasswordHash = passwordHash != null ? PasswordHasher.HashPassword(passwordHash) : employee.PasswordHash;
+            employee.ModifiedAt = DateTime.UtcNow;
+            employee.ModifiedById = modifiedById;
+            
             return await _repository.Update(employee);
         }
         catch (Exception ex)
@@ -56,8 +60,39 @@ public class EmployeeService : IEmployeeService
             throw new Exception($"Помилка при оновленні співробітника з ID  {employee.Id}", ex);
         }
     }
+    
+    public async Task<Employee> SoftDeleteEmployeeAsync(Employee employee, int removedById)
+    {
+        try
+        {
+            employee.RemovedAt = DateTime.UtcNow;
+            employee.RemovedById = removedById;
+            
+            return await _repository.Update(employee);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при видаленні Вхідної накладної з ID  {employee.Id}", ex);
+        }
+    }
+    
+    public async Task<Employee> RestoreRemovedEmployeeAsync(Employee employee, int restoredById)
+    {
+        try
+        {
+            employee.RemovedAt = null;
+            employee.RestoredAt = DateTime.UtcNow;
+            employee.RestoreById = restoredById;
+            
+            return await _repository.Update(employee);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при відновленні Вхідної накладної з ID  {employee.Id}", ex);
+        }
+    }
 
-    public async Task<bool> DeleteEmployee(int id)
+    public async Task<bool> DeleteEmployeeAsync(int id)
     {
         try
         {
@@ -76,7 +111,7 @@ public class EmployeeService : IEmployeeService
         
     }
 
-    public async Task<IEnumerable<Employee>> GetEmployeesByCondition(Expression<Func<Employee, bool>> predicate)
+    public async Task<IEnumerable<Employee>> GetEmployeesByConditionAsync(Expression<Func<Employee, bool>> predicate)
     {
         try
         {

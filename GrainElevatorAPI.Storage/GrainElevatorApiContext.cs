@@ -1,20 +1,21 @@
 ﻿using GrainElevatorAPI.Core.Models;
+using GrainElevatorAPI.Core.Security;
 using Microsoft.EntityFrameworkCore;
 
 namespace GrainElevator.Storage;
 
 public class GrainElevatorApiContext : DbContext
 {
-    public GrainElevatorApiContext(DbContextOptions<GrainElevatorApiContext> options) : base(options)
-    {
-        
-    }
-
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // public GrainElevatorApiContext(DbContextOptions<GrainElevatorApiContext> options) : base(options)
     // {
-    //     optionsBuilder.UseSqlServer(
-    //         "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=grainElevatorAPI_db;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+    //     
     // }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer(
+            "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=grainElevatorAPI_db;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+    }
 
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Role> Roles { get; set; }
@@ -44,18 +45,37 @@ public class GrainElevatorApiContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         
+        // створення ролі
+        var role = new Role
+        {
+            Id = 1,
+            Title = "Admin",
+            CreatedAt = DateTime.UtcNow,
+        };
+        modelBuilder.Entity<Role>().HasData(role);
+        
+        // створення адміна
+        var admin = new Employee
+        {
+            Id = 1,
+            Email = "admin@example.com",
+            PasswordHash = PasswordHasher.HashPassword("Admin@123"),
+            CreatedAt = DateTime.UtcNow,
+            RoleId = 1
+        };
+        modelBuilder.Entity<Employee>().HasData(admin);
+        
+        
+        modelBuilder.Entity<Role>()
+            .HasOne(r => r.CreatedBy)
+            .WithMany()
+            .HasForeignKey(r => r.CreatedById)
+            .OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Role>()
             .HasOne(r =>r.ModifiedBy)
             .WithMany(e => e.Roles)
             .HasForeignKey(r => r.ModifiedById)
             .OnDelete(DeleteBehavior.Restrict);
-        
-        // modelBuilder.Entity<Role>()
-        //     .HasOne(r => r.CreatedBy)
-        //     .WithMany()
-        //     .HasForeignKey(r => r.CreatedById)
-        //     .OnDelete(DeleteBehavior.Restrict);
-        
         modelBuilder.Entity<Role>()
             .HasOne(r => r.RemovedBy)
             .WithMany()

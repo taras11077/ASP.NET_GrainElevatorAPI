@@ -31,8 +31,8 @@ public class Role
 	[Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "RestoredAt must be between 1900 and 2024.")]
 	public DateTime? RestoredAt { get; set; }
     
-	// [Range(1, int.MaxValue, ErrorMessage = "CreatedById must be a positive number.")]
-	public int CreatedById { get; set; }
+	[Range(1, int.MaxValue, ErrorMessage = "CreatedById must be a positive number.")]
+	public int? CreatedById { get; set; }
 	[Range(1, int.MaxValue, ErrorMessage = "ModifiedById must be a positive number.")]
 	public int? ModifiedById { get; set; }
 	[Range(1, int.MaxValue, ErrorMessage = "RemovedById must be a positive number.")]

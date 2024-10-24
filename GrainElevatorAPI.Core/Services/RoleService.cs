@@ -133,6 +133,5 @@ public class RoleService : IRoleService
             throw new Exception($"Помилка при видаленні Ролі з ID {id}", ex);
         }
     }
-
-   
+    
 }
