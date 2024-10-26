@@ -18,6 +18,8 @@ public class ProductionBatch
     [Range(1, int.MaxValue, ErrorMessage = "AccountWeight must be a positive number.")]
 	public int? AccountWeight { get; set; }
 	
+	public double? QuantitiesDrying { get; set; }
+	
 	
 	[Required(ErrorMessage = "LaboratoryCardId is required.")]
 	[Range(1, int.MaxValue, ErrorMessage = "LaboratoryCardId must be a positive number.")]
@@ -27,7 +29,7 @@ public class ProductionBatch
 	public int? RegisterId { get; set; }
 	
 	public virtual LaboratoryCard LaboratoryCard { get; set; }
-	public virtual Register? Register { get; set; }
+	public virtual InvoiceRegister? Register { get; set; }
 	
 	
 	[DataType(DataType.Date, ErrorMessage = "Invalid date format.")]

@@ -4,6 +4,7 @@ using GrainElevator.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GrainElevator.Storage.Migrations
 {
     [DbContext(typeof(GrainElevatorApiContext))]
-    partial class GrainElevatorApiContextModelSnapshot : ModelSnapshot
+    [Migration("20241025195425_renameModelRegisterToInvoiceRegister")]
+    partial class renameModelRegisterToInvoiceRegister
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1338,7 +1341,7 @@ namespace GrainElevator.Storage.Migrations
                     b.HasOne("GrainElevatorAPI.Core.Models.InputInvoice", "InputInvoice")
                         .WithOne("LaboratoryCard")
                         .HasForeignKey("GrainElevatorAPI.Core.Models.LaboratoryCard", "InputInvoiceId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("GrainElevatorAPI.Core.Models.Employee", "ModifiedBy")
@@ -1538,7 +1541,7 @@ namespace GrainElevator.Storage.Migrations
                     b.HasOne("GrainElevatorAPI.Core.Models.LaboratoryCard", "LaboratoryCard")
                         .WithOne("ProductionBatch")
                         .HasForeignKey("GrainElevatorAPI.Core.Models.ProductionBatch", "LaboratoryCardId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("GrainElevatorAPI.Core.Models.Employee", "ModifiedBy")

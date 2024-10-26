@@ -16,6 +16,7 @@ public class Repository : IRepository
     {
         var entityFromFb = _context.Set<T>().Add(entity);
         await _context.SaveChangesAsync();
+        
         return entityFromFb.Entity;
     }
 

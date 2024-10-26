@@ -13,19 +13,21 @@ namespace GrainElevatorAPI.Controllers;
 [ApiController]
 public class InputInvoiceController : ControllerBase
 {
+    private readonly ILogger<InputInvoiceController> _logger;
     private readonly IInputInvoiceService _inputInvoiceService;
     private readonly IMapper _mapper;
 
-    public InputInvoiceController(IInputInvoiceService inputInvoiceService, IMapper mapper)
+    public InputInvoiceController(IInputInvoiceService inputInvoiceService, IMapper mapper, ILogger<InputInvoiceController> logger)
     {
         _inputInvoiceService = inputInvoiceService;
         _mapper = mapper;
+        _logger = logger;
     }
     
 
     [HttpPost]
-    [Authorize(Roles = "admin, laboratory")]
-    public async Task<ActionResult<InputInvoice>> PostInputInvoice(InputInvoiceCreateRequest request)
+    //[Authorize(Roles = "Admin, laboratory")]
+    public async Task<ActionResult<InputInvoice>> CreateInputInvoice(InputInvoiceCreateRequest request)
     {
         if (!ModelState.IsValid)
         {
@@ -43,7 +45,8 @@ public class InputInvoiceController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при створенні Прибуткової накладної: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при створенні Прибуткової накладної: {ex.Message}");
         }
     }
 
@@ -59,7 +62,8 @@ public class InputInvoiceController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при отриманні всіх Прибуткових накладних: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при отриманні Прибуткових накладних: {ex.Message}");
         }
     }
 
@@ -80,6 +84,7 @@ public class InputInvoiceController : ControllerBase
         }
         catch (Exception ex)
         {
+            _logger.LogError($"Внутрішня помилка сервера при отриманні Прибуткової накладної з ID {id}: {ex.Message}");
             return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
         }
     }
@@ -109,7 +114,8 @@ public class InputInvoiceController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при отриманні Прибуткової накладної: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при отриманні Прибуткової накладної: {ex.Message}");
         }
     }
 
@@ -139,7 +145,8 @@ public class InputInvoiceController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при оновленні Прибуткової накладної з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при оновленні Прибуткової накладної: {ex.Message}");
         }
     }
     
@@ -163,7 +170,8 @@ public class InputInvoiceController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при soft-видаленні Прибуткової накладної з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при видаленні Прибуткової накладної: {ex.Message}");
         }
     }
     
@@ -187,7 +195,8 @@ public class InputInvoiceController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при відновленні Прибуткової накладної з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при відновленні Прибуткової накладної: {ex.Message}");
         }
     }
     
@@ -207,6 +216,7 @@ public class InputInvoiceController : ControllerBase
         }
         catch (Exception ex)
         {
+            _logger.LogError($"Внутрішня помилка сервера при hard-видаленні Прибуткової накладної з ID {id}: {ex.Message}");
             return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
         }
     }

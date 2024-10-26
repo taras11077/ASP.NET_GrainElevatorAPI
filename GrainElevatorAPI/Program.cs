@@ -11,6 +11,8 @@ using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
 using GrainElevatorAPI.Core.Security;
 using GrainElevatorAPI.Core.Services;
+using Serilog;
+using Serilog.Sinks.MSSqlServer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +27,16 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.MSSqlServer(
+        connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
+        sinkOptions: new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true })
+    .CreateLogger();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog();
+
 builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IEmployeeService, EmployeeService>();
@@ -33,11 +45,13 @@ builder.Services.AddTransient<ISupplierService, SupplierService>();
 builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<IInputInvoiceService, InputInvoiceService>();
 builder.Services.AddTransient<ILaboratoryCardService, LaboratoryCardService>();
+builder.Services.AddTransient<IInvoiceRegisterService, InvoiceRegisterService>();
+
 
 builder.Services.AddTransient<IInputInvoice, InputInvoice>();
 builder.Services.AddTransient<ILaboratoryCard, LaboratoryCard>();
-builder.Services.AddTransient<IRegister, Register>();
-builder.Services.AddTransient<IProductionButchCalculator, StandardProductionButchCalculator>();
+builder.Services.AddTransient<IRegister, InvoiceRegister>();
+builder.Services.AddTransient<IProductionBatchCalculator, StandardProductionBatchCalculator>();
 
 builder.Services.AddControllers();
 
@@ -120,16 +134,20 @@ async Task EnsureAdminCreated(IServiceProvider services)
         };
         await roleService.CreateRoleAsync(adminRole);
     }
+    
+    // перевірка, чи існує адміністратор з таким email
+    var existingAdmin = await authService.FindByEmailAsync(adminEmail);
+    if (existingAdmin != null)
+    {
+        Console.WriteLine($"Адміністратор з email {adminEmail} вже існує. Продовження виконання програми.");
+        return;
+    }
 
     // реєстрація адміністратора 
     try
     {
         var adminEmployee = await authService.Register(adminEmail, adminPassword, adminRole.Id);
         Console.WriteLine($"Адміністратор {adminEmployee.Email} успішно створений.");
-    }
-    catch (InvalidOperationException ex)
-    {
-        Console.WriteLine($"Адміністратор з email {adminEmail} вже існує.");
     }
     catch (Exception ex)
     {

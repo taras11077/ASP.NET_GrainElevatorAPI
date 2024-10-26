@@ -31,5 +31,8 @@ public class MapperProfile : Profile
         
         CreateMap<LaboratoryCard, LaboratoryCardCreateRequest>().ReverseMap();
         CreateMap<LaboratoryCard, LaboratoryCardDTO>().ReverseMap();
+        
+        CreateMap<InvoiceRegister, InvoiceRegisterCreateRequest>().ReverseMap();
+        CreateMap<InvoiceRegister, InvoiceRegisterDTO>().ReverseMap();
     }
 }

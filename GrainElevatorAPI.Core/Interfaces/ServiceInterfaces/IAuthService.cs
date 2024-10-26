@@ -6,4 +6,5 @@ public interface IAuthService
 {
     Task<Employee> Register(string email, string password, int roleId);
     Task<Employee> Login(string email, string password);
+    Task<Employee> FindByEmailAsync(string email);
 }

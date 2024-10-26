@@ -26,7 +26,7 @@ public class CompletionReport
 	
     public bool? IsFinalized { get; set; }
     
-    public virtual ICollection<Register> Registers { get; set; } = new List<Register>();
+    public virtual ICollection<InvoiceRegister> Registers { get; set; } = new List<InvoiceRegister>();
     public virtual ICollection<CompletionReportItem> CompletionReportItems { get; set; } = new List<CompletionReportItem>();
 
     

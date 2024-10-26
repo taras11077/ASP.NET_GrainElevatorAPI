@@ -4,9 +4,9 @@ using GrainElevatorAPI.Core.Models;
 
 namespace GrainElevatorAPI.Core.Calculators;
 
-public interface IProductionButchCalculator
+public interface IProductionBatchCalculator
 {
-    void CalcResultProduction(IInputInvoice inputInvoice, ILaboratoryCard laboratoryCard, IRegister register,
+    void CalcProductionBatch(IInputInvoice inputInvoice, ILaboratoryCard laboratoryCard, IRegister register,
         ProductionBatch productionBatch);
 }
 

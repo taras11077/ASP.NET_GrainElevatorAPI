@@ -17,7 +17,7 @@ public class CompletionReportCalculator : ICompletionReportCalculator
         if (CompletionReport.Registers.Count == 0)
             return 0;
 
-        foreach (Register reg in CompletionReport.Registers)
+        foreach (InvoiceRegister reg in CompletionReport.Registers)
             CompletionReport.ReportPhysicalWeight += (double)reg.PhysicalWeightReg / 1000;
 
         return CompletionReport.ReportPhysicalWeight.Value;
@@ -31,7 +31,7 @@ public class CompletionReportCalculator : ICompletionReportCalculator
 
         try
         {
-            foreach (Register reg in CompletionReport.Registers)
+            foreach (InvoiceRegister reg in CompletionReport.Registers)
             {
                 //    if ((reg.ProductionBatches as List<ProductionBatch>) is null)
                 //        return 0.0;

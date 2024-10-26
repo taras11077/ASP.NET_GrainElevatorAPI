@@ -26,7 +26,7 @@ public class Employee
     public virtual ICollection<InputInvoice> InputInvoices { get; set; } = new List<InputInvoice>();
     public virtual ICollection<LaboratoryCard> LaboratoryCards { get; set; } = new List<LaboratoryCard>();
     public virtual ICollection<ProductionBatch> ProductionBatches { get; set; } = new List<ProductionBatch>();
-    public virtual ICollection<Register> Registers { get; set; } = new List<Register>();
+    public virtual ICollection<InvoiceRegister> Registers { get; set; } = new List<InvoiceRegister>();
     public virtual ICollection<CompletionReportItem> CompletionReportItems { get; set; } = new List<CompletionReportItem>();
     public virtual ICollection<CompletionReport> CompletionReports { get; set; } = new List<CompletionReport>();
     public virtual ICollection<PriceListItem> PriceListItems { get; set; } = new List<PriceListItem>();

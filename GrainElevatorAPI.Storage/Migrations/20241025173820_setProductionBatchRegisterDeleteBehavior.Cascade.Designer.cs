@@ -4,6 +4,7 @@ using GrainElevator.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GrainElevator.Storage.Migrations
 {
     [DbContext(typeof(GrainElevatorApiContext))]
-    partial class GrainElevatorApiContextModelSnapshot : ModelSnapshot
+    [Migration("20241025173820_setProductionBatchRegisterDeleteBehavior.Cascade")]
+    partial class setProductionBatchRegisterDeleteBehaviorCascade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -455,95 +458,6 @@ namespace GrainElevator.Storage.Migrations
                     b.ToTable("InputInvoices");
                 });
 
-            modelBuilder.Entity("GrainElevatorAPI.Core.Models.InvoiceRegister", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AccWeightReg")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ArrivalDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("CompletionReportId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("ModifiedById")
-                        .HasColumnType("int");
-
-                    b.Property<double>("MoistureBase")
-                        .HasColumnType("float");
-
-                    b.Property<int?>("PhysicalWeightReg")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<double?>("QuantitiesDryingReg")
-                        .HasColumnType("float");
-
-                    b.Property<string>("RegisterNumber")
-                        .IsRequired()
-                        .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
-
-                    b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("RemovedById")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RestoreById")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("RestoredAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("ShrinkageReg")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SupplierId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("WasteReg")
-                        .HasColumnType("int");
-
-                    b.Property<double>("WeedImpurityBase")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompletionReportId");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("ModifiedById");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("RemovedById");
-
-                    b.HasIndex("RestoreById");
-
-                    b.HasIndex("SupplierId");
-
-                    b.ToTable("Registers");
-                });
-
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.LaboratoryCard", b =>
                 {
                     b.Property<int>("Id")
@@ -883,9 +797,6 @@ namespace GrainElevator.Storage.Migrations
                     b.Property<int?>("ModifiedById")
                         .HasColumnType("int");
 
-                    b.Property<double?>("QuantitiesDrying")
-                        .HasColumnType("float");
-
                     b.Property<int?>("RegisterId")
                         .HasColumnType("int");
 
@@ -923,6 +834,95 @@ namespace GrainElevator.Storage.Migrations
                     b.HasIndex("RestoreById");
 
                     b.ToTable("ProductionBatches");
+                });
+
+            modelBuilder.Entity("GrainElevatorAPI.Core.Models.Register", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AccWeightReg")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ArrivalDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CompletionReportId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ModifiedById")
+                        .HasColumnType("int");
+
+                    b.Property<double>("MoistureBase")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("PhysicalWeightReg")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("QuantitiesDryingReg")
+                        .HasColumnType("float");
+
+                    b.Property<string>("RegisterNumber")
+                        .IsRequired()
+                        .HasMaxLength(9)
+                        .HasColumnType("nvarchar(9)");
+
+                    b.Property<DateTime?>("RemovedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("RemovedById")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RestoreById")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("RestoredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ShrinkageReg")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WasteReg")
+                        .HasColumnType("int");
+
+                    b.Property<double>("WeedImpurityBase")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompletionReportId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("ModifiedById");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("RemovedById");
+
+                    b.HasIndex("RestoreById");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("Registers");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.Role", b =>
@@ -1273,60 +1273,6 @@ namespace GrainElevator.Storage.Migrations
                     b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("GrainElevatorAPI.Core.Models.InvoiceRegister", b =>
-                {
-                    b.HasOne("GrainElevatorAPI.Core.Models.CompletionReport", "CompletionReport")
-                        .WithMany("Registers")
-                        .HasForeignKey("CompletionReportId");
-
-                    b.HasOne("GrainElevatorAPI.Core.Models.Employee", "CreatedBy")
-                        .WithMany("Registers")
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("GrainElevatorAPI.Core.Models.Employee", "ModifiedBy")
-                        .WithMany()
-                        .HasForeignKey("ModifiedById")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("GrainElevatorAPI.Core.Models.Product", "Product")
-                        .WithMany("Registers")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GrainElevatorAPI.Core.Models.Employee", "RemovedBy")
-                        .WithMany()
-                        .HasForeignKey("RemovedById")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("GrainElevatorAPI.Core.Models.Employee", "RestoreBy")
-                        .WithMany()
-                        .HasForeignKey("RestoreById")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("GrainElevatorAPI.Core.Models.Supplier", "Supplier")
-                        .WithMany("Registers")
-                        .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CompletionReport");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("ModifiedBy");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("RemovedBy");
-
-                    b.Navigation("RestoreBy");
-
-                    b.Navigation("Supplier");
-                });
-
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.LaboratoryCard", b =>
                 {
                     b.HasOne("GrainElevatorAPI.Core.Models.Employee", "CreatedBy")
@@ -1338,7 +1284,7 @@ namespace GrainElevator.Storage.Migrations
                     b.HasOne("GrainElevatorAPI.Core.Models.InputInvoice", "InputInvoice")
                         .WithOne("LaboratoryCard")
                         .HasForeignKey("GrainElevatorAPI.Core.Models.LaboratoryCard", "InputInvoiceId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("GrainElevatorAPI.Core.Models.Employee", "ModifiedBy")
@@ -1538,7 +1484,7 @@ namespace GrainElevator.Storage.Migrations
                     b.HasOne("GrainElevatorAPI.Core.Models.LaboratoryCard", "LaboratoryCard")
                         .WithOne("ProductionBatch")
                         .HasForeignKey("GrainElevatorAPI.Core.Models.ProductionBatch", "LaboratoryCardId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("GrainElevatorAPI.Core.Models.Employee", "ModifiedBy")
@@ -1546,7 +1492,7 @@ namespace GrainElevator.Storage.Migrations
                         .HasForeignKey("ModifiedById")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("GrainElevatorAPI.Core.Models.InvoiceRegister", "Register")
+                    b.HasOne("GrainElevatorAPI.Core.Models.Register", "Register")
                         .WithMany("ProductionBatches")
                         .HasForeignKey("RegisterId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -1572,6 +1518,60 @@ namespace GrainElevator.Storage.Migrations
                     b.Navigation("RemovedBy");
 
                     b.Navigation("RestoreBy");
+                });
+
+            modelBuilder.Entity("GrainElevatorAPI.Core.Models.Register", b =>
+                {
+                    b.HasOne("GrainElevatorAPI.Core.Models.CompletionReport", "CompletionReport")
+                        .WithMany("Registers")
+                        .HasForeignKey("CompletionReportId");
+
+                    b.HasOne("GrainElevatorAPI.Core.Models.Employee", "CreatedBy")
+                        .WithMany("Registers")
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GrainElevatorAPI.Core.Models.Employee", "ModifiedBy")
+                        .WithMany()
+                        .HasForeignKey("ModifiedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("GrainElevatorAPI.Core.Models.Product", "Product")
+                        .WithMany("Registers")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GrainElevatorAPI.Core.Models.Employee", "RemovedBy")
+                        .WithMany()
+                        .HasForeignKey("RemovedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("GrainElevatorAPI.Core.Models.Employee", "RestoreBy")
+                        .WithMany()
+                        .HasForeignKey("RestoreById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("GrainElevatorAPI.Core.Models.Supplier", "Supplier")
+                        .WithMany("Registers")
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CompletionReport");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("ModifiedBy");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("RemovedBy");
+
+                    b.Navigation("RestoreBy");
+
+                    b.Navigation("Supplier");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.Role", b =>
@@ -1687,11 +1687,6 @@ namespace GrainElevator.Storage.Migrations
                     b.Navigation("LaboratoryCard");
                 });
 
-            modelBuilder.Entity("GrainElevatorAPI.Core.Models.InvoiceRegister", b =>
-                {
-                    b.Navigation("ProductionBatches");
-                });
-
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.LaboratoryCard", b =>
                 {
                     b.Navigation("ProductionBatch");
@@ -1715,6 +1710,11 @@ namespace GrainElevator.Storage.Migrations
                     b.Navigation("OutputInvoices");
 
                     b.Navigation("Registers");
+                });
+
+            modelBuilder.Entity("GrainElevatorAPI.Core.Models.Register", b =>
+                {
+                    b.Navigation("ProductionBatches");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.Supplier", b =>

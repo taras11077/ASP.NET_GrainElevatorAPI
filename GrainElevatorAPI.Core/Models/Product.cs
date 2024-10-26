@@ -17,7 +17,7 @@ public class Product
     public virtual ICollection<DepotItem> DepotItems { get; set; } = new List<DepotItem>();
     public virtual ICollection<InputInvoice> InputInvoices { get; set; } = new List<InputInvoice>();
     public virtual ICollection<OutputInvoice> OutputInvoices { get; set; } = new List<OutputInvoice>();
-    public virtual ICollection<Register> Registers { get; set; } = new List<Register>();
+    public virtual ICollection<InvoiceRegister> Registers { get; set; } = new List<InvoiceRegister>();
     
     
     

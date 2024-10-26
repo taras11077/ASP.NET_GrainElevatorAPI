@@ -24,8 +24,8 @@ public class LaboratoryCardController : ControllerBase
     
 
     [HttpPost]
-    //[Authorize(Roles = "admin, laboratory")]
-    public async Task<ActionResult<LaboratoryCard>> PostLaboratoryCard(LaboratoryCardCreateRequest request)
+    //[Authorize(Roles = "Admin, Laboratory")]
+    public async Task<ActionResult<LaboratoryCard>> CreateLaboratoryCard(LaboratoryCardCreateRequest request)
     {
         if (!ModelState.IsValid)
         {
@@ -37,9 +37,9 @@ public class LaboratoryCardController : ControllerBase
             var newLaboratoryCard = _mapper.Map<LaboratoryCard>(request);
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             
-            var createdILaboratoryCard = await _laboratoryCardService.AddLaboratoryCardAsync(newLaboratoryCard, createdById);
-            return CreatedAtAction(nameof(GetLaboratoryCard), new { id = createdILaboratoryCard.Id },
-                _mapper.Map<LaboratoryCardDTO>(createdILaboratoryCard));
+            var createdLaboratoryCard = await _laboratoryCardService.AddLaboratoryCardAsync(newLaboratoryCard, createdById);
+            return CreatedAtAction(nameof(GetLaboratoryCard), new { id = createdLaboratoryCard.Id },
+                _mapper.Map<LaboratoryCardDTO>(createdLaboratoryCard));
         }
         catch (Exception ex)
         {
@@ -49,7 +49,7 @@ public class LaboratoryCardController : ControllerBase
 
 
     [HttpGet]
-    //[Authorize(Roles = "admin, laboratory")]
+    //[Authorize(Roles = "Admin, Laboratory")]
     public ActionResult<IEnumerable<LaboratoryCard>> GetLaboratoryCard([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
@@ -65,7 +65,7 @@ public class LaboratoryCardController : ControllerBase
 
 
     [HttpGet("{id}")]
-    //[Authorize(Roles = "admin, laboratory")]
+    //[Authorize(Roles = "Admin, Laboratory")]
     public async Task<ActionResult<LaboratoryCard>> GetLaboratoryCard(int id)
     {
         try
@@ -86,7 +86,7 @@ public class LaboratoryCardController : ControllerBase
 
     
     [HttpGet("search")]
-    //[Authorize(Roles = "admin, laboratory")]
+    //[Authorize(Roles = "Admin, Laboratory")]
     public ActionResult<IEnumerable<LaboratoryCardDTO>> SearchLaboratoryCards(
         [FromQuery] int? id = null,
         [FromQuery] string? labCardNumber = null,
@@ -134,7 +134,7 @@ public class LaboratoryCardController : ControllerBase
     
 
     [HttpPut("{id}")]
-    //[Authorize(Roles = "admin, laboratory")]
+    //[Authorize(Roles = "Admin, Laboratory")]
     public async Task<IActionResult> PutLaboratoryCard(int id, LaboratoryCardUpdateRequest request)
     {
         if (!ModelState.IsValid)
@@ -164,7 +164,7 @@ public class LaboratoryCardController : ControllerBase
     
     
     [HttpPatch("{id}/soft-remove")]
-    //[Authorize(Roles = "admin, laboratory")]
+    //[Authorize(Roles = "Admin, Laboratory")]
     public async Task<IActionResult> SoftDeleteLaboratoryCar(int id)
     {
         try
@@ -188,7 +188,7 @@ public class LaboratoryCardController : ControllerBase
     
 
     [HttpPatch("{id}/restore")]
-    //[Authorize(Roles = "admin, laboratory")]
+    //[Authorize(Roles = "Admin, Laboratory")]
     public async Task<IActionResult> RestoreRemovedLaboratoryCard(int id)
     {
         try
@@ -212,7 +212,7 @@ public class LaboratoryCardController : ControllerBase
     
     
     [HttpDelete("{id}/hard-remove")]
-    //[Authorize(Roles = "admin")]
+    //[Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteLaboratoryCard(int id)
     {
         try

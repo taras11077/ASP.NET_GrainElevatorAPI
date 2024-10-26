@@ -27,7 +27,7 @@ public class GrainElevatorApiContext : DbContext
     public DbSet<LaboratoryCard> LaboratoryCards { get; set; }
     
     public DbSet<ProductionBatch> ProductionBatches { get; set; }
-    public DbSet<Register> Registers { get; set; }
+    public DbSet<InvoiceRegister> Registers { get; set; }
     
     public DbSet<CompletionReportItem> CompletionReportItems { get; set; }
     public DbSet<PriceListItem> PriceListItems { get; set; }
@@ -59,7 +59,7 @@ public class GrainElevatorApiContext : DbContext
         //     Email = "admin@example.com",
         //     PasswordHash = PasswordHasher.HashPassword("Admin@123"),
         //     CreatedAt = DateTime.UtcNow,
-        //     RoleId = adminRole.Id
+        //     RoleId = 1
         // };
         // modelBuilder.Entity<Employee>().HasData(admin);
         
@@ -170,7 +170,8 @@ public class GrainElevatorApiContext : DbContext
         modelBuilder.Entity<LaboratoryCard>()
             .HasOne(lc => lc.InputInvoice)
             .WithOne(ii => ii.LaboratoryCard)
-            .HasForeignKey<LaboratoryCard>(lc => lc.InputInvoiceId);
+            .HasForeignKey<LaboratoryCard>(lc => lc.InputInvoiceId)
+            .OnDelete(DeleteBehavior.Restrict);;
         
         modelBuilder.Entity<LaboratoryCard>()
             .HasOne(lc => lc.CreatedBy)
@@ -200,7 +201,14 @@ public class GrainElevatorApiContext : DbContext
         modelBuilder.Entity<ProductionBatch>()
             .HasOne(pb => pb.LaboratoryCard)
             .WithOne(lc => lc.ProductionBatch)
-            .HasForeignKey<ProductionBatch>(pb => pb.LaboratoryCardId);
+            .HasForeignKey<ProductionBatch>(pb => pb.LaboratoryCardId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<ProductionBatch>()
+            .HasOne(pb => pb.Register)
+            .WithMany(r => r.ProductionBatches)
+            .HasForeignKey(pb => pb.RegisterId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<ProductionBatch>()
             .HasOne(pb => pb.CreatedBy)
@@ -228,25 +236,25 @@ public class GrainElevatorApiContext : DbContext
         
         
         
-        modelBuilder.Entity<Register>()
+        modelBuilder.Entity<InvoiceRegister>()
             .HasOne(r => r.CreatedBy)
             .WithMany(e => e.Registers)
             .HasForeignKey(r => r.CreatedById)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<Register>()
+        modelBuilder.Entity<InvoiceRegister>()
             .HasOne(r => r.ModifiedBy)
             .WithMany()
             .HasForeignKey(r => r.ModifiedById)
             .OnDelete(DeleteBehavior.Restrict);
         
-        modelBuilder.Entity<Register>()
+        modelBuilder.Entity<InvoiceRegister>()
             .HasOne(r => r.RemovedBy)
             .WithMany()
             .HasForeignKey(r => r.RemovedById)
             .OnDelete(DeleteBehavior.Restrict);
         
-        modelBuilder.Entity<Register>()
+        modelBuilder.Entity<InvoiceRegister>()
             .HasOne(r => r.RestoreBy)
             .WithMany()
             .HasForeignKey(r => r.RestoreById)

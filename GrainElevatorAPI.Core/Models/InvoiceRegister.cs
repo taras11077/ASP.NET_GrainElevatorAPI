@@ -4,7 +4,7 @@ using GrainElevatorAPI.Core.Interfaces.ModelInterfaces;
 
 namespace GrainElevatorAPI.Core.Models;
 
-public class Register : IRegister
+public class InvoiceRegister : IRegister
 {
 	[Required(ErrorMessage = "Id is required.")]
 	[Range(1, int.MaxValue, ErrorMessage = "Id must be a positive number.")]
@@ -39,8 +39,7 @@ public class Register : IRegister
 
 	[Range(1, int.MaxValue, ErrorMessage = "AccWeightReg must be a positive number.")]
 	public int? AccWeightReg { get; set; }
-
-	[Range(1, double.MaxValue, ErrorMessage = "QuantitiesDryingReg must be a positive number.")]
+	
 	public double? QuantitiesDryingReg { get; set; }
 
 

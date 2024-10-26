@@ -2,6 +2,7 @@
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
 using GrainElevatorAPI.Core.Security;
+using Microsoft.EntityFrameworkCore;
 
 namespace GrainElevatorAPI.Core.Services;
 
@@ -24,7 +25,6 @@ public class AuthService : IAuthService
         {
             throw new ArgumentException();
         }
-               
         
         // перевірка існування користувача з таким самим нікнеймом
         if (_repository.GetAll<Employee>().Any(u => u.Email == email))
@@ -67,5 +67,20 @@ public class AuthService : IAuthService
         await _repository.Update(employee);
     
         return employee;
+    }
+
+    public async Task<Employee> FindByEmailAsync(string email)
+    {
+        try
+        {
+            return await _repository.GetAll<Employee>()
+                .Where(r => r.Email.ToLower() == email.ToLower())
+                .FirstOrDefaultAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка при отриманні Співробітника з електронною поштою {email}", ex);
+        }
+
     }
 }
