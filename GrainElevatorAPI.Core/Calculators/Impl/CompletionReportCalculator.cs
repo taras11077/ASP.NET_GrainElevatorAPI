@@ -53,13 +53,13 @@ public class CompletionReportCalculator : ICompletionReportCalculator
     }
 
     //рассчет финансовой части Акта доработка по заданному Прайсу
-    public void CalcByPrice(PriceList pl)
+    public void CalcByPrice(ProductionPriceList pl)
     {
         try
         {
             (CompletionReport.CompletionReportItems as List<CompletionReportItem>)?.ForEach(op =>
             {
-                foreach (var p in pl.PriceByOperations)
+                foreach (var p in pl.PriceListItems)
                     if (op.TechnologicalOperation == p.OperationTitle)
                     {
                         op.Price = p.OperationPrice;

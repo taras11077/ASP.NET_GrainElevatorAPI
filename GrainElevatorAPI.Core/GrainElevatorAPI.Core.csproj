@@ -21,4 +21,10 @@
       </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+      <Reference Include="GrainElevatorAPI.Core">
+        <HintPath>..\GrainElevatorAPI\bin\Debug\net8.0\GrainElevatorAPI.Core.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>

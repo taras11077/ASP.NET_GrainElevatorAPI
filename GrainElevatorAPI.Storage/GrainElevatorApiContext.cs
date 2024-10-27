@@ -1,4 +1,5 @@
 ﻿using GrainElevatorAPI.Core.Models;
+using GrainElevatorAPI.Core.Models.Base;
 using GrainElevatorAPI.Core.Security;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,16 +7,16 @@ namespace GrainElevator.Storage;
 
 public class GrainElevatorApiContext : DbContext
 {
-    public GrainElevatorApiContext(DbContextOptions<GrainElevatorApiContext> options) : base(options)
-    {
-        
-    }
-
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // public GrainElevatorApiContext(DbContextOptions<GrainElevatorApiContext> options) : base(options)
     // {
-    //     optionsBuilder.UseSqlServer(
-    //         "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=grainElevatorAPI_db;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+    //     
     // }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer(
+            "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=grainElevatorAPI_db;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+    }
 
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Role> Roles { get; set; }
@@ -31,14 +32,12 @@ public class GrainElevatorApiContext : DbContext
     
     public DbSet<CompletionReportItem> CompletionReportItems { get; set; }
     public DbSet<PriceListItem> PriceListItems { get; set; }
-    public DbSet<PriceList> PriceLists { get; set; }
+    public DbSet<ProductionPriceList> PriceLists { get; set; }
     public DbSet<CompletionReport> CompletionReports { get; set; }
     
-    public DbSet<DepotItem> DepotItems { get; set; }
-    public DbSet<DepotProductCategory> DepotProductCategories { get; set; }
+    public DbSet<WarehouseUnit> DepotItems { get; set; }
+    public DbSet<WarehouseProductCategory> DepotProductCategories { get; set; }
     public DbSet<OutputInvoice> OutputInvoices { get; set; }
-    
-    public DbSet<AppDefect> AppDefects { get; set; }
     
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -64,16 +63,43 @@ public class GrainElevatorApiContext : DbContext
         // modelBuilder.Entity<Employee>().HasData(admin);
         
         
+        modelBuilder.Entity<Employee>()
+            .HasOne(e => e.CreatedBy)
+            .WithMany() // Обратная связь, если нет коллекции
+            .HasForeignKey(e => e.CreatedById)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<Employee>()
+            .HasOne(e => e.ModifiedBy)
+            .WithMany()
+            .HasForeignKey(e => e.ModifiedById)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<Employee>()
+            .HasOne(e => e.RemovedBy)
+            .WithMany()
+            .HasForeignKey(e => e.RemovedById)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<Employee>()
+            .HasOne(e => e.RestoreBy)
+            .WithMany()
+            .HasForeignKey(e => e.RestoreById)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        
         modelBuilder.Entity<Role>()
             .HasOne(r => r.CreatedBy)
             .WithMany()
             .HasForeignKey(r => r.CreatedById)
             .OnDelete(DeleteBehavior.Restrict);
+        
         modelBuilder.Entity<Role>()
             .HasOne(r =>r.ModifiedBy)
             .WithMany(e => e.Roles)
             .HasForeignKey(r => r.ModifiedById)
             .OnDelete(DeleteBehavior.Restrict);
+        
         modelBuilder.Entity<Role>()
             .HasOne(r => r.RemovedBy)
             .WithMany()
@@ -85,8 +111,6 @@ public class GrainElevatorApiContext : DbContext
             .WithMany()
             .HasForeignKey(r => r.RestoreById)
             .OnDelete(DeleteBehavior.Restrict);
-        
-        
         
         
         modelBuilder.Entity<Supplier>()
@@ -341,25 +365,25 @@ public class GrainElevatorApiContext : DbContext
         
         
         
-        modelBuilder.Entity<PriceList>()
+        modelBuilder.Entity<ProductionPriceList>()
             .HasOne(pl => pl.CreatedBy)
             .WithMany(e => e.PriceLists)
             .HasForeignKey(pl => pl.CreatedById)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<PriceList>()
+        modelBuilder.Entity<ProductionPriceList>()
             .HasOne(pl => pl.ModifiedBy)
             .WithMany()
             .HasForeignKey(pl => pl.ModifiedById)
             .OnDelete(DeleteBehavior.Restrict);
         
-        modelBuilder.Entity<PriceList>()
+        modelBuilder.Entity<ProductionPriceList>()
             .HasOne(pl => pl.RemovedBy)
             .WithMany()
             .HasForeignKey(pl => pl.RemovedById)
             .OnDelete(DeleteBehavior.Restrict);
         
-        modelBuilder.Entity<PriceList>()
+        modelBuilder.Entity<ProductionPriceList>()
             .HasOne(pl => pl.RestoreBy)
             .WithMany()
             .HasForeignKey(pl => pl.RestoreById)
@@ -368,25 +392,25 @@ public class GrainElevatorApiContext : DbContext
         
         
         
-        modelBuilder.Entity<DepotItem>()
+        modelBuilder.Entity<WarehouseUnit>()
             .HasOne(di => di.CreatedBy)
-            .WithMany(e => e.DepotItems)
+            .WithMany(e => e.WarehouseUnits)
             .HasForeignKey(di => di.CreatedById)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<DepotItem>()
+        modelBuilder.Entity<WarehouseUnit>()
             .HasOne(di => di.ModifiedBy)
             .WithMany()
             .HasForeignKey(di => di.ModifiedById)
             .OnDelete(DeleteBehavior.Restrict);
         
-        modelBuilder.Entity<DepotItem>()
+        modelBuilder.Entity<WarehouseUnit>()
             .HasOne(di => di.RemovedBy)
             .WithMany()
             .HasForeignKey(di => di.RemovedById)
             .OnDelete(DeleteBehavior.Restrict);
         
-        modelBuilder.Entity<DepotItem>()
+        modelBuilder.Entity<WarehouseUnit>()
             .HasOne(di => di.RestoreBy)
             .WithMany()
             .HasForeignKey(di => di.RestoreById)
@@ -394,25 +418,25 @@ public class GrainElevatorApiContext : DbContext
         
         
         
-        modelBuilder.Entity<DepotProductCategory>()
+        modelBuilder.Entity<WarehouseProductCategory>()
             .HasOne(dpc => dpc.CreatedBy)
-            .WithMany(e => e.DepotProductCategories)
+            .WithMany(e => e.WarehouseProductCategories)
             .HasForeignKey(dpc => dpc.CreatedById)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<DepotProductCategory>()
+        modelBuilder.Entity<WarehouseProductCategory>()
             .HasOne(dpc => dpc.ModifiedBy)
             .WithMany()
             .HasForeignKey(dpc => dpc.ModifiedById)
             .OnDelete(DeleteBehavior.Restrict);
         
-        modelBuilder.Entity<DepotProductCategory>()
+        modelBuilder.Entity<WarehouseProductCategory>()
             .HasOne(dpc => dpc.RemovedBy)
             .WithMany()
             .HasForeignKey(dpc => dpc.RemovedById)
             .OnDelete(DeleteBehavior.Restrict);
         
-        modelBuilder.Entity<DepotProductCategory>()
+        modelBuilder.Entity<WarehouseProductCategory>()
             .HasOne(dpc => dpc.RestoreBy)
             .WithMany()
             .HasForeignKey(di => di.RestoreById)

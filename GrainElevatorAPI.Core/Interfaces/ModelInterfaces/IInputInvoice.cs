@@ -13,14 +13,4 @@ public interface IInputInvoice
     int? LaboratoryCardId { get; set; }
     int SupplierId { get; set; }
     int ProductId { get; set; }
-    
-    DateTime CreatedAt { get; set; }
-    DateTime? ModifiedAt { get; set; }
-    DateTime? RemovedAt { get; set; }
-    DateTime? RestoredAt { get; set; }
-    
-    int CreatedById { get; set; }
-    int? ModifiedById { get; set; }
-    int? RemovedById { get; set; }
-    int? RestoreById { get; set; }
 }
