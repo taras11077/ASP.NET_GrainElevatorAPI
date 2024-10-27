@@ -5,11 +5,11 @@ namespace GrainElevatorAPI.Extensions;
 
 public static class InvoiceRegisterExtensions
 {
-    public static void UpdateFromRequest(this InvoiceRegister register, InvoiceRegisterUpdateRequest request)
+    public static void UpdateFromRequest(this InvoiceRegister invoiceRegister, InvoiceRegisterUpdateRequest request)
     {
-        register.RegisterNumber = request.RegisterNumber ?? register.RegisterNumber;
-        register.WeedImpurityBase = request.WeedImpurityBase ?? register.WeedImpurityBase;
-        register.MoistureBase = request.MoistureBase ?? register.MoistureBase;
-        register.ProductionBatches = request.ProductionBatches ?? register.ProductionBatches;
+        invoiceRegister.RegisterNumber = request.RegisterNumber ?? invoiceRegister.RegisterNumber;
+        invoiceRegister.WeedImpurityBase = request.WeedImpurityBase ?? invoiceRegister.WeedImpurityBase;
+        invoiceRegister.MoistureBase = request.MoistureBase ?? invoiceRegister.MoistureBase;
+        invoiceRegister.ProductionBatches = request.ProductionBatches ?? invoiceRegister.ProductionBatches;
     }
 }

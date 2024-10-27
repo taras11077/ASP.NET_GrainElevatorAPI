@@ -2,7 +2,7 @@
 
 namespace GrainElevatorAPI.Core.Interfaces.ModelInterfaces;
 
-public interface IRegister
+public interface IInvoiceRegister
 {
 	int Id { get; set; }
 	string RegisterNumber { get; set; }

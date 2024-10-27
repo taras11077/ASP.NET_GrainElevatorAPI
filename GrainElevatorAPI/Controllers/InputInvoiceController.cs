@@ -13,9 +13,10 @@ namespace GrainElevatorAPI.Controllers;
 [ApiController]
 public class InputInvoiceController : ControllerBase
 {
-    private readonly ILogger<InputInvoiceController> _logger;
     private readonly IInputInvoiceService _inputInvoiceService;
     private readonly IMapper _mapper;
+    private readonly ILogger<InputInvoiceController> _logger;
+    
 
     public InputInvoiceController(IInputInvoiceService inputInvoiceService, IMapper mapper, ILogger<InputInvoiceController> logger)
     {
@@ -40,8 +41,9 @@ public class InputInvoiceController : ControllerBase
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             
             var createdInputInvoice = await _inputInvoiceService.AddInputInvoiceAsync(newInputInvoice, createdById);
+            _logger.LogInformation($"Прибуткову накладну з ID = {createdInputInvoice.Id} створено.");
             return CreatedAtAction(nameof(GetInputInvoice), new { id = createdInputInvoice.Id },
-                _mapper.Map<InputInvoiceDTO>(createdInputInvoice));
+                _mapper.Map<InputInvoiceDto>(createdInputInvoice));
         }
         catch (Exception ex)
         {
@@ -58,7 +60,7 @@ public class InputInvoiceController : ControllerBase
         try
         {
             var inputInvoices = _inputInvoiceService.GetInputInvoices(page, size);
-            return Ok(_mapper.Map<IEnumerable<InputInvoiceDTO>>(inputInvoices));
+            return Ok(_mapper.Map<IEnumerable<InputInvoiceDto>>(inputInvoices));
         }
         catch (Exception ex)
         {
@@ -80,18 +82,18 @@ public class InputInvoiceController : ControllerBase
                 return NotFound($"Прибуткову накладну з ID {id} не знайдено.");
             }
 
-            return Ok(_mapper.Map<InputInvoiceDTO>(inputInvoice));
+            return Ok(_mapper.Map<InputInvoiceDto>(inputInvoice));
         }
         catch (Exception ex)
         {
             _logger.LogError($"Внутрішня помилка сервера при отриманні Прибуткової накладної з ID {id}: {ex.Message}");
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при отриманні Прибуткової накладної з ID {id}: {ex.Message}");
         }
     }
 
     [HttpGet("search")]
     //[Authorize(Roles = "admin, laboratory")]
-    public ActionResult<IEnumerable<InputInvoiceDTO>> SearchInputInvoices(
+    public ActionResult<IEnumerable<InputInvoiceDto>> SearchInputInvoices(
         [FromQuery] int? id = null,
         [FromQuery] string? invoiceNumber = null,
         [FromQuery] DateTime? arrivalDate = null,
@@ -110,11 +112,11 @@ public class InputInvoiceController : ControllerBase
             var filteredInvoices = _inputInvoiceService.SearchInputInvoices(
                 id, invoiceNumber, arrivalDate, vehicleNumber, physicalWeight, supplierId, productId, createdById, removedAt, page, size);
 
-            return Ok(_mapper.Map<IEnumerable<InputInvoiceDTO>>(filteredInvoices));
+            return Ok(_mapper.Map<IEnumerable<InputInvoiceDto>>(filteredInvoices));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Внутрішня помилка сервера при отриманні Прибуткової накладної: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при отриманні Прибуткової накладної за параметрами: {ex.Message}");
             return StatusCode(500, $"Внутрішня помилка сервера при отриманні Прибуткової накладної: {ex.Message}");
         }
     }
@@ -122,7 +124,7 @@ public class InputInvoiceController : ControllerBase
     
     [HttpPut("{id}")]
     //[Authorize(Roles = "admin, laboratory")]
-    public async Task<IActionResult> PutInputInvoice(int id, InputInvoiceUpdateRequest request)
+    public async Task<IActionResult> UpdateInputInvoice(int id, InputInvoiceUpdateRequest request)
     {
         if (!ModelState.IsValid)
         {
@@ -141,7 +143,7 @@ public class InputInvoiceController : ControllerBase
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             var updatedInputInvoice = await _inputInvoiceService.UpdateInputInvoiceAsync(inputInvoiceDb, modifiedById);
 
-            return Ok(_mapper.Map<InputInvoiceDTO>(updatedInputInvoice));
+            return Ok(_mapper.Map<InputInvoiceDto>(updatedInputInvoice));
         }
         catch (Exception ex)
         {
@@ -166,7 +168,7 @@ public class InputInvoiceController : ControllerBase
             var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             var removedInputInvoice = await _inputInvoiceService.SoftDeleteInputInvoiceAsync(inputInvoiceDb, removedById);
             
-            return Ok(_mapper.Map<InputInvoiceDTO>(removedInputInvoice));
+            return Ok(_mapper.Map<InputInvoiceDto>(removedInputInvoice));
         }
         catch (Exception ex)
         {
@@ -191,12 +193,12 @@ public class InputInvoiceController : ControllerBase
             var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             var restoredInputInvoice = await _inputInvoiceService.RestoreRemovedInputInvoiceAsync(inputInvoiceDb, restoredById);
 
-            return Ok(_mapper.Map<InputInvoiceDTO>(restoredInputInvoice));
+            return Ok(_mapper.Map<InputInvoiceDto>(restoredInputInvoice));
         }
         catch (Exception ex)
         {
             _logger.LogError($"Внутрішня помилка сервера при відновленні Прибуткової накладної з ID {id}: {ex.Message}");
-            return StatusCode(500, $"Внутрішня помилка сервера при відновленні Прибуткової накладної: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при відновленні Прибуткової накладної з ID {id}: {ex.Message}");
         }
     }
     
@@ -217,7 +219,7 @@ public class InputInvoiceController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError($"Внутрішня помилка сервера при hard-видаленні Прибуткової накладної з ID {id}: {ex.Message}");
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при hard-видаленні Прибуткової накладної з ID {id}: {ex.Message}");
         }
     }
     

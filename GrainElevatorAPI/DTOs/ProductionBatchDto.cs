@@ -1,6 +1,6 @@
 ﻿namespace GrainElevatorAPI.DTOs;
 
-public class ProductionBatchDTO
+public class ProductionBatchDto
 {
 	public int Id { get; set; }
 

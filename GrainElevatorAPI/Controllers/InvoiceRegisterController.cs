@@ -14,11 +14,13 @@ public class InvoiceRegisterController : ControllerBase
 {
     private readonly IInvoiceRegisterService _invoiceRegisterService;
     private readonly IMapper _mapper;
+    private readonly ILogger<InvoiceRegisterController> _logger;
 
-    public InvoiceRegisterController(IInvoiceRegisterService invoiceRegisterService, IMapper mapper)
+    public InvoiceRegisterController(IInvoiceRegisterService invoiceRegisterService, IMapper mapper, ILogger<InvoiceRegisterController> logger)
     {
         _invoiceRegisterService = invoiceRegisterService;
         _mapper = mapper;
+        _logger = logger;
     }
     
     
@@ -46,11 +48,12 @@ public class InvoiceRegisterController : ControllerBase
                 createdById);
             
             return CreatedAtAction(nameof(GetRegisters), new { id = createdRegister.Id },
-                _mapper.Map<InvoiceRegisterDTO>(createdRegister));
+                _mapper.Map<InvoiceRegisterDto>(createdRegister));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при створенні Реєстра: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при створенні Реєстра: {ex.Message}");
         }
     }
     
@@ -62,11 +65,12 @@ public class InvoiceRegisterController : ControllerBase
         try
         {
             var registers = _invoiceRegisterService.GetRegisters(page, size);
-            return Ok(_mapper.Map<IEnumerable<InvoiceRegisterDTO>>(registers));
+            return Ok(_mapper.Map<IEnumerable<InvoiceRegisterDto>>(registers));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при отриманні всіх Реєстрів: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при отриманні Реєстрів: {ex.Message}");
         }
     }
     
@@ -83,11 +87,13 @@ public class InvoiceRegisterController : ControllerBase
                 return NotFound($"Реєстру з ID {id} не знайдено.");
             }
 
-            return Ok(_mapper.Map<InvoiceRegisterDTO>(register));
+            return Ok(_mapper.Map<InvoiceRegisterDto>(register));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            
+            _logger.LogError($"Внутрішня помилка сервера при отриманні Реєстра з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при отриманні Реєстра з ID {id}: {ex.Message}");
         }
     }
     
@@ -108,7 +114,8 @@ public class InvoiceRegisterController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при hard-видаленні Реєстра з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при hard-видаленні Реєстра з ID {id}: {ex.Message}");
         }
     }
 }

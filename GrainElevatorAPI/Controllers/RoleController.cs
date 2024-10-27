@@ -16,15 +16,17 @@ public class RoleController : ControllerBase
 {
    private readonly IRoleService _roleService;
    private readonly IMapper _mapper;
+   private readonly ILogger<RoleController> _logger;
 
-    public RoleController(IRoleService roleService, IMapper mapper)
+    public RoleController(IRoleService roleService, IMapper mapper, ILogger<RoleController> logger)
     {
         _roleService = roleService;
         _mapper = mapper;
+        _logger = logger;
     }
     
     [HttpPost]
-    public async Task<ActionResult<Role>> PostRole(RoleCreateRequest request)
+    public async Task<ActionResult<Role>> CreateRole(RoleCreateRequest request)
     {
         if (!ModelState.IsValid)
         {
@@ -37,11 +39,12 @@ public class RoleController : ControllerBase
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             
             var createdRole = await _roleService.AddRoleAsync(newRole, createdById);
-            return CreatedAtAction(nameof(GetRole), new { id = createdRole.Id }, _mapper.Map<RoleDTO>(createdRole));
+            return CreatedAtAction(nameof(GetRole), new { id = createdRole.Id }, _mapper.Map<RoleDto>(createdRole));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при створенні Ролі: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при створенні Ролі: {ex.Message}");
         }
     }
     
@@ -55,7 +58,8 @@ public class RoleController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при отриманні всіх Ролей: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при отриманні всіх Ролей: {ex.Message}");
         }
     }
 
@@ -70,11 +74,12 @@ public class RoleController : ControllerBase
             {
                 return NotFound($"Роль з ID {id} не знайдено.");
             }
-            return Ok(_mapper.Map<RoleDTO>(role));
+            return Ok(_mapper.Map<RoleDto>(role));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при отриманні Ролі з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при отриманні Ролі з ID {id}: {ex.Message}");
         }
     }
     
@@ -84,16 +89,17 @@ public class RoleController : ControllerBase
         try
         {
             var roles = _roleService.SearchRoles(title);
-            return Ok(_mapper.Map<IEnumerable<RoleDTO>>(roles));
+            return Ok(_mapper.Map<IEnumerable<RoleDto>>(roles));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при отриманні Ролі за назвою: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при отриманні Ролі за назвою: {ex.Message}");
         }
     } 
     
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutRole(int id, RoleCreateRequest request)
+    public async Task<IActionResult> UpdateRole(int id, RoleCreateRequest request)
     {
         if (!ModelState.IsValid)
         {
@@ -112,11 +118,12 @@ public class RoleController : ControllerBase
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             var updatedRole = await _roleService.UpdateRoleAsync(roleDb, modifiedById);
             
-            return Ok(_mapper.Map<RoleDTO>(updatedRole));
+            return Ok(_mapper.Map<RoleDto>(updatedRole));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при оновленні Ролі з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при оновленні Ролі з ID {id}: {ex.Message}");
         }
     }
     
@@ -135,11 +142,12 @@ public class RoleController : ControllerBase
             var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             var removedRole = await _roleService.SoftDeleteRoleAsync(roleDb, removedById);
             
-            return Ok(_mapper.Map<RoleDTO>(removedRole));
+            return Ok(_mapper.Map<RoleDto>(removedRole));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при soft-видаленні Ролі з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при видаленні Ролі з ID {id}: {ex.Message}");
         }
     }
     
@@ -159,11 +167,12 @@ public class RoleController : ControllerBase
             var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             var restoredRole = await _roleService.RestoreRemovedRoleAsync(roleDb, restoredById);
             
-            return Ok(_mapper.Map<RoleDTO>(restoredRole));
+            return Ok(_mapper.Map<RoleDto>(restoredRole));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при відновленні Ролі з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при відновленні Ролі з ID {id}: {ex.Message}");
         }
     }
     
@@ -175,14 +184,15 @@ public class RoleController : ControllerBase
             var success = await _roleService.DeleteRoleAsync(id);
             if (!success)
             {
-                return NotFound($"Роль з ID {{id}} не знайдено.");
+                return NotFound($"Роль з ID {id} не знайдено.");
             }
 
             return NoContent();
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при hard-видаленні Ролі з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при hard-видаленні Ролі з ID {id}: {ex.Message}");
         }
     }
 }

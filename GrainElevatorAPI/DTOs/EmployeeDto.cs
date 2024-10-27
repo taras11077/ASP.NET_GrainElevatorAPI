@@ -1,6 +1,6 @@
 ﻿namespace GrainElevatorAPI.DTOs;
 
-public class EmployeeDTO
+public class EmployeeDto
 {
     public int Id { get; set; }
     public string? FirstName { get; set; }

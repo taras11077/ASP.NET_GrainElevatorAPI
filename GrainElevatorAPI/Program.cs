@@ -12,6 +12,7 @@ using GrainElevatorAPI.Core.Models;
 using GrainElevatorAPI.Core.Security;
 using GrainElevatorAPI.Core.Services;
 using Serilog;
+using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,15 +28,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .WriteTo.MSSqlServer(
-        connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
-        sinkOptions: new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true })
-    .CreateLogger();
 
-builder.Logging.ClearProviders();
-builder.Logging.AddSerilog();
 
 builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddTransient<IAuthService, AuthService>();
@@ -50,8 +43,9 @@ builder.Services.AddTransient<IInvoiceRegisterService, InvoiceRegisterService>()
 
 builder.Services.AddTransient<IInputInvoice, InputInvoice>();
 builder.Services.AddTransient<ILaboratoryCard, LaboratoryCard>();
-builder.Services.AddTransient<IRegister, InvoiceRegister>();
-builder.Services.AddTransient<IProductionBatchCalculator, StandardProductionBatchCalculator>();
+builder.Services.AddTransient<IProductionBatch, ProductionBatch>();
+builder.Services.AddTransient<IInvoiceRegister, InvoiceRegister>();
+builder.Services.AddTransient<IRegisterCalculator, StandardRegisterCalculator>();
 
 builder.Services.AddControllers();
 
@@ -76,6 +70,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Debug)
+    .WriteTo.Console()
+    .WriteTo.MSSqlServer(
+        connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
+        sinkOptions: new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true },
+        restrictedToMinimumLevel: LogEventLevel.Error)  // Записує тільки Error і вище
+    .CreateLogger();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog();
+
 var app = builder.Build();
 
 // створення адміністратора під час запуску програми
@@ -89,7 +95,7 @@ using (var scope = app.Services.CreateScope())
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while creating the admin user.");
+        logger.LogError(ex, "Сталася помилка при створенні адміністратора.");
     }
 }
 
@@ -118,6 +124,7 @@ async Task EnsureAdminCreated(IServiceProvider services)
     var configuration = services.GetRequiredService<IConfiguration>();
     var roleService = services.GetRequiredService<IRoleService>();
     var authService = services.GetRequiredService<IAuthService>();
+    var logger = services.GetRequiredService<ILogger<Program>>();
 
     // отримання даних адміністратора з конфігурації
     var adminEmail = configuration["AdminSettings:AdminEmail"];
@@ -139,7 +146,7 @@ async Task EnsureAdminCreated(IServiceProvider services)
     var existingAdmin = await authService.FindByEmailAsync(adminEmail);
     if (existingAdmin != null)
     {
-        Console.WriteLine($"Адміністратор з email {adminEmail} вже існує. Продовження виконання програми.");
+        logger.LogInformation($"Адміністратор з email {adminEmail} вже існує. Продовження виконання програми.");
         return;
     }
 
@@ -147,10 +154,10 @@ async Task EnsureAdminCreated(IServiceProvider services)
     try
     {
         var adminEmployee = await authService.Register(adminEmail, adminPassword, adminRole.Id);
-        Console.WriteLine($"Адміністратор {adminEmployee.Email} успішно створений.");
+        logger.LogInformation($"Адміністратор {adminEmployee.Email} успішно створений.");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Сталася помилка при створенні адміністратора: {ex.Message}");
+        logger.LogError($"Сталася помилка при створенні адміністратора: {ex.Message}");
     }
 }

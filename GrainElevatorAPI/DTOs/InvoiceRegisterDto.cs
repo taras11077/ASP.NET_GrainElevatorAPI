@@ -2,7 +2,7 @@
 
 namespace GrainElevatorAPI.DTOs;
 
-public class InvoiceRegisterDTO
+public class InvoiceRegisterDto
 {
 	public int Id { get; set; }
 	

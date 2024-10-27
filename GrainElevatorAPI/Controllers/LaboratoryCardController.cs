@@ -15,11 +15,13 @@ public class LaboratoryCardController : ControllerBase
 {
     private readonly ILaboratoryCardService _laboratoryCardService;
     private readonly IMapper _mapper;
+    private readonly ILogger<LaboratoryCardController> _logger;
 
-    public LaboratoryCardController(ILaboratoryCardService laboratoryCardService, IMapper mapper)
+    public LaboratoryCardController(ILaboratoryCardService laboratoryCardService, IMapper mapper, ILogger<LaboratoryCardController> logger)
     {
         _laboratoryCardService = laboratoryCardService;
         _mapper = mapper;
+        _logger = logger;
     }
     
 
@@ -39,11 +41,12 @@ public class LaboratoryCardController : ControllerBase
             
             var createdLaboratoryCard = await _laboratoryCardService.AddLaboratoryCardAsync(newLaboratoryCard, createdById);
             return CreatedAtAction(nameof(GetLaboratoryCard), new { id = createdLaboratoryCard.Id },
-                _mapper.Map<LaboratoryCardDTO>(createdLaboratoryCard));
+                _mapper.Map<LaboratoryCardDto>(createdLaboratoryCard));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при створенні Лабораторної карточки: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при створенні Лабораторної карточки: {ex.Message}");
         }
     }
 
@@ -55,11 +58,12 @@ public class LaboratoryCardController : ControllerBase
         try
         {
             var laboratoryCards = _laboratoryCardService.GetLaboratoryCards(page, size);
-            return Ok(_mapper.Map<IEnumerable<LaboratoryCardDTO>>(laboratoryCards));
+            return Ok(_mapper.Map<IEnumerable<LaboratoryCardDto>>(laboratoryCards));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при отриманні всіх Лабораторних карточок: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при отриманні всіх Лабораторних карточок: {ex.Message}");
         }
     }
 
@@ -76,18 +80,19 @@ public class LaboratoryCardController : ControllerBase
                 return NotFound($"Лабораторної карточки з ID {id} не знайдено.");
             }
 
-            return Ok(_mapper.Map<LaboratoryCardDTO>(laboratoryCard));
+            return Ok(_mapper.Map<LaboratoryCardDto>(laboratoryCard));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при отриманні Лабораторної карточки з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при отриманні Лабораторної карточки з ID {id}: {ex.Message}");
         }
     }
 
     
     [HttpGet("search")]
     //[Authorize(Roles = "Admin, Laboratory")]
-    public ActionResult<IEnumerable<LaboratoryCardDTO>> SearchLaboratoryCards(
+    public ActionResult<IEnumerable<LaboratoryCardDto>> SearchLaboratoryCards(
         [FromQuery] int? id = null,
         [FromQuery] string? labCardNumber = null,
         [FromQuery] double? weedImpurity = null,
@@ -124,18 +129,19 @@ public class LaboratoryCardController : ControllerBase
                 page, 
                 size);
 
-            return Ok(_mapper.Map<IEnumerable<LaboratoryCardDTO>>(filteredLabCards));
+            return Ok(_mapper.Map<IEnumerable<LaboratoryCardDto>>(filteredLabCards));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при отриманні Лабораторної карточки за параметрами: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при отриманні Лабораторної карточки за параметрами: {ex.Message}");
         }
     }
     
 
     [HttpPut("{id}")]
     //[Authorize(Roles = "Admin, Laboratory")]
-    public async Task<IActionResult> PutLaboratoryCard(int id, LaboratoryCardUpdateRequest request)
+    public async Task<IActionResult> UpdateLaboratoryCard(int id, LaboratoryCardUpdateRequest request)
     {
         if (!ModelState.IsValid)
         {
@@ -154,11 +160,12 @@ public class LaboratoryCardController : ControllerBase
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             var updatedLaboratoryCard = await _laboratoryCardService.UpdateLaboratoryCardAsync(laboratoryCardDb, modifiedById);
             
-            return Ok(_mapper.Map<LaboratoryCardDTO>(updatedLaboratoryCard));
+            return Ok(_mapper.Map<LaboratoryCardDto>(updatedLaboratoryCard));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при при оновленні Лабораторної карточки з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при оновленні Лабораторної карточки з ID {id}: {ex.Message}");
         }
     }
     
@@ -178,11 +185,12 @@ public class LaboratoryCardController : ControllerBase
             var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             var removedLaboratoryCard = await _laboratoryCardService.SoftDeleteLaboratoryCardAsync(laboratoryCardDb, removedById);
             
-            return Ok(_mapper.Map<LaboratoryCardDTO>(removedLaboratoryCard));
+            return Ok(_mapper.Map<LaboratoryCardDto>(removedLaboratoryCard));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при soft-видаленні Лабораторної карточки з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при видаленні Лабораторної карточки з ID {id}: {ex.Message}");
         }
     }
     
@@ -202,11 +210,12 @@ public class LaboratoryCardController : ControllerBase
             var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             var restoredLaboratoryCard = await _laboratoryCardService.RestoreRemovedLaboratoryCardAsync(laboratoryCardDb, restoredById);
             
-            return Ok(_mapper.Map<LaboratoryCardDTO>(restoredLaboratoryCard));
+            return Ok(_mapper.Map<LaboratoryCardDto>(restoredLaboratoryCard));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при відновленні Лабораторної карточки з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при відновленні Лабораторної карточки з ID {id}: {ex.Message}");
         }
     }
     
@@ -227,7 +236,8 @@ public class LaboratoryCardController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при hard-видаленні Лабораторної карточки з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при hard-видаленні Лабораторної карточки з ID {id}: {ex.Message}");
         }
     }
 }

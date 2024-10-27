@@ -9,30 +9,30 @@ public class MapperProfile : Profile
 {
     public MapperProfile()
     {
-        CreateMap<Employee, EmployeeDTO>()
+        CreateMap<Employee, EmployeeDto>()
             // .ForMember(dest => dest.Nickname,
             //     opt => opt.MapFrom(
             //         src => src.UserName))  -  якщо назви полів моделі і ДТО не співпадають
             .ReverseMap();
 
         CreateMap<Employee, EmployeeRegisterRequest>().ReverseMap();
-        CreateMap<Role, RoleDTO>().ReverseMap();
+        CreateMap<Role, RoleDto>().ReverseMap();
         CreateMap<Role, RoleCreateRequest>().ReverseMap();;
         
-        CreateMap<Supplier, SupplierDTO>().ReverseMap();
+        CreateMap<Supplier, SupplierDto>().ReverseMap();
         CreateMap<Supplier, SupplierCreateRequest>().ReverseMap();
         
-        CreateMap<Product, ProductDTO>().ReverseMap();
+        CreateMap<Product, ProductDto>().ReverseMap();
         CreateMap<Product, ProductCreateRequest>().ReverseMap();
         
         CreateMap<InputInvoice, InputInvoiceCreateRequest>().ReverseMap();
         CreateMap<InputInvoice, InputInvoiceUpdateRequest>().ReverseMap();
-        CreateMap<InputInvoice, InputInvoiceDTO>().ReverseMap();
+        CreateMap<InputInvoice, InputInvoiceDto>().ReverseMap();
         
         CreateMap<LaboratoryCard, LaboratoryCardCreateRequest>().ReverseMap();
-        CreateMap<LaboratoryCard, LaboratoryCardDTO>().ReverseMap();
+        CreateMap<LaboratoryCard, LaboratoryCardDto>().ReverseMap();
         
         CreateMap<InvoiceRegister, InvoiceRegisterCreateRequest>().ReverseMap();
-        CreateMap<InvoiceRegister, InvoiceRegisterDTO>().ReverseMap();
+        CreateMap<InvoiceRegister, InvoiceRegisterDto>().ReverseMap();
     }
 }

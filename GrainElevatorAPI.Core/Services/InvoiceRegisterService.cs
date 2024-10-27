@@ -9,9 +9,9 @@ namespace GrainElevatorAPI.Core.Services;
 public class InvoiceRegisterService : IInvoiceRegisterService
 {
     private readonly IRepository _repository;
-    private readonly IProductionBatchCalculator _calculator;
+    private readonly IRegisterCalculator _calculator;
 
-    public InvoiceRegisterService(IRepository repository, IProductionBatchCalculator calculator)
+    public InvoiceRegisterService(IRepository repository, IRegisterCalculator calculator)
     {
         _repository = repository;
         _calculator = calculator;
@@ -63,13 +63,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
                 };
                 _calculator.CalcProductionBatch(labCard.InputInvoice, labCard, register, productionBatch);
                 
-                register.ProductionBatches.Add(productionBatch);
                 
-                register.PhysicalWeightReg += labCard.InputInvoice.PhysicalWeight;
-                register.ShrinkageReg += productionBatch.Shrinkage;
-                register.WasteReg += productionBatch.Waste;
-                register.AccWeightReg += productionBatch.AccountWeight;
-                register.QuantitiesDryingReg += productionBatch.QuantitiesDrying;  
             }
             
             // Оновлення register з ProductionBatches

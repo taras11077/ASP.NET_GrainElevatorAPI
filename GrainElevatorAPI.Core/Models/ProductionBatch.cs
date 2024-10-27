@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using GrainElevatorAPI.Core.Calculators.Impl;
+using GrainElevatorAPI.Core.Interfaces.ModelInterfaces;
 
 namespace GrainElevatorAPI.Core.Models;
 
-public class ProductionBatch
+public class ProductionBatch : IProductionBatch
 {
 	[Required(ErrorMessage = "Id is required.")]
 	[Range(1, int.MaxValue, ErrorMessage = "Id must be a positive number.")]

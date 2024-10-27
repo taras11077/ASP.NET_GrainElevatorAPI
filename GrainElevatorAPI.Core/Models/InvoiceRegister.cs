@@ -4,7 +4,7 @@ using GrainElevatorAPI.Core.Interfaces.ModelInterfaces;
 
 namespace GrainElevatorAPI.Core.Models;
 
-public class InvoiceRegister : IRegister
+public class InvoiceRegister : IInvoiceRegister
 {
 	[Required(ErrorMessage = "Id is required.")]
 	[Range(1, int.MaxValue, ErrorMessage = "Id must be a positive number.")]

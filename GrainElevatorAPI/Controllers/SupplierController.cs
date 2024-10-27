@@ -15,16 +15,18 @@ public class SupplierController : ControllerBase
 {
 	private readonly ISupplierService _supplierService;
 	private readonly IMapper _mapper;
+	private readonly ILogger<SupplierController> _logger;
 	
-	public SupplierController(ISupplierService supplierService, IMapper mapper)
+	public SupplierController(ISupplierService supplierService, IMapper mapper, ILogger<SupplierController> logger)
 	{
 		_supplierService = supplierService;
 		_mapper = mapper;
+		_logger = logger;
 	}
 
 
 	[HttpPost]
-	public async Task<ActionResult<Supplier>> PostSupplier(SupplierCreateRequest request)
+	public async Task<ActionResult<Supplier>> CreateSupplier(SupplierCreateRequest request)
 	{
 		if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -35,11 +37,12 @@ public class SupplierController : ControllerBase
 
 			var createdSupplier = await _supplierService.AddSupplierAsync(newSupplier, createdById);
 			return CreatedAtAction(nameof(GetSupplier), new { id = createdSupplier.Id },
-				_mapper.Map<SupplierDTO>(createdSupplier));
+				_mapper.Map<SupplierDto>(createdSupplier));
 		}
 		catch (Exception ex)
 		{
-			return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+			_logger.LogError($"Внутрішня помилка сервера при створенні Постачальника: {ex.Message}");
+			return StatusCode(500, $"Внутрішня помилка сервера при створенні Постачальника: {ex.Message}");
 		}
 	}
 
@@ -50,11 +53,12 @@ public class SupplierController : ControllerBase
 		try
 		{
 			var suppliers = _supplierService.GetSuppliers(page, size);
-			return Ok(_mapper.Map<IEnumerable<SupplierDTO>>(suppliers));
+			return Ok(_mapper.Map<IEnumerable<SupplierDto>>(suppliers));
 		}
 		catch (Exception ex)
 		{
-			return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+			_logger.LogError($"Внутрішня помилка сервера при отриманні всіх Постачальників: {ex.Message}");
+			return StatusCode(500, $"Внутрішня помилка сервера при отриманні всіх Постачальників: {ex.Message}");
 		}
 	}
 
@@ -67,11 +71,12 @@ public class SupplierController : ControllerBase
 			var supplier = await _supplierService.GetSupplierByIdAsync(id);
 			if (supplier == null) return NotFound($"Постачальника з ID {id} не знайдено.");
 			
-			return Ok(_mapper.Map<SupplierDTO>(supplier));
+			return Ok(_mapper.Map<SupplierDto>(supplier));
 		}
 		catch (Exception ex)
 		{
-			return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+			_logger.LogError($"Внутрішня помилка сервера при отриманні Постачальника з ID {id}: {ex.Message}");
+			return StatusCode(500, $"Внутрішня помилка сервера при отриманні Постачальника з ID {id}: {ex.Message}");
 		}
 	}
 
@@ -81,17 +86,18 @@ public class SupplierController : ControllerBase
 		try
 		{
 			var suppliers = _supplierService.SearchSupplier(title);
-			return Ok(_mapper.Map<IEnumerable<SupplierDTO>>(suppliers));
+			return Ok(_mapper.Map<IEnumerable<SupplierDto>>(suppliers));
 		}
 		catch (Exception ex)
 		{
-			return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+			_logger.LogError($"Внутрішня помилка сервера при отриманні Постачальника за назвою: {ex.Message}");
+			return StatusCode(500, $"Внутрішня помилка сервера при отриманні Постачальника за назвою: {ex.Message}");
 		}
 	}
 	
 	
 	[HttpPut("{id}")]
-	public async Task<IActionResult> PutSupplier(int id, SupplierCreateRequest request)
+	public async Task<IActionResult> UpdateSupplier(int id, SupplierCreateRequest request)
 	{
 		if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -104,11 +110,12 @@ public class SupplierController : ControllerBase
 			var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
 			var updatedSupplier = await _supplierService.UpdateSupplierAsync(supplierDb, modifiedById);
 			
-			return Ok(_mapper.Map<SupplierDTO>(updatedSupplier));
+			return Ok(_mapper.Map<SupplierDto>(updatedSupplier));
 		}
 		catch (Exception ex)
 		{
-			return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+			_logger.LogError($"Внутрішня помилка сервера при оновленні Постачальника з ID {id}: {ex.Message}");
+			return StatusCode(500, $"Внутрішня помилка сервера при оновленні Постачальника з ID {id}: {ex.Message}");
 		}
 	}
 
@@ -125,11 +132,12 @@ public class SupplierController : ControllerBase
 			var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
 			var removedSupplier = await _supplierService.SoftDeleteSupplierAsync(supplierDb, removedById);
 			
-			return Ok(_mapper.Map<SupplierDTO>(removedSupplier));
+			return Ok(_mapper.Map<SupplierDto>(removedSupplier));
 		}
 		catch (Exception ex)
 		{
-			return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+			_logger.LogError($"Внутрішня помилка сервера при soft-видаленні Постачальника з ID {id}: {ex.Message}");
+			return StatusCode(500, $"Внутрішня помилка сервера при видаленні Постачальника з ID {id}: {ex.Message}");
 		}
 	}
 
@@ -141,16 +149,17 @@ public class SupplierController : ControllerBase
 		try
 		{
 			var supplierDb = await _supplierService.GetSupplierByIdAsync(id);
-			if (supplierDb == null) return NotFound($"ППостачальника з ID {id} не знайдено.");
+			if (supplierDb == null) return NotFound($"Постачальника з ID {id} не знайдено.");
 			
 			var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
 			var restoredSupplier = await _supplierService.RestoreRemovedSupplierAsync(supplierDb, restoredById);
 			
-			return Ok(_mapper.Map<SupplierDTO>(restoredSupplier));
+			return Ok(_mapper.Map<SupplierDto>(restoredSupplier));
 		}
 		catch (Exception ex)
 		{
-			return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+			_logger.LogError($"Внутрішня помилка сервера при відновленні Постачальника з ID {id}: {ex.Message}");
+			return StatusCode(500, $"Внутрішня помилка сервера при відновленні Постачальника з ID {id}: {ex.Message}");
 		}
 	}
 	
@@ -167,7 +176,8 @@ public class SupplierController : ControllerBase
 		}
 		catch (Exception ex)
 		{
-			return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+			_logger.LogError($"Внутрішня помилка сервера при hard-видаленні Постачальника з ID {id}: {ex.Message}");
+			return StatusCode(500, $"Внутрішня помилка сервера при hard-видаленні Постачальника з ID {id}: {ex.Message}");
 		}
 	}
 	

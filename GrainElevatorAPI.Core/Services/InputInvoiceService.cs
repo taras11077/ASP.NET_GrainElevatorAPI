@@ -1,16 +1,19 @@
 ﻿using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
+using Microsoft.Extensions.Logging;
 
 namespace GrainElevatorAPI.Core.Services;
 
 public class InputInvoiceService : IInputInvoiceService
 {
     private readonly IRepository _repository;
+    private readonly ILogger<InputInvoiceService> _logger;
 
-    public InputInvoiceService(IRepository repository)
+    public InputInvoiceService(IRepository repository, ILogger<InputInvoiceService> logger)
     {
         _repository = repository;
+        _logger = logger;
     }
     
     
