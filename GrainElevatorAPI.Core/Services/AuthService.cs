@@ -40,7 +40,7 @@ public class AuthService : IAuthService
             RoleId = roleId,
         };
     
-        await _repository.Add(newEmployee);
+        await _repository.AddAsync(newEmployee);
     
         return newEmployee;
     }
@@ -64,7 +64,7 @@ public class AuthService : IAuthService
         
         // оновлення часу останнього відвідування
         employee.LastSeenOnline = DateTime.UtcNow;
-        await _repository.Update(employee);
+        await _repository.UpdateAsync(employee);
     
         return employee;
     }

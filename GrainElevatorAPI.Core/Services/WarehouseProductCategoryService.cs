@@ -19,7 +19,7 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
             warehouseProductCategory.CreatedAt = DateTime.UtcNow;
             warehouseProductCategory.CreatedById = createdById;
             
-            return await _repository.Add(warehouseProductCategory);
+            return await _repository.AddAsync(warehouseProductCategory);
         }
         catch (Exception ex)
         {
@@ -45,7 +45,7 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
     {
         try
         {
-            return await _repository.GetById<WarehouseProductCategory>(id);
+            return await _repository.GetByIdAsync<WarehouseProductCategory>(id);
         }
         catch (Exception ex)
         {
@@ -105,7 +105,7 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
             warehouseProductCategory.ModifiedAt = DateTime.UtcNow;
             warehouseProductCategory.ModifiedById = modifiedById;
             
-            return await _repository.Update(warehouseProductCategory);
+            return await _repository.UpdateAsync(warehouseProductCategory);
         }
         catch (Exception ex)
         {
@@ -120,7 +120,7 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
             warehouseProductCategory.RemovedAt = DateTime.UtcNow;
             warehouseProductCategory.RemovedById = removedById;
             
-            return await _repository.Update(warehouseProductCategory);
+            return await _repository.UpdateAsync(warehouseProductCategory);
         }
         catch (Exception ex)
         {
@@ -136,7 +136,7 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
             warehouseProductCategory.RestoredAt = DateTime.UtcNow;
             warehouseProductCategory.RestoreById = restoredById;
             
-            return await _repository.Update(warehouseProductCategory);
+            return await _repository.UpdateAsync(warehouseProductCategory);
         }
         catch (Exception ex)
         {
@@ -148,10 +148,10 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
     {
         try
         {
-            var warehouseProductCategory = await _repository.GetById<WarehouseProductCategory>(id);
+            var warehouseProductCategory = await _repository.GetByIdAsync<WarehouseProductCategory>(id);
             if (warehouseProductCategory != null)
             {
-                await _repository.Delete<WarehouseProductCategory>(id);
+                await _repository.DeleteAsync<WarehouseProductCategory>(id);
                 return true;
             }
             return false;

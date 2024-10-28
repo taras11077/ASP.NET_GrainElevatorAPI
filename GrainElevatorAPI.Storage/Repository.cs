@@ -12,7 +12,7 @@ public class Repository : IRepository
         _context = context;
     }
 
-    public async Task<T> Add<T>(T entity) where T : class
+    public async Task<T> AddAsync<T>(T entity) where T : class
     {
         var entityFromFb = _context.Set<T>().Add(entity);
         await _context.SaveChangesAsync();
@@ -20,14 +20,14 @@ public class Repository : IRepository
         return entityFromFb.Entity;
     }
 
-    public async Task<T> Update<T>(T entity) where T : class
+    public async Task<T> UpdateAsync<T>(T entity) where T : class
     {
         var updated = _context.Update(entity);
         await _context.SaveChangesAsync();
         return updated.Entity;
     }
 
-    public async Task Delete<T>(int id) where T : class
+    public async Task DeleteAsync<T>(int id) where T : class
     {
         var entity = await _context.Set<T>().FindAsync(id);
         if (entity != null)
@@ -41,7 +41,7 @@ public class Repository : IRepository
         }
     }
 
-    public async Task<T> GetById<T>(int id) where T : class
+    public async Task<T> GetByIdAsync<T>(int id) where T : class
     {
         return await _context.Set<T>().FindAsync(id);
     }

@@ -24,7 +24,7 @@ public class InputInvoiceService : IInputInvoiceService
             inputInvoice.CreatedAt = DateTime.UtcNow;
             inputInvoice.CreatedById = createdById;
             
-            return await _repository.Add(inputInvoice);
+            return await _repository.AddAsync(inputInvoice);
         }
         catch (Exception ex)
         {
@@ -50,7 +50,7 @@ public class InputInvoiceService : IInputInvoiceService
     {
         try
         {
-            return await _repository.GetById<InputInvoice>(id);
+            return await _repository.GetByIdAsync<InputInvoice>(id);
         }
         catch (Exception ex)
         {
@@ -115,7 +115,7 @@ public class InputInvoiceService : IInputInvoiceService
             inputInvoice.ModifiedAt = DateTime.UtcNow;
             inputInvoice.ModifiedById = modifiedById;
             
-            return await _repository.Update(inputInvoice);
+            return await _repository.UpdateAsync(inputInvoice);
         }
         catch (Exception ex)
         {
@@ -130,7 +130,7 @@ public class InputInvoiceService : IInputInvoiceService
             inputInvoice.RemovedAt = DateTime.UtcNow;
             inputInvoice.RemovedById = removedById;
             
-            return await _repository.Update(inputInvoice);
+            return await _repository.UpdateAsync(inputInvoice);
         }
         catch (Exception ex)
         {
@@ -146,7 +146,7 @@ public class InputInvoiceService : IInputInvoiceService
             inputInvoice.RestoredAt = DateTime.UtcNow;
             inputInvoice.RestoreById = restoredById;
             
-            return await _repository.Update(inputInvoice);
+            return await _repository.UpdateAsync(inputInvoice);
         }
         catch (Exception ex)
         {
@@ -158,10 +158,10 @@ public class InputInvoiceService : IInputInvoiceService
     {
         try
         {
-            var supplier = await _repository.GetById<InputInvoice>(id);
+            var supplier = await _repository.GetByIdAsync<InputInvoice>(id);
             if (supplier != null)
             {
-                await _repository.Delete<InputInvoice>(id);
+                await _repository.DeleteAsync<InputInvoice>(id);
                 return true;
             }
             return false;

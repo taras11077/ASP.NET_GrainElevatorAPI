@@ -20,7 +20,7 @@ public class ProductService : IProductService
             product.CreatedAt = DateTime.UtcNow;
             product.CreatedById = createdById;
             
-            return await _repository.Add(product);
+            return await _repository.AddAsync(product);
         }
         catch (Exception ex)
         {
@@ -47,7 +47,7 @@ public class ProductService : IProductService
     {
         try
         {
-            return await _repository.GetById<Product>(id);
+            return await _repository.GetByIdAsync<Product>(id);
         }
         catch (Exception ex)
         {
@@ -76,7 +76,7 @@ public class ProductService : IProductService
             product.ModifiedAt = DateTime.UtcNow;
             product.ModifiedById = modifiedById;
             
-            return await _repository.Update(product);
+            return await _repository.UpdateAsync(product);
         }
         catch (Exception ex)
         {
@@ -91,7 +91,7 @@ public class ProductService : IProductService
             product.RemovedAt = DateTime.UtcNow;
             product.RemovedById = removedById;
             
-            return await _repository.Update(product);
+            return await _repository.UpdateAsync(product);
         }
         catch (Exception ex)
         {
@@ -107,7 +107,7 @@ public class ProductService : IProductService
             product.RestoredAt = DateTime.UtcNow;
             product.RestoreById = restoredById;
             
-            return await _repository.Update(product);
+            return await _repository.UpdateAsync(product);
         }
         catch (Exception ex)
         {
@@ -119,10 +119,10 @@ public class ProductService : IProductService
     {
         try
         {
-            var product = await _repository.GetById<Product>(id);
+            var product = await _repository.GetByIdAsync<Product>(id);
             if (product != null)
             {
-                await _repository.Delete<Product>(id);
+                await _repository.DeleteAsync<Product>(id);
                 return true;
             }
             return false;

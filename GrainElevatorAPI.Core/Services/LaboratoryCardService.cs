@@ -19,7 +19,7 @@ public class LaboratoryCardService : ILaboratoryCardService
             laboratoryCard.CreatedAt = DateTime.UtcNow;
             laboratoryCard.CreatedById = createdById;
             
-            return await _repository.Add(laboratoryCard);
+            return await _repository.AddAsync(laboratoryCard);
         }
         catch (Exception ex)
         {
@@ -43,7 +43,7 @@ public class LaboratoryCardService : ILaboratoryCardService
     {
         try
         {
-            return await _repository.GetById<LaboratoryCard>(id);
+            return await _repository.GetByIdAsync<LaboratoryCard>(id);
         }
         catch (Exception ex)
         {
@@ -130,7 +130,7 @@ public class LaboratoryCardService : ILaboratoryCardService
             laboratoryCard.ModifiedAt = DateTime.UtcNow;
             laboratoryCard.ModifiedById = modifiedById;
             
-            return await _repository.Update(laboratoryCard);
+            return await _repository.UpdateAsync(laboratoryCard);
         }
         catch (Exception ex)
         {
@@ -145,7 +145,7 @@ public class LaboratoryCardService : ILaboratoryCardService
             laboratoryCard.RemovedAt = DateTime.UtcNow;
             laboratoryCard.RemovedById = removedById;
             
-            return await _repository.Update(laboratoryCard);
+            return await _repository.UpdateAsync(laboratoryCard);
         }
         catch (Exception ex)
         {
@@ -161,7 +161,7 @@ public class LaboratoryCardService : ILaboratoryCardService
             laboratoryCard.RestoredAt = DateTime.UtcNow;
             laboratoryCard.RestoreById = restoredById;
             
-            return await _repository.Update(laboratoryCard);
+            return await _repository.UpdateAsync(laboratoryCard);
         }
         catch (Exception ex)
         {
@@ -173,10 +173,10 @@ public class LaboratoryCardService : ILaboratoryCardService
     {
         try
         {
-            var laboratoryCard = await _repository.GetById<LaboratoryCard>(id);
+            var laboratoryCard = await _repository.GetByIdAsync<LaboratoryCard>(id);
             if (laboratoryCard != null)
             {
-                await _repository.Delete<LaboratoryCard>(id);
+                await _repository.DeleteAsync<LaboratoryCard>(id);
                 return true;
             }
             return false;

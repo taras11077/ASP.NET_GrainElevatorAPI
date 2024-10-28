@@ -13,14 +13,16 @@ namespace GrainElevatorAPI.Controllers;
 public class InvoiceRegisterController : ControllerBase
 {
     private readonly IInvoiceRegisterService _invoiceRegisterService;
+    private readonly IWarehouseUnitService _warehouseUnitService;
     private readonly IMapper _mapper;
     private readonly ILogger<InvoiceRegisterController> _logger;
 
-    public InvoiceRegisterController(IInvoiceRegisterService invoiceRegisterService, IMapper mapper, ILogger<InvoiceRegisterController> logger)
+    public InvoiceRegisterController(IInvoiceRegisterService invoiceRegisterService, IMapper mapper, ILogger<InvoiceRegisterController> logger, IWarehouseUnitService warehouseUnitService)
     {
         _invoiceRegisterService = invoiceRegisterService;
         _mapper = mapper;
         _logger = logger;
+        _warehouseUnitService = warehouseUnitService;
     }
     
     
@@ -38,6 +40,7 @@ public class InvoiceRegisterController : ControllerBase
 
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
         
+            // створення Реєстру (доробка продукції)
             var createdRegister = await _invoiceRegisterService.CreateRegisterAsync(
                 request.SupplierId,
                 request.ProductId,
@@ -46,6 +49,9 @@ public class InvoiceRegisterController : ControllerBase
                 request.MoistureBase,
                 request.LaboratoryCardIds,
                 createdById);
+            
+            // створення Складського юніту (переміщення на склад)
+            await  _warehouseUnitService.WarehouseTransferAsync(createdRegister.Id, createdById);
             
             return CreatedAtAction(nameof(GetRegisters), new { id = createdRegister.Id },
                 _mapper.Map<InvoiceRegisterDto>(createdRegister));

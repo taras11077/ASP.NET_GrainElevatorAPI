@@ -10,7 +10,7 @@ public interface IInvoiceRegisterService
         DateTime arrivalDate,
         double weedImpurityBase,
         double moistureBase,
-        List<int> laboratoryCardIds,
+        IEnumerable<int> laboratoryCardIds,
         int createdById);
     Task<InvoiceRegister> GetRegisterByIdAsync(int id);
     Task<InvoiceRegister> UpdateRegisterAsync(InvoiceRegister invoiceRegister);

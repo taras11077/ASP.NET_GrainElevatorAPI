@@ -23,7 +23,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         DateTime arrivalDate, 
         double weedImpurityBase, 
         double moistureBase, 
-        List<int> laboratoryCardIds, 
+        IEnumerable<int> laboratoryCardIds, 
         int createdById)
     {
         try
@@ -51,7 +51,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
             };
             
             // Збереження register без виробничих партій
-            await _repository.Add(register);
+            await _repository.AddAsync(register);
 
             foreach (var labCard in laboratoryCards)
             {
@@ -67,7 +67,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
             }
             
             // Оновлення register з ProductionBatches
-            return await _repository.Update(register);
+            return await _repository.UpdateAsync(register);
         }
         catch (Exception ex)
         {
@@ -86,7 +86,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
     {
         try
         {
-            return await _repository.GetById<InvoiceRegister>(id);
+            return await _repository.GetByIdAsync<InvoiceRegister>(id);
         }
         catch (Exception ex)
         {
@@ -98,7 +98,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
     {
         try
         {
-            return await _repository.Update(invoiceRegister);
+            return await _repository.UpdateAsync(invoiceRegister);
         }
         catch (Exception ex)
         {
@@ -110,10 +110,10 @@ public class InvoiceRegisterService : IInvoiceRegisterService
     {
         try
         {
-            var register = await _repository.GetById<InvoiceRegister>(id);
+            var register = await _repository.GetByIdAsync<InvoiceRegister>(id);
             if (register != null)
             {
-                await _repository.Delete<InvoiceRegister>(id);
+                await _repository.DeleteAsync<InvoiceRegister>(id);
                 return true;
             }
 

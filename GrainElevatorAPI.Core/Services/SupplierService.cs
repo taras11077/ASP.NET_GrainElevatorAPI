@@ -21,7 +21,7 @@ public class SupplierService : ISupplierService
             supplier.CreatedAt = DateTime.UtcNow;
             supplier.CreatedById = createdById;
             
-            return await _repository.Add(supplier);
+            return await _repository.AddAsync(supplier);
         }
         catch (Exception ex)
         {
@@ -48,7 +48,7 @@ public class SupplierService : ISupplierService
     {
         try
         {
-            return await _repository.GetById<Supplier>(id);
+            return await _repository.GetByIdAsync<Supplier>(id);
         }
         catch (Exception ex)
         {
@@ -77,7 +77,7 @@ public class SupplierService : ISupplierService
             supplier.ModifiedAt = DateTime.UtcNow;
             supplier.ModifiedById = modifiedById;
             
-            return await _repository.Update(supplier);
+            return await _repository.UpdateAsync(supplier);
         }
         catch (Exception ex)
         {
@@ -92,7 +92,7 @@ public class SupplierService : ISupplierService
             supplier.RemovedAt = DateTime.UtcNow;
             supplier.RemovedById = removedById;
             
-            return await _repository.Update(supplier);
+            return await _repository.UpdateAsync(supplier);
         }
         catch (Exception ex)
         {
@@ -108,7 +108,7 @@ public class SupplierService : ISupplierService
             supplier.RestoredAt = DateTime.UtcNow;
             supplier.RestoreById = restoredById;
             
-            return await _repository.Update(supplier);
+            return await _repository.UpdateAsync(supplier);
         }
         catch (Exception ex)
         {
@@ -120,10 +120,10 @@ public class SupplierService : ISupplierService
     {
         try
         {
-            var supplier = await _repository.GetById<Supplier>(id);
+            var supplier = await _repository.GetByIdAsync<Supplier>(id);
             if (supplier != null)
             {
-                await _repository.Delete<Supplier>(id);
+                await _repository.DeleteAsync<Supplier>(id);
                 return true;
             }
             return false;

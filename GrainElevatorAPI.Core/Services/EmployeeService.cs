@@ -22,7 +22,7 @@ public class EmployeeService : IEmployeeService
     {
         try
         {
-            return await _repository.GetById<Employee>(id);
+            return await _repository.GetByIdAsync<Employee>(id);
         }
         catch (Exception ex)
         {
@@ -69,7 +69,7 @@ public class EmployeeService : IEmployeeService
             employee.ModifiedAt = DateTime.UtcNow;
             employee.ModifiedById = modifiedById;
             
-            return await _repository.Update(employee);
+            return await _repository.UpdateAsync(employee);
         }
         catch (Exception ex)
         {
@@ -84,7 +84,7 @@ public class EmployeeService : IEmployeeService
             employee.RemovedAt = DateTime.UtcNow;
             employee.RemovedById = removedById;
             
-            return await _repository.Update(employee);
+            return await _repository.UpdateAsync(employee);
         }
         catch (Exception ex)
         {
@@ -100,7 +100,7 @@ public class EmployeeService : IEmployeeService
             employee.RestoredAt = DateTime.UtcNow;
             employee.RestoreById = restoredById;
             
-            return await _repository.Update(employee);
+            return await _repository.UpdateAsync(employee);
         }
         catch (Exception ex)
         {
@@ -112,10 +112,10 @@ public class EmployeeService : IEmployeeService
     {
         try
         {
-            var employee = await _repository.GetById<Employee>(id);
+            var employee = await _repository.GetByIdAsync<Employee>(id);
             if (employee != null)
             {
-                await _repository.Delete<Employee>(id);
+                await _repository.DeleteAsync<Employee>(id);
                 return true;
             }
             return false;

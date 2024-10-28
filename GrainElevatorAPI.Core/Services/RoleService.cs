@@ -19,7 +19,7 @@ public class RoleService : IRoleService
         try
         {
             role.CreatedAt = DateTime.UtcNow;
-            return await _repository.Add(role);
+            return await _repository.AddAsync(role);
         }
         catch (Exception ex)
         {
@@ -37,7 +37,7 @@ public class RoleService : IRoleService
             if (createdById.HasValue)
                 role.CreatedById = createdById;
             
-            return await _repository.Add(role);
+            return await _repository.AddAsync(role);
         }
         catch (Exception ex)
         {
@@ -49,7 +49,7 @@ public class RoleService : IRoleService
     {
         try
         {
-            return await _repository.GetById<Role>(id);
+            return await _repository.GetByIdAsync<Role>(id);
         }
         catch (Exception ex)
         {
@@ -107,7 +107,7 @@ public class RoleService : IRoleService
             role.ModifiedAt = DateTime.UtcNow;
             role.ModifiedById = modifiedById;
             
-            return await _repository.Update(role);
+            return await _repository.UpdateAsync(role);
         }
         catch (Exception ex)
         {
@@ -122,7 +122,7 @@ public class RoleService : IRoleService
             role.RemovedAt = DateTime.UtcNow;
             role.RemovedById = removedById;
             
-            return await _repository.Update(role);
+            return await _repository.UpdateAsync(role);
         }
         catch (Exception ex)
         {
@@ -138,7 +138,7 @@ public class RoleService : IRoleService
             role.RestoredAt = DateTime.UtcNow;
             role.RestoreById = restoredById;
             
-            return await _repository.Update(role);
+            return await _repository.UpdateAsync(role);
         }
         catch (Exception ex)
         {
@@ -150,10 +150,10 @@ public class RoleService : IRoleService
     {
         try
         {
-            var role = await _repository.GetById<Role>(id);
+            var role = await _repository.GetByIdAsync<Role>(id);
             if (role != null)
             {
-                await _repository.Delete<Role>(id);
+                await _repository.DeleteAsync<Role>(id);
                 return true;
             }
             return false;

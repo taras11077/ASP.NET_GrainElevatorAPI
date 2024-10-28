@@ -24,6 +24,7 @@ public class InvoiceRegisterDto
 
 	public double? QuantitiesDryingReg { get; set; }
 	
+	public List<ProductionBatch> ProductionBatches { get; set; } = new List<ProductionBatch>();
 	
 	public int SupplierId { get; set; }
 	
@@ -48,5 +49,4 @@ public class InvoiceRegisterDto
 	public int? RemovedById { get; set; }
 
 	public int? RestoreById { get; set; }
-
 }
