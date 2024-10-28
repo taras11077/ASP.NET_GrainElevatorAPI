@@ -12,7 +12,7 @@ public class OutputInvoice : AuditableEntity, IOutputInvoice
 
 	[MinLength(3, ErrorMessage = "InvoiceNumber must be at least 3 characters long.")]
 	[MaxLength(9, ErrorMessage = "InvoiceNumber must be at least 9 characters long.")]
-	public string InvoiceNumber { get; set; }
+	public required string InvoiceNumber { get; set; }
 
 	[DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
 	[Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "ShipmentDate must be between 1900 and 2024.")]
@@ -25,7 +25,7 @@ public class OutputInvoice : AuditableEntity, IOutputInvoice
 
 	[MinLength(2, ErrorMessage = "ProductCategory must be at least 2 characters long.")]
 	[MaxLength(20, ErrorMessage = "ProductCategory must be at least 20 characters long.")]
-	public string ProductCategory { get; set; }
+	public required string ProductCategory { get; set; }
 
 	[Required(ErrorMessage = "ProductWeight is required.")]
 	[Range(1, int.MaxValue, ErrorMessage = "ProductWeight must be a positive number.")]
@@ -42,7 +42,7 @@ public class OutputInvoice : AuditableEntity, IOutputInvoice
 	[Range(1, int.MaxValue, ErrorMessage = "WarehouseUnitId must be a positive number.")]
 	public int WarehouseUnitId { get; set; }
 	
-	public virtual Supplier Supplier { get; set; }
-	public virtual Product Product { get; set; }
-	public virtual WarehouseUnit WarehouseUnit { get; set; }
+	public virtual required Supplier Supplier { get; set; }
+	public virtual required Product Product { get; set; }
+	public virtual required WarehouseUnit WarehouseUnit { get; set; }
 }

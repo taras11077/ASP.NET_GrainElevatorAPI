@@ -16,6 +16,7 @@ public class MapperProfile : Profile
             .ReverseMap();
 
         CreateMap<Employee, EmployeeRegisterRequest>().ReverseMap();
+        
         CreateMap<Role, RoleDto>().ReverseMap();
         CreateMap<Role, RoleCreateRequest>().ReverseMap();;
         
@@ -30,9 +31,15 @@ public class MapperProfile : Profile
         CreateMap<InputInvoice, InputInvoiceDto>().ReverseMap();
         
         CreateMap<LaboratoryCard, LaboratoryCardCreateRequest>().ReverseMap();
+        CreateMap<LaboratoryCard, LaboratoryCardUpdateRequest>().ReverseMap();
         CreateMap<LaboratoryCard, LaboratoryCardDto>().ReverseMap();
         
         CreateMap<InvoiceRegister, InvoiceRegisterCreateRequest>().ReverseMap();
+        CreateMap<InvoiceRegister, InvoiceRegisterUpdateRequest>().ReverseMap();
         CreateMap<InvoiceRegister, InvoiceRegisterDto>().ReverseMap();
+        
+        CreateMap<WarehouseProductCategory, WarehouseProductCategoryCreateRequest>().ReverseMap();
+        CreateMap<WarehouseProductCategory, WarehouseProductCategoryUpdateRequest>().ReverseMap();
+        CreateMap<WarehouseProductCategory, WarehouseProductCategoryDto>().ReverseMap();
     }
 }

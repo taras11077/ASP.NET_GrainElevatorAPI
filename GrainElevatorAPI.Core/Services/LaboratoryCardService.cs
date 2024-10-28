@@ -165,7 +165,7 @@ public class LaboratoryCardService : ILaboratoryCardService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при відновленні Вхідної накладної з ID  {laboratoryCard.Id}", ex);
+            throw new Exception($"Помилка при відновленні Лабораторної карточки з ID  {laboratoryCard.Id}", ex);
         }
     }
     

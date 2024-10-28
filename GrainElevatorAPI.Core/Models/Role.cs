@@ -18,9 +18,9 @@ public class Role : AuditableEntity, IRole
 }
 
 
-// admin
+// Admin
 // CEO
-// laboratory
-// technologist
-// accountant
+// Laboratory
+// Technologist
+// Accountant
 // HR
