@@ -24,6 +24,7 @@ public class Repository : IRepository
     {
         var updated = _context.Update(entity);
         await _context.SaveChangesAsync();
+        
         return updated.Entity;
     }
 

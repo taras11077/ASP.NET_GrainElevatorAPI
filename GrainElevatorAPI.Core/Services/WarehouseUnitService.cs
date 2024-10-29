@@ -35,10 +35,10 @@ public class WarehouseUnitService: IWarehouseUnitService
             {
                 warehouseUnit = new WarehouseUnit()
                 {
+                    SupplierId = register.SupplierId,
+                    ProductId = register.ProductId,
                     CreatedAt = DateTime.UtcNow,
                     CreatedById = createdById,
-                    Supplier = register.Supplier, // ініціалізація навігаційних властивостей
-                    Product = register.Product,
                     ProductCategories = new List<WarehouseProductCategory>
                     {
                         new WarehouseProductCategory("Кондиційна продукція") { Value = register.AccWeightReg },

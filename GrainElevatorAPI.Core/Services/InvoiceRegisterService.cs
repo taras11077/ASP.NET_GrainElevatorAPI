@@ -61,9 +61,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
                     CreatedAt = DateTime.UtcNow,
                     CreatedById = createdById
                 };
-                _calculator.CalcProductionBatch(labCard.InputInvoice, labCard, register, productionBatch);
-                
-                
+                register = (InvoiceRegister)_calculator.CalcProductionBatch(labCard.InputInvoice, labCard, register, productionBatch);
             }
             
             // Оновлення register з ProductionBatches

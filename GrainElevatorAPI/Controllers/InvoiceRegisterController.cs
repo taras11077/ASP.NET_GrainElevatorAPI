@@ -17,12 +17,12 @@ public class InvoiceRegisterController : ControllerBase
     private readonly IMapper _mapper;
     private readonly ILogger<InvoiceRegisterController> _logger;
 
-    public InvoiceRegisterController(IInvoiceRegisterService invoiceRegisterService, IMapper mapper, ILogger<InvoiceRegisterController> logger, IWarehouseUnitService warehouseUnitService)
+    public InvoiceRegisterController(IInvoiceRegisterService invoiceRegisterService , IWarehouseUnitService warehouseUnitService, IMapper mapper, ILogger<InvoiceRegisterController> logger)
     {
         _invoiceRegisterService = invoiceRegisterService;
+        _warehouseUnitService = warehouseUnitService;
         _mapper = mapper;
         _logger = logger;
-        _warehouseUnitService = warehouseUnitService;
     }
     
     

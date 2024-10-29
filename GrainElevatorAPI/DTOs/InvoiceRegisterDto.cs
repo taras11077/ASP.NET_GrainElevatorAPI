@@ -24,7 +24,7 @@ public class InvoiceRegisterDto
 
 	public double? QuantitiesDryingReg { get; set; }
 	
-	public List<ProductionBatch> ProductionBatches { get; set; } = new List<ProductionBatch>();
+	public List<ProductionBatchDto> ProductionBatches { get; set; }
 	
 	public int SupplierId { get; set; }
 	

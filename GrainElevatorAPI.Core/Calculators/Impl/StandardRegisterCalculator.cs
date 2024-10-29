@@ -3,22 +3,26 @@ using GrainElevatorAPI.Core.Models;
 
 namespace GrainElevatorAPI.Core.Calculators.Impl;
 
-public class StandardRegisterCalculator : IRegisterCalculator 
+public class StandardRegisterCalculator : IRegisterCalculator
 {
-    public void CalcProductionBatch(IInputInvoice inputInvoice, ILaboratoryCard laboratoryCard, IInvoiceRegister invoiceRegister, IProductionBatch productionBatch)
+    public IInvoiceRegister CalcProductionBatch(IInputInvoice inputInvoice, ILaboratoryCard laboratoryCard,
+        IInvoiceRegister invoiceRegister, IProductionBatch productionBatch)
     {
         if (inputInvoice.PhysicalWeight <= 0)
-            throw new ArgumentException("Physical weight must be greater than zero.", nameof(inputInvoice.PhysicalWeight));
+            throw new ArgumentException("Physical weight must be greater than zero.",
+                nameof(inputInvoice.PhysicalWeight));
 
         // розрахунок втрати ваги при очищенні (Waste)
-        productionBatch.Waste = laboratoryCard.WeedImpurity <= invoiceRegister.WeedImpurityBase 
-            ? 0 
-            : (int)(inputInvoice.PhysicalWeight * (1 - (100 - laboratoryCard.WeedImpurity) / (100 - invoiceRegister.WeedImpurityBase)));
+        productionBatch.Waste = laboratoryCard.WeedImpurity <= invoiceRegister.WeedImpurityBase
+            ? 0
+            : (int)(inputInvoice.PhysicalWeight *
+                    (1 - (100 - laboratoryCard.WeedImpurity) / (100 - invoiceRegister.WeedImpurityBase)));
 
         // розрахунок втрати ваги при сушінні (Shrinkage)
         productionBatch.Shrinkage = laboratoryCard.Moisture <= invoiceRegister.MoistureBase
             ? 0
-            : (int)((inputInvoice.PhysicalWeight - productionBatch.Waste) * (1 - (100 - laboratoryCard.Moisture) / (100 - invoiceRegister.MoistureBase)));
+            : (int)((inputInvoice.PhysicalWeight - productionBatch.Waste) *
+                    (1 - (100 - laboratoryCard.Moisture) / (100 - invoiceRegister.MoistureBase)));
 
         // розрахунок залікової ваги (AccountWeight)
         productionBatch.AccountWeight = inputInvoice.PhysicalWeight - productionBatch.Waste - productionBatch.Shrinkage;
@@ -27,14 +31,15 @@ public class StandardRegisterCalculator : IRegisterCalculator
         var quantitiesDrying = (inputInvoice.PhysicalWeight - productionBatch.Waste) *
             (laboratoryCard.Moisture - invoiceRegister.MoistureBase) / 1000;
         productionBatch.QuantitiesDrying = productionBatch.Shrinkage != 0 ? quantitiesDrying : 0;
-        
+
         // додавання Партии в Реєстр
-        AddProductionBatch(inputInvoice, laboratoryCard, productionBatch, invoiceRegister);
+        return AddProductionBatch(inputInvoice, productionBatch, invoiceRegister);
     }
 
-    public void AddProductionBatch(IInputInvoice inputInvoice, ILaboratoryCard laboratoryCard, IProductionBatch productionBatch, IInvoiceRegister invoiceRegister)
+    public IInvoiceRegister AddProductionBatch(IInputInvoice inputInvoice, IProductionBatch productionBatch,
+        IInvoiceRegister invoiceRegister)
     {
-        if(productionBatch is ProductionBatch batch)
+        if (productionBatch is ProductionBatch batch)
             invoiceRegister.ProductionBatches.Add(batch);
 
         if (invoiceRegister is InvoiceRegister register)
@@ -43,11 +48,10 @@ public class StandardRegisterCalculator : IRegisterCalculator
             register.ShrinkageReg += productionBatch.Shrinkage;
             register.WasteReg += productionBatch.Waste;
             register.AccWeightReg += productionBatch.AccountWeight;
-            register.QuantitiesDryingReg += productionBatch.QuantitiesDrying;  
+            register.QuantitiesDryingReg += productionBatch.QuantitiesDrying;
         }
-       
+        return invoiceRegister;
     }
-    
 }
 
 

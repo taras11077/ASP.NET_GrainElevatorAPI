@@ -19,6 +19,6 @@ public class WarehouseUnit : AuditableEntity, IWarehouseUnit
 	[Range(1, int.MaxValue, ErrorMessage = "ProductId must be a positive number.")]
 	public int ProductId { get; set; }
 	
-	public virtual required Supplier Supplier { get; set; }
-	public virtual required Product Product { get; set; }
+	public virtual Supplier Supplier { get; set; }
+	public virtual Product Product { get; set; }
 }
