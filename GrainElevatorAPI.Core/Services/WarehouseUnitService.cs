@@ -17,14 +17,13 @@ public class WarehouseUnitService: IWarehouseUnitService
         _invoiceRegisterService = invoiceRegisterService;
     }
     
-    public async Task<WarehouseUnit> WarehouseTransferAsync(int invoiceRegisterId, int createdById)
+    public async Task<WarehouseUnit> WarehouseTransferAsync(InvoiceRegister register, int createdById)
     {
         try
         {
-            var register = await _invoiceRegisterService.GetRegisterByIdAsync(invoiceRegisterId);
             if (register == null)
             {
-                throw new Exception($"Реєстр з ID {invoiceRegisterId} не знайдено.");
+                throw new Exception($"Реєстр не знайдено.");
             }
 
             // перевірка наявності WarehouseUnit із заданими SupplierId і ProductId
@@ -58,7 +57,7 @@ public class WarehouseUnitService: IWarehouseUnitService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при обробці операції переміщення до складу продукції Реєстру з ID {invoiceRegisterId}", ex);
+            throw new Exception($"Помилка при обробці операції переміщення до складу продукції Реєстру з ID {register.Id}", ex);
         }
     }
 

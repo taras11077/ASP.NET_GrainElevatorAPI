@@ -417,6 +417,11 @@ public class GrainElevatorApiContext : DbContext
             .OnDelete(DeleteBehavior.Restrict);
         
         
+        modelBuilder.Entity<WarehouseProductCategory>()
+            .HasOne(wpc => wpc.WarehouseUnit)
+            .WithMany(wu => wu.ProductCategories)
+            .HasForeignKey(wpc => wpc.WarehouseUnitId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<WarehouseProductCategory>()
             .HasOne(dpc => dpc.CreatedBy)

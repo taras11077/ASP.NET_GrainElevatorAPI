@@ -50,9 +50,6 @@ public class InvoiceRegisterService : IInvoiceRegisterService
                 QuantitiesDryingReg = 0,   
             };
             
-            // Збереження register без виробничих партій
-            await _repository.AddAsync(register);
-
             foreach (var labCard in laboratoryCards)
             {
                 var productionBatch = new ProductionBatch
@@ -63,9 +60,8 @@ public class InvoiceRegisterService : IInvoiceRegisterService
                 };
                 register = (InvoiceRegister)_calculator.CalcProductionBatch(labCard.InputInvoice, labCard, register, productionBatch);
             }
-            
-            // Оновлення register з ProductionBatches
-            return await _repository.UpdateAsync(register);
+
+            return await _repository.AddAsync(register);
         }
         catch (Exception ex)
         {
