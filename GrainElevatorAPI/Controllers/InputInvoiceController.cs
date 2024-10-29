@@ -40,7 +40,7 @@ public class InputInvoiceController : ControllerBase
             var newInputInvoice = _mapper.Map<InputInvoice>(request);
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             
-            var createdInputInvoice = await _inputInvoiceService.AddInputInvoiceAsync(newInputInvoice, createdById);
+            var createdInputInvoice = await _inputInvoiceService.CreateInputInvoiceAsync(newInputInvoice, createdById);
             _logger.LogInformation($"Прибуткову накладну з ID = {createdInputInvoice.Id} створено.");
             return CreatedAtAction(nameof(GetInputInvoice), new { id = createdInputInvoice.Id },
                 _mapper.Map<InputInvoiceDto>(createdInputInvoice));

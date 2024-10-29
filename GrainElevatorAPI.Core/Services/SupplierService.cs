@@ -14,18 +14,21 @@ public class SupplierService : ISupplierService
     }
     
     
-    public async Task<Supplier> AddSupplierAsync(Supplier supplier, int createdById)
+    public async Task<Supplier> CreateSupplierAsync(Supplier supplier, int createdById)
     {
         try
         {
             supplier.CreatedAt = DateTime.UtcNow;
             supplier.CreatedById = createdById;
             
-            return await _repository.AddAsync(supplier);
+            await _repository.AddAsync(supplier);
+            await _repository.SaveChangesAsync();
+            
+            return supplier;
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при додаванні Постачальника", ex);
+            throw new Exception("Помилка сервісу при додаванні Постачальника", ex);
         }
     }
 
@@ -40,7 +43,7 @@ public class SupplierService : ISupplierService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при отриманні списку Постачальників", ex);
+            throw new Exception("Помилка сервісу при отриманні списку Постачальників", ex);
         }
     }
     
@@ -52,7 +55,7 @@ public class SupplierService : ISupplierService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Постачальника з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Постачальника з ID {id}", ex);
         }
     }
     
@@ -66,7 +69,7 @@ public class SupplierService : ISupplierService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Постачальника з назвою {title}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Постачальника з назвою {title}", ex);
         }
     }
 
@@ -77,11 +80,14 @@ public class SupplierService : ISupplierService
             supplier.ModifiedAt = DateTime.UtcNow;
             supplier.ModifiedById = modifiedById;
             
-            return await _repository.UpdateAsync(supplier);
+            await _repository.UpdateAsync(supplier);
+            await _repository.SaveChangesAsync();
+            
+            return supplier;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при оновленні Постачальника з ID  {supplier.Id}", ex);
+            throw new Exception($"Помилка сервісу при оновленні Постачальника з ID  {supplier.Id}", ex);
         }
     }
 
@@ -92,11 +98,14 @@ public class SupplierService : ISupplierService
             supplier.RemovedAt = DateTime.UtcNow;
             supplier.RemovedById = removedById;
             
-            return await _repository.UpdateAsync(supplier);
+            await _repository.UpdateAsync(supplier);
+            await _repository.SaveChangesAsync();
+            
+            return supplier;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Постачальника з ID  {supplier.Id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Постачальника з ID  {supplier.Id}", ex);
         }
     }
     
@@ -108,11 +117,14 @@ public class SupplierService : ISupplierService
             supplier.RestoredAt = DateTime.UtcNow;
             supplier.RestoreById = restoredById;
             
-            return await _repository.UpdateAsync(supplier);
+            await _repository.UpdateAsync(supplier);
+            await _repository.SaveChangesAsync();
+            
+            return supplier;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при відновленні Постачальника з ID  {supplier.Id}", ex);
+            throw new Exception($"Помилка сервісу при відновленні Постачальника з ID  {supplier.Id}", ex);
         }
     }
     
@@ -124,13 +136,14 @@ public class SupplierService : ISupplierService
             if (supplier != null)
             {
                 await _repository.DeleteAsync<Supplier>(id);
+                await _repository.SaveChangesAsync();
                 return true;
             }
             return false;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Постачальника з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при hard-видаленні Постачальника з ID {id}", ex);
         }
     }
     

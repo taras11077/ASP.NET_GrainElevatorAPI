@@ -13,7 +13,7 @@ public interface IInvoiceRegisterService
         IEnumerable<int> laboratoryCardIds,
         int createdById);
     Task<InvoiceRegister> GetRegisterByIdAsync(int id);
-    Task<InvoiceRegister> UpdateRegisterAsync(InvoiceRegister invoiceRegister);
+    Task<InvoiceRegister> UpdateRegisterAsync(InvoiceRegister invoiceRegister, int modifiedById);
     Task<bool> DeleteRegisterAsync(int id);
     IQueryable<InvoiceRegister> GetRegisters(int page, int size);
     IEnumerable<InvoiceRegister> SearchRegisters(string registerNumber);

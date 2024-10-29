@@ -13,18 +13,21 @@ public class ProductService : IProductService
         _repository = repository;
     }
     
- public async Task<Product> AddProductAsync(Product product, int createdById)
+ public async Task<Product> CreateProductAsync(Product product, int createdById)
     {
         try
         {
             product.CreatedAt = DateTime.UtcNow;
             product.CreatedById = createdById;
             
-            return await _repository.AddAsync(product);
+            await _repository.AddAsync(product);
+            await _repository.SaveChangesAsync();
+
+            return product;
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при додаванні Назви продукту", ex);
+            throw new Exception("Помилка сервісу при додаванні Продукції", ex);
         }
     }
  
@@ -39,7 +42,7 @@ public class ProductService : IProductService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при отриманні списку Назв продукту", ex);
+            throw new Exception("Помилка сервісу при отриманні списку Продукції", ex);
         }
     }
 
@@ -51,7 +54,7 @@ public class ProductService : IProductService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Назви продукту з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Продукції з ID {id}", ex);
         }
     }
 
@@ -65,7 +68,7 @@ public class ProductService : IProductService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Назви продукту з назвою {title}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Продукції з назвою {title}", ex);
         }
     }
     
@@ -76,11 +79,14 @@ public class ProductService : IProductService
             product.ModifiedAt = DateTime.UtcNow;
             product.ModifiedById = modifiedById;
             
-            return await _repository.UpdateAsync(product);
+            await _repository.UpdateAsync(product);
+            await _repository.SaveChangesAsync();
+
+            return product;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при оновленні Назви продукту з ID  {product.Id}", ex);
+            throw new Exception($"Помилка сервісу при оновленні Продукції з ID  {product.Id}", ex);
         }
     }
     
@@ -91,11 +97,14 @@ public class ProductService : IProductService
             product.RemovedAt = DateTime.UtcNow;
             product.RemovedById = removedById;
             
-            return await _repository.UpdateAsync(product);
+            await _repository.UpdateAsync(product);
+            await _repository.SaveChangesAsync();
+
+            return product;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Продукції з ID  {product.Id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Продукції з ID  {product.Id}", ex);
         }
     }
     
@@ -107,11 +116,14 @@ public class ProductService : IProductService
             product.RestoredAt = DateTime.UtcNow;
             product.RestoreById = restoredById;
             
-            return await _repository.UpdateAsync(product);
+            await _repository.UpdateAsync(product);
+            await _repository.SaveChangesAsync();
+
+            return product;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при відновленні Продукції з ID  {product.Id}", ex);
+            throw new Exception($"Помилка сервісу при відновленні Продукції з ID  {product.Id}", ex);
         }
     }
 
@@ -123,13 +135,14 @@ public class ProductService : IProductService
             if (product != null)
             {
                 await _repository.DeleteAsync<Product>(id);
+                await _repository.SaveChangesAsync();
                 return true;
             }
             return false;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Назви продукту з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при hard-видаленні Продукції з ID {id}", ex);
         }
     }
 }

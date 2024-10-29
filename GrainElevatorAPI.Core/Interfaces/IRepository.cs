@@ -11,4 +11,6 @@ public interface IRepository
     Task<T> GetByIdAsync<T>(int id) where T : class;
     IQueryable<T> GetAll<T>() where T : class;
     Task<IEnumerable<T>> GetQuery<T>(Expression<Func<T, bool>> func) where T : class;
+
+    Task SaveChangesAsync();
 }

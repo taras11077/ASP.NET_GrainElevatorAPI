@@ -41,6 +41,7 @@ public class AuthService : IAuthService
         };
     
         await _repository.AddAsync(newEmployee);
+        await _repository.SaveChangesAsync();
     
         return newEmployee;
     }
@@ -65,6 +66,7 @@ public class AuthService : IAuthService
         // оновлення часу останнього відвідування
         employee.LastSeenOnline = DateTime.UtcNow;
         await _repository.UpdateAsync(employee);
+        await _repository.SaveChangesAsync();
     
         return employee;
     }

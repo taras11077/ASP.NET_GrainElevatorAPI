@@ -22,11 +22,12 @@ public class EmployeeService : IEmployeeService
     {
         try
         {
+            
             return await _repository.GetByIdAsync<Employee>(id);
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні співробітника з ID {id}", ex);
+            throw new Exception($"Помилка сервіса при отриманні співробітника з ID {id}", ex);
         }
     }
 
@@ -40,7 +41,7 @@ public class EmployeeService : IEmployeeService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Співробітника з електронною поштою {email}", ex);
+            throw new Exception($"Помилка сервіса при отриманні Співробітника з електронною поштою {email}", ex);
         }
     }
     
@@ -69,11 +70,14 @@ public class EmployeeService : IEmployeeService
             employee.ModifiedAt = DateTime.UtcNow;
             employee.ModifiedById = modifiedById;
             
-            return await _repository.UpdateAsync(employee);
+            await _repository.UpdateAsync(employee);
+            await _repository.SaveChangesAsync();
+
+            return employee;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при оновленні співробітника з ID  {employee.Id}", ex);
+            throw new Exception($"Помилка сервіса при оновленні співробітника з ID  {employee.Id}", ex);
         }
     }
     
@@ -84,11 +88,14 @@ public class EmployeeService : IEmployeeService
             employee.RemovedAt = DateTime.UtcNow;
             employee.RemovedById = removedById;
             
-            return await _repository.UpdateAsync(employee);
+            await _repository.UpdateAsync(employee);
+            await _repository.SaveChangesAsync();
+
+            return employee;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Вхідної накладної з ID  {employee.Id}", ex);
+            throw new Exception($"Помилка сервіса при видаленні Вхідної накладної з ID  {employee.Id}", ex);
         }
     }
     
@@ -100,11 +107,14 @@ public class EmployeeService : IEmployeeService
             employee.RestoredAt = DateTime.UtcNow;
             employee.RestoreById = restoredById;
             
-            return await _repository.UpdateAsync(employee);
+            await _repository.UpdateAsync(employee);
+            await _repository.SaveChangesAsync();
+
+            return employee;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при відновленні Вхідної накладної з ID  {employee.Id}", ex);
+            throw new Exception($"Помилка сервіса при відновленні Вхідної накладної з ID  {employee.Id}", ex);
         }
     }
 
@@ -116,13 +126,14 @@ public class EmployeeService : IEmployeeService
             if (employee != null)
             {
                 await _repository.DeleteAsync<Employee>(id);
+                await _repository.SaveChangesAsync();
                 return true;
             }
             return false;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні співробітника з ID {id}", ex);
+            throw new Exception($"Помилка сервіса при видаленні співробітника з ID {id}", ex);
         }
         
     }
@@ -135,7 +146,7 @@ public class EmployeeService : IEmployeeService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка під час виконання пошуку співробітників", ex);
+            throw new Exception("Помилка сервіса під час виконання пошуку співробітників", ex);
         }
     }
 }

@@ -69,7 +69,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при створенні Реєстру", ex);
+            throw new Exception("Помилка сервісу при створенні Реєстру", ex);
         }
         
     }
@@ -88,19 +88,25 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Реєстру з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Реєстру з ID {id}", ex);
         }
     }
 
-    public async Task<InvoiceRegister> UpdateRegisterAsync(InvoiceRegister invoiceRegister)
+    public async Task<InvoiceRegister> UpdateRegisterAsync(InvoiceRegister invoiceRegister, int modifiedById)
     {
         try
         {
-            return await _repository.UpdateAsync(invoiceRegister);
+            invoiceRegister.ModifiedAt = DateTime.UtcNow;
+            invoiceRegister.ModifiedById = modifiedById;
+            
+            await _repository.UpdateAsync(invoiceRegister);
+            await _repository.SaveChangesAsync();
+            
+            return invoiceRegister;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при оновленні Реєстру з ID  {invoiceRegister.Id}", ex);
+            throw new Exception($"Помилка сервісу при оновленні Реєстру з ID  {invoiceRegister.Id}", ex);
         }
     }
 
@@ -112,6 +118,8 @@ public class InvoiceRegisterService : IInvoiceRegisterService
             if (register != null)
             {
                 await _repository.DeleteAsync<InvoiceRegister>(id);
+                await _repository.SaveChangesAsync();
+                
                 return true;
             }
 
@@ -119,7 +127,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Реєстру з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Реєстру з ID {id}", ex);
         }
     }
 
@@ -133,7 +141,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при отриманні списку Реєстрів", ex);
+            throw new Exception("Помилка сервісу при отриманні списку Реєстрів", ex);
         }
     }
 
@@ -147,7 +155,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Реєстру за номером {registerNumber}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Реєстру за номером {registerNumber}", ex);
         }
     }
 }

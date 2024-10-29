@@ -38,7 +38,7 @@ public class ProductController : ControllerBase
             var newProduct = _mapper.Map<Product>(request);
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             
-            var createdProduct = await _productService.AddProductAsync(newProduct, createdById);
+            var createdProduct = await _productService.CreateProductAsync(newProduct, createdById);
             return CreatedAtAction(nameof(GetProduct), new { id = createdProduct.Id }, _mapper.Map<ProductDto>(createdProduct));
         }
         catch (Exception ex)

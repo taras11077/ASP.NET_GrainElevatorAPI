@@ -19,11 +19,14 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
             warehouseProductCategory.CreatedAt = DateTime.UtcNow;
             warehouseProductCategory.CreatedById = createdById;
             
-            return await _repository.AddAsync(warehouseProductCategory);
+            await _repository.AddAsync(warehouseProductCategory);
+            await _repository.SaveChangesAsync();
+            
+            return warehouseProductCategory;
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при додаванні Категорії продукції", ex);
+            throw new Exception("Помилка сервісу при додаванні Категорії продукції", ex);
         }
     }
     public IQueryable<WarehouseProductCategory> GetWarehouseProductCategories(int page, int size)
@@ -36,7 +39,7 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при отриманні списку Категорій продукції", ex);
+            throw new Exception("Помилка сервісу при отриманні списку Категорій продукції", ex);
         }
     }
     
@@ -49,7 +52,7 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Категорії продукції з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Категорії продукції з ID {id}", ex);
         }
     }
 
@@ -94,7 +97,7 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при пошуку Категорій продукції", ex);
+            throw new Exception("Помилка сервісу при пошуку Категорій продукції", ex);
         }
     }
     
@@ -105,11 +108,14 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
             warehouseProductCategory.ModifiedAt = DateTime.UtcNow;
             warehouseProductCategory.ModifiedById = modifiedById;
             
-            return await _repository.UpdateAsync(warehouseProductCategory);
+            await _repository.UpdateAsync(warehouseProductCategory);
+            await _repository.SaveChangesAsync();
+            
+            return warehouseProductCategory;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при оновленні Категорії продукції з ID  {warehouseProductCategory.Id}", ex);
+            throw new Exception($"Помилка сервісу при оновленні Категорії продукції з ID  {warehouseProductCategory.Id}", ex);
         }
     }
 
@@ -120,11 +126,14 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
             warehouseProductCategory.RemovedAt = DateTime.UtcNow;
             warehouseProductCategory.RemovedById = removedById;
             
-            return await _repository.UpdateAsync(warehouseProductCategory);
+            await _repository.UpdateAsync(warehouseProductCategory);
+            await _repository.SaveChangesAsync();
+            
+            return warehouseProductCategory;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Категорії продукції з ID  {warehouseProductCategory.Id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Категорії продукції з ID  {warehouseProductCategory.Id}", ex);
         }
     }
     
@@ -136,11 +145,14 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
             warehouseProductCategory.RestoredAt = DateTime.UtcNow;
             warehouseProductCategory.RestoreById = restoredById;
             
-            return await _repository.UpdateAsync(warehouseProductCategory);
+            await _repository.UpdateAsync(warehouseProductCategory);
+            await _repository.SaveChangesAsync();
+            
+            return warehouseProductCategory;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при відновленні Категорії продукції з ID  {warehouseProductCategory.Id}", ex);
+            throw new Exception($"Помилка сервісу при відновленні Категорії продукції з ID  {warehouseProductCategory.Id}", ex);
         }
     }
     
@@ -152,13 +164,14 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
             if (warehouseProductCategory != null)
             {
                 await _repository.DeleteAsync<WarehouseProductCategory>(id);
+                await _repository.SaveChangesAsync();
                 return true;
             }
             return false;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Категорії продукції з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Категорії продукції з ID {id}", ex);
         }
     }
 }

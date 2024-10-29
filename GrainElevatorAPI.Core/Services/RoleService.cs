@@ -19,11 +19,15 @@ public class RoleService : IRoleService
         try
         {
             role.CreatedAt = DateTime.UtcNow;
-            return await _repository.AddAsync(role);
+            
+            await _repository.AddAsync(role);
+            await _repository.SaveChangesAsync();
+            
+            return role;
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при створенні ролі", ex);
+            throw new Exception("Помилка сервісу при створенні ролі", ex);
         }
     }
     
@@ -37,11 +41,14 @@ public class RoleService : IRoleService
             if (createdById.HasValue)
                 role.CreatedById = createdById;
             
-            return await _repository.AddAsync(role);
+            await _repository.AddAsync(role);
+            await _repository.SaveChangesAsync();
+            
+            return role;
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при додаванні ролі", ex);
+            throw new Exception("Помилка сервісу при додаванні Ролі", ex);
         }
     }
 
@@ -53,7 +60,7 @@ public class RoleService : IRoleService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Ролі з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Ролі з ID {id}", ex);
         }
     }
     
@@ -67,7 +74,7 @@ public class RoleService : IRoleService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Ролі з назвою {title}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Ролі з назвою {title}", ex);
         }
     }
 
@@ -82,7 +89,7 @@ public class RoleService : IRoleService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при отриманні списку ролів", ex);
+            throw new Exception("Помилка сервісу при отриманні списку Ролів", ex);
         }
     }
 
@@ -96,7 +103,7 @@ public class RoleService : IRoleService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні ролі з назвою {title}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Ролі з назвою {title}", ex);
         }
     }
     
@@ -106,12 +113,15 @@ public class RoleService : IRoleService
         {
             role.ModifiedAt = DateTime.UtcNow;
             role.ModifiedById = modifiedById;
+ 
+            await _repository.UpdateAsync(role);
+            await _repository.SaveChangesAsync();
             
-            return await _repository.UpdateAsync(role);
+            return role;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при оновленні ролі з ID  {role.Id}", ex);
+            throw new Exception($"Помилка сервісу при оновленні Ролі з ID  {role.Id}", ex);
         }
     }
     
@@ -122,11 +132,14 @@ public class RoleService : IRoleService
             role.RemovedAt = DateTime.UtcNow;
             role.RemovedById = removedById;
             
-            return await _repository.UpdateAsync(role);
+            await _repository.UpdateAsync(role);
+            await _repository.SaveChangesAsync();
+            
+            return role;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Продукції з ID  {role.Id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Ролі з ID  {role.Id}", ex);
         }
     }
     
@@ -138,11 +151,14 @@ public class RoleService : IRoleService
             role.RestoredAt = DateTime.UtcNow;
             role.RestoreById = restoredById;
             
-            return await _repository.UpdateAsync(role);
+            await _repository.UpdateAsync(role);
+            await _repository.SaveChangesAsync();
+            
+            return role;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при відновленні Продукції з ID  {role.Id}", ex);
+            throw new Exception($"Помилка сервісу при відновленні Ролі з ID  {role.Id}", ex);
         }
     }
 
@@ -154,13 +170,14 @@ public class RoleService : IRoleService
             if (role != null)
             {
                 await _repository.DeleteAsync<Role>(id);
+                await _repository.SaveChangesAsync();
                 return true;
             }
             return false;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Ролі з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Ролі з ID {id}", ex);
         }
     }
     

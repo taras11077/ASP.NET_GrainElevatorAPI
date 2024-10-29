@@ -4,7 +4,7 @@ namespace GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 
 public interface ISupplierService
 {
-    Task<Supplier> AddSupplierAsync(Supplier supplier, int createdById);
+    Task<Supplier> CreateSupplierAsync(Supplier supplier, int createdById);
     IEnumerable<Supplier> GetSuppliers(int page, int size);
     Task<Supplier> GetSupplierByIdAsync(int id);
     IEnumerable<Supplier> SearchSupplier(string title);

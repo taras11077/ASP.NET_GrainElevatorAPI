@@ -4,7 +4,7 @@ namespace GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 
 public interface IProductService
 {
-    Task<Product> AddProductAsync(Product product, int createdById);
+    Task<Product> CreateProductAsync(Product product, int createdById);
     Task<Product> GetProductByIdAsync(int id);
     Task<Product> UpdateProductAsync(Product product, int modifiedById);
     

@@ -39,7 +39,7 @@ public class LaboratoryCardController : ControllerBase
             var newLaboratoryCard = _mapper.Map<LaboratoryCard>(request);
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             
-            var createdLaboratoryCard = await _laboratoryCardService.AddLaboratoryCardAsync(newLaboratoryCard, createdById);
+            var createdLaboratoryCard = await _laboratoryCardService.CreateLaboratoryCardAsync(newLaboratoryCard, createdById);
             return CreatedAtAction(nameof(GetLaboratoryCard), new { id = createdLaboratoryCard.Id },
                 _mapper.Map<LaboratoryCardDto>(createdLaboratoryCard));
         }

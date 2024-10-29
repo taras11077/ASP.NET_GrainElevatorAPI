@@ -12,18 +12,21 @@ public class LaboratoryCardService : ILaboratoryCardService
     public LaboratoryCardService(IRepository repository) => _repository = repository;
 
 
-    public async Task<LaboratoryCard> AddLaboratoryCardAsync(LaboratoryCard laboratoryCard, int createdById)
+    public async Task<LaboratoryCard> CreateLaboratoryCardAsync(LaboratoryCard laboratoryCard, int createdById)
     {
         try
         {
             laboratoryCard.CreatedAt = DateTime.UtcNow;
             laboratoryCard.CreatedById = createdById;
             
-            return await _repository.AddAsync(laboratoryCard);
+            await _repository.AddAsync(laboratoryCard);
+            await _repository.SaveChangesAsync();
+            
+            return laboratoryCard;
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при додаванні Лабораторної карточки", ex);
+            throw new Exception("Помилка сервіса при додаванні Лабораторної карточки", ex);
         }
     }
     public IQueryable<LaboratoryCard> GetLaboratoryCards(int page, int size)
@@ -36,7 +39,7 @@ public class LaboratoryCardService : ILaboratoryCardService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при отриманні списку Лабораторних карточок", ex);
+            throw new Exception("Помилка сервіса при отриманні списку Лабораторних карточок", ex);
         }
     }
     public async Task<LaboratoryCard> GetLaboratoryCardByIdAsync(int id)
@@ -47,7 +50,7 @@ public class LaboratoryCardService : ILaboratoryCardService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Лабораторної карточки з ID {id}", ex);
+            throw new Exception($"Помилка сервіса при отриманні Лабораторної карточки з ID {id}", ex);
         }
     }
 
@@ -119,7 +122,7 @@ public class LaboratoryCardService : ILaboratoryCardService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при пошуку Лабораторних карточок", ex);
+            throw new Exception("Помилка сервіса при пошуку Лабораторних карточок", ex);
         }
     }
     
@@ -130,11 +133,14 @@ public class LaboratoryCardService : ILaboratoryCardService
             laboratoryCard.ModifiedAt = DateTime.UtcNow;
             laboratoryCard.ModifiedById = modifiedById;
             
-            return await _repository.UpdateAsync(laboratoryCard);
+            await _repository.UpdateAsync(laboratoryCard);
+            await _repository.SaveChangesAsync();
+            
+            return laboratoryCard;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при оновленні Лабораторної карточки з ID  {laboratoryCard.Id}", ex);
+            throw new Exception($"Помилка сервіса при оновленні Лабораторної карточки з ID  {laboratoryCard.Id}", ex);
         }
     }
 
@@ -145,11 +151,14 @@ public class LaboratoryCardService : ILaboratoryCardService
             laboratoryCard.RemovedAt = DateTime.UtcNow;
             laboratoryCard.RemovedById = removedById;
             
-            return await _repository.UpdateAsync(laboratoryCard);
+            await _repository.UpdateAsync(laboratoryCard);
+            await _repository.SaveChangesAsync();
+            
+            return laboratoryCard;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Лабораторної карточки з ID  {laboratoryCard.Id}", ex);
+            throw new Exception($"Помилка сервіса при видаленні Лабораторної карточки з ID  {laboratoryCard.Id}", ex);
         }
     }
     
@@ -161,11 +170,14 @@ public class LaboratoryCardService : ILaboratoryCardService
             laboratoryCard.RestoredAt = DateTime.UtcNow;
             laboratoryCard.RestoreById = restoredById;
             
-            return await _repository.UpdateAsync(laboratoryCard);
+            await _repository.UpdateAsync(laboratoryCard);
+            await _repository.SaveChangesAsync();
+            
+            return laboratoryCard;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при відновленні Лабораторної карточки з ID  {laboratoryCard.Id}", ex);
+            throw new Exception($"Помилка сервіса при відновленні Лабораторної карточки з ID  {laboratoryCard.Id}", ex);
         }
     }
     
@@ -177,13 +189,14 @@ public class LaboratoryCardService : ILaboratoryCardService
             if (laboratoryCard != null)
             {
                 await _repository.DeleteAsync<LaboratoryCard>(id);
+                await _repository.SaveChangesAsync();
                 return true;
             }
             return false;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Лабораторної карточки з ID {id}", ex);
+            throw new Exception($"Помилка сервіса при видаленні Лабораторної карточки з ID {id}", ex);
         }
     }
 }

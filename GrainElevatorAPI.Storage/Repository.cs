@@ -15,31 +15,23 @@ public class Repository : IRepository
     public async Task<T> AddAsync<T>(T entity) where T : class
     {
         var entityFromFb = _context.Set<T>().Add(entity);
-        await _context.SaveChangesAsync();
-        
-        return entityFromFb.Entity;
+        return await Task.FromResult(entityFromFb.Entity);
     }
 
     public async Task<T> UpdateAsync<T>(T entity) where T : class
     {
         var updated = _context.Update(entity);
-        await _context.SaveChangesAsync();
-        
-        return updated.Entity;
+        return await Task.FromResult(updated.Entity);
     }
 
     public async Task DeleteAsync<T>(int id) where T : class
     {
         var entity = await _context.Set<T>().FindAsync(id);
         if (entity != null)
-        {
             _context.Set<T>().Remove(entity);
-            await _context.SaveChangesAsync();
-        }
         else
-        {
             throw new ArgumentException("Entity not found");
-        }
+        
     }
 
     public async Task<T> GetByIdAsync<T>(int id) where T : class
@@ -55,5 +47,10 @@ public class Repository : IRepository
     public async Task<IEnumerable<T>> GetQuery<T>(Expression<Func<T, bool>> func) where T : class
     {
         return _context.Set<T>().Where(func);
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        await _context.SaveChangesAsync();
     }
 }

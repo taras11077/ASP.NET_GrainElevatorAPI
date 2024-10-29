@@ -35,7 +35,7 @@ public class SupplierController : ControllerBase
 			var newSupplier = _mapper.Map<Supplier>(request);
 			var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
 
-			var createdSupplier = await _supplierService.AddSupplierAsync(newSupplier, createdById);
+			var createdSupplier = await _supplierService.CreateSupplierAsync(newSupplier, createdById);
 			return CreatedAtAction(nameof(GetSupplier), new { id = createdSupplier.Id },
 				_mapper.Map<SupplierDto>(createdSupplier));
 		}

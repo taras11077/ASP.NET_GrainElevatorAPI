@@ -4,7 +4,7 @@ namespace GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 
 public interface ILaboratoryCardService
 {
-    Task<LaboratoryCard> AddLaboratoryCardAsync(LaboratoryCard laboratoryCard, int createdById);
+    Task<LaboratoryCard> CreateLaboratoryCardAsync(LaboratoryCard laboratoryCard, int createdById);
     Task<LaboratoryCard> GetLaboratoryCardByIdAsync(int id);
     Task<LaboratoryCard> UpdateLaboratoryCardAsync(LaboratoryCard laboratoryCard, int modifiedById);
     Task<LaboratoryCard> SoftDeleteLaboratoryCardAsync(LaboratoryCard laboratoryCard, int removedById);

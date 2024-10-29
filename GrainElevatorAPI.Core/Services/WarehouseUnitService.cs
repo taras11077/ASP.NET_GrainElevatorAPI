@@ -54,11 +54,12 @@ public class WarehouseUnitService: IWarehouseUnitService
                 await UpdateWarehouseUnitWithRegisterData(warehouseUnit, register);
             }
 
+            await _repository.SaveChangesAsync();
             return warehouseUnit;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при обробці операції переміщення до складу продукції Реєстру з ID {invoiceRegisterId}", ex);
+            throw new Exception($"Помилка сервісу при обробці операції переміщення до складу продукції Реєстру з ID {invoiceRegisterId}", ex);
         }
     }
 
@@ -113,7 +114,7 @@ public class WarehouseUnitService: IWarehouseUnitService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при отриманні списку Cкладських одиниць", ex);
+            throw new Exception("Помилка сервісу при отриманні списку Cкладських одиниць", ex);
         }
     }
 
@@ -125,7 +126,7 @@ public class WarehouseUnitService: IWarehouseUnitService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Cкладської одиниці з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Cкладської одиниці з ID {id}", ex);
         }
     }
 
@@ -164,7 +165,7 @@ public class WarehouseUnitService: IWarehouseUnitService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при пошуку Cкладських одиниць за параметрами", ex);
+            throw new Exception("Помилка сервісу при пошуку Cкладських одиниць за параметрами", ex);
         }
     }
     
@@ -175,11 +176,14 @@ public class WarehouseUnitService: IWarehouseUnitService
             warehouseUnit.ModifiedAt = DateTime.UtcNow;
             warehouseUnit.ModifiedById = modifiedById;
             
-            return await _repository.UpdateAsync(warehouseUnit);
+            await _repository.UpdateAsync(warehouseUnit);
+            await _repository.SaveChangesAsync();
+            
+            return warehouseUnit;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при оновленні Cкладської одиниці з ID  {warehouseUnit.Id}", ex);
+            throw new Exception($"Помилка сервісу при оновленні Cкладської одиниці з ID  {warehouseUnit.Id}", ex);
         }
     }
 
@@ -190,11 +194,14 @@ public class WarehouseUnitService: IWarehouseUnitService
             warehouseUnit.RemovedAt = DateTime.UtcNow;
             warehouseUnit.RemovedById = removedById;
             
-            return await _repository.UpdateAsync(warehouseUnit);
+            await _repository.UpdateAsync(warehouseUnit);
+            await _repository.SaveChangesAsync();
+            
+            return warehouseUnit;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Cкладської одиниці з ID  {warehouseUnit.Id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Cкладської одиниці з ID  {warehouseUnit.Id}", ex);
         }
     }
     
@@ -206,11 +213,14 @@ public class WarehouseUnitService: IWarehouseUnitService
             warehouseUnit.RestoredAt = DateTime.UtcNow;
             warehouseUnit.RestoreById = restoredById;
             
-            return await _repository.UpdateAsync(warehouseUnit);
+            await _repository.UpdateAsync(warehouseUnit);
+            await _repository.SaveChangesAsync();
+            
+            return warehouseUnit;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при відновленні Cкладської одиниці з ID  {warehouseUnit.Id}", ex);
+            throw new Exception($"Помилка сервісу при відновленні Cкладської одиниці з ID  {warehouseUnit.Id}", ex);
         }
     }
     
@@ -222,13 +232,14 @@ public class WarehouseUnitService: IWarehouseUnitService
             if (warehouseUnit != null)
             {
                 await _repository.DeleteAsync<WarehouseUnit>(id);
+                await _repository.SaveChangesAsync();
                 return true;
             }
             return false;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Cкладської одиниці з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Cкладської одиниці з ID {id}", ex);
         }
     }
 }

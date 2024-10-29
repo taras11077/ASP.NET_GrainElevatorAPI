@@ -37,9 +37,11 @@ public class InvoiceRegisterController : ControllerBase
     
         try
         {
-
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
         
+            
+            
+            
             // створення Реєстру (доробка продукції)
             var createdRegister = await _invoiceRegisterService.CreateRegisterAsync(
                 request.SupplierId,
@@ -51,7 +53,10 @@ public class InvoiceRegisterController : ControllerBase
                 createdById);
             
             // створення Складського юніту (переміщення на склад)
-            await  _warehouseUnitService.WarehouseTransferAsync(createdRegister.Id, createdById);
+            //await  _warehouseUnitService.WarehouseTransferAsync(createdRegister.Id, createdById);
+            
+            
+            
             
             return CreatedAtAction(nameof(GetRegisters), new { id = createdRegister.Id },
                 _mapper.Map<InvoiceRegisterDto>(createdRegister));

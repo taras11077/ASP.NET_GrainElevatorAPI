@@ -17,18 +17,21 @@ public class InputInvoiceService : IInputInvoiceService
     }
     
     
-    public async Task<InputInvoice> AddInputInvoiceAsync(InputInvoice inputInvoice, int createdById)
+    public async Task<InputInvoice> CreateInputInvoiceAsync(InputInvoice inputInvoice, int createdById)
     {
         try
         {
             inputInvoice.CreatedAt = DateTime.UtcNow;
             inputInvoice.CreatedById = createdById;
             
-            return await _repository.AddAsync(inputInvoice);
+            await _repository.AddAsync(inputInvoice);
+            await _repository.SaveChangesAsync();
+            
+            return inputInvoice;
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при додаванні Вхідної накладної", ex);
+            throw new Exception("Помилка сервіса при додаванні Вхідної накладної", ex);
         }
     }
 
@@ -105,7 +108,7 @@ public class InputInvoiceService : IInputInvoiceService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при пошуку Вхідних накладних", ex);
+            throw new Exception("Помилка сервіса при пошуку Вхідних накладних", ex);
         }
     }
     public async Task<InputInvoice> UpdateInputInvoiceAsync(InputInvoice inputInvoice, int modifiedById)
@@ -115,11 +118,14 @@ public class InputInvoiceService : IInputInvoiceService
             inputInvoice.ModifiedAt = DateTime.UtcNow;
             inputInvoice.ModifiedById = modifiedById;
             
-            return await _repository.UpdateAsync(inputInvoice);
+            await _repository.UpdateAsync(inputInvoice);
+            await _repository.SaveChangesAsync();
+            
+            return inputInvoice;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при оновленні Вхідної накладної з ID  {inputInvoice.Id}", ex);
+            throw new Exception($"Помилка сервіса при оновленні Вхідної накладної з ID  {inputInvoice.Id}", ex);
         }
     }
     
@@ -130,27 +136,38 @@ public class InputInvoiceService : IInputInvoiceService
             inputInvoice.RemovedAt = DateTime.UtcNow;
             inputInvoice.RemovedById = removedById;
             
-            return await _repository.UpdateAsync(inputInvoice);
+            await _repository.UpdateAsync(inputInvoice);
+            await _repository.SaveChangesAsync();
+            
+            return inputInvoice;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Вхідної накладної з ID  {inputInvoice.Id}", ex);
+            throw new Exception($"Помилка сервіса при видаленні Вхідної накладної з ID  {inputInvoice.Id}", ex);
         }
     }
     
     public async Task<InputInvoice> RestoreRemovedInputInvoiceAsync(InputInvoice inputInvoice, int restoredById)
     {
+        if (inputInvoice == null)
+        {
+            throw new ArgumentNullException(nameof(inputInvoice), "Вхідна накладна не може бути null.");
+        }
+        
         try
         {
             inputInvoice.RemovedAt = null;
             inputInvoice.RestoredAt = DateTime.UtcNow;
             inputInvoice.RestoreById = restoredById;
             
-            return await _repository.UpdateAsync(inputInvoice);
+            await _repository.UpdateAsync(inputInvoice);
+            await _repository.SaveChangesAsync();
+            
+            return inputInvoice;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при відновленні Вхідної накладної з ID  {inputInvoice.Id}", ex);
+            throw new Exception($"Помилка сервіса при відновленні Вхідної накладної з ID  {inputInvoice.Id}", ex);
         }
     }
     
@@ -162,13 +179,14 @@ public class InputInvoiceService : IInputInvoiceService
             if (supplier != null)
             {
                 await _repository.DeleteAsync<InputInvoice>(id);
+                await _repository.SaveChangesAsync();
                 return true;
             }
             return false;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Вхідної накладної з ID {id}", ex);
+            throw new Exception($"Помилка сервіса при видаленні Вхідної накладної з ID {id}", ex);
         }
     }
     
