@@ -1,30 +1,29 @@
 ﻿using AutoMapper;
 using GrainElevatorAPI.Core.Interfaces;
+using GrainElevatorAPI.Core.Interfaces.ModelInterfaces;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
 using Microsoft.EntityFrameworkCore;
+using ArgumentNullException = System.ArgumentNullException;
 
 namespace GrainElevatorAPI.Core.Services;
 
 public class WarehouseUnitService: IWarehouseUnitService
 {
     private readonly IRepository _repository;
-    private readonly IInvoiceRegisterService _invoiceRegisterService;
 
-    public WarehouseUnitService(IRepository repository, IInvoiceRegisterService invoiceRegisterService)
+    public WarehouseUnitService(IRepository repository)
     {
         _repository = repository;
-        _invoiceRegisterService = invoiceRegisterService;
     }
     
-    public async Task<WarehouseUnit> WarehouseTransferAsync(int invoiceRegisterId, int createdById)
+    public async Task<WarehouseUnit> WarehouseTransferAsync(InvoiceRegister register, int createdById)
     {
         try
         {
-            var register = await _invoiceRegisterService.GetRegisterByIdAsync(invoiceRegisterId);
             if (register == null)
             {
-                throw new Exception($"Реєстр з ID {invoiceRegisterId} не знайдено.");
+                throw new ArgumentNullException($"Реєстр не знайдено.");
             }
 
             // перевірка наявності WarehouseUnit із заданими SupplierId і ProductId
@@ -45,7 +44,7 @@ public class WarehouseUnitService: IWarehouseUnitService
                         new WarehouseProductCategory("Відходи") { Value = register.WasteReg }
                     }
                 };
-        
+
                 await _repository.AddAsync(warehouseUnit);
             }
             else
@@ -57,9 +56,13 @@ public class WarehouseUnitService: IWarehouseUnitService
             await _repository.SaveChangesAsync();
             return warehouseUnit;
         }
+        catch(ArgumentNullException ex)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка сервісу при обробці операції переміщення до складу продукції Реєстру з ID {invoiceRegisterId}", ex);
+            throw new Exception($"Помилка сервісу при обробці операції переміщення до складу продукції Реєстру з ID {register.Id}", ex);
         }
     }
 

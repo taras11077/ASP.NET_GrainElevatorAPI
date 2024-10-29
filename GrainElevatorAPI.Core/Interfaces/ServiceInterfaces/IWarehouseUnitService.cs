@@ -1,10 +1,11 @@
-﻿using GrainElevatorAPI.Core.Models;
+﻿using GrainElevatorAPI.Core.Interfaces.ModelInterfaces;
+using GrainElevatorAPI.Core.Models;
 
 namespace GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 
 public interface IWarehouseUnitService
 {
-    Task<WarehouseUnit> WarehouseTransferAsync(int invoiceRegisterId, int createdById);
+    Task<WarehouseUnit> WarehouseTransferAsync(InvoiceRegister invoiceRegister, int createdById);
     Task<WarehouseUnit> GetWarehouseUnitByIdAsync(int id);
     Task<WarehouseUnit> UpdateWarehouseUnitAsync(WarehouseUnit unit, int modifiedById);
     Task<WarehouseUnit> SoftDeleteWarehouseUnitAsync(WarehouseUnit warehouseUnit, int removedById);

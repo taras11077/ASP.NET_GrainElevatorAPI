@@ -46,6 +46,7 @@ builder.Services.AddTransient<IInputInvoice, InputInvoice>();
 builder.Services.AddTransient<ILaboratoryCard, LaboratoryCard>();
 builder.Services.AddTransient<IProductionBatch, ProductionBatch>();
 builder.Services.AddTransient<IInvoiceRegister, InvoiceRegister>();
+builder.Services.AddTransient<IWarehouseUnit, WarehouseUnit>();
 builder.Services.AddTransient<IRegisterCalculator, StandardRegisterCalculator>();
 
 builder.Services.AddControllers();

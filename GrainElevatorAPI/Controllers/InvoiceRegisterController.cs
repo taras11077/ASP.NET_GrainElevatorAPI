@@ -53,7 +53,7 @@ public class InvoiceRegisterController : ControllerBase
                 createdById);
             
             // створення Складського юніту (переміщення на склад)
-            //await  _warehouseUnitService.WarehouseTransferAsync(createdRegister.Id, createdById);
+            await  _warehouseUnitService.WarehouseTransferAsync(createdRegister, createdById);
             
             
             
