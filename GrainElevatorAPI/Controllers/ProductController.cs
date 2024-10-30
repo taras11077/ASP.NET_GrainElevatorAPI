@@ -62,7 +62,8 @@ public class ProductController : ControllerBase
     {
         try
         {
-            var products = _productService.GetProducts(page, size);
+            var cancellationToken = GetCancellationToken();
+            var products = _productService.GetProducts(page, size, cancellationToken);
             return Ok(_mapper.Map<IEnumerable<ProductDto>>(products));
         }
         catch (Exception ex)
@@ -98,7 +99,8 @@ public class ProductController : ControllerBase
     {
         try
         {
-            var products = _productService.SearchProduct(title);
+            var cancellationToken = GetCancellationToken();
+            var products = _productService.SearchProduct(title, cancellationToken);
             return Ok(_mapper.Map<IEnumerable<ProductDto>>(products));
         }
         catch (Exception ex)

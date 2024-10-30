@@ -134,7 +134,7 @@ async Task EnsureAdminCreated(IServiceProvider services)
     var adminPassword = configuration["AdminSettings:AdminPassword"];
 
     // перевірка, чи існує роль Admin
-    var adminRole = await roleService.GetRoleByTitleAsync("Admin");
+    var adminRole = await roleService.GetRoleByTitleAsync("Admin", cancellationToken);
     if (adminRole == null)
     {
         adminRole = new Role

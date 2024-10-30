@@ -10,13 +10,14 @@ public interface IWarehouseProductCategoryService
     Task<WarehouseProductCategory> SoftDeleteWarehouseProductCategoryAsync(WarehouseProductCategory warehouseProductCategory, int removedById, CancellationToken cancellationToken);
     Task<WarehouseProductCategory> RestoreRemovedWarehouseProductCategoryAsync(WarehouseProductCategory warehouseProductCategory, int restoredById, CancellationToken cancellationToken);
     Task<bool> DeleteWarehouseProductCategoryAsync(int id, CancellationToken cancellationToken);
-    IQueryable<WarehouseProductCategory> GetWarehouseProductCategories(int page, int size);
-    IEnumerable<WarehouseProductCategory> SearchWarehouseProductCategories(int? id,
+    Task<IEnumerable<WarehouseProductCategory>> GetWarehouseProductCategories(int page, int size, CancellationToken cancellationToken);
+    Task<IEnumerable<WarehouseProductCategory>> SearchWarehouseProductCategories(int? id,
         string? title,
         int? supplierId,
         int? productId,
         int? createdById,
         DateTime? removedAt,
         int page,
-        int size);
+        int size, 
+        CancellationToken cancellationToken);
 }

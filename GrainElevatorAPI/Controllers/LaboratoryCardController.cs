@@ -66,7 +66,8 @@ public class LaboratoryCardController : ControllerBase
     {
         try
         {
-            var laboratoryCards = _laboratoryCardService.GetLaboratoryCards(page, size);
+            var cancellationToken = GetCancellationToken();
+            var laboratoryCards = _laboratoryCardService.GetLaboratoryCards(page, size, cancellationToken);
             return Ok(_mapper.Map<IEnumerable<LaboratoryCardDto>>(laboratoryCards));
         }
         catch (Exception ex)
@@ -122,6 +123,7 @@ public class LaboratoryCardController : ControllerBase
     {
         try
         {
+            var cancellationToken = GetCancellationToken();
             // передаємо параметри у сервіс для фільтрації
             var filteredLabCards = _laboratoryCardService.SearchLaboratoryCards(
                 id, 
@@ -137,7 +139,8 @@ public class LaboratoryCardController : ControllerBase
                 createdById, 
                 removedAt, 
                 page, 
-                size);
+                size,
+                cancellationToken);
 
             return Ok(_mapper.Map<IEnumerable<LaboratoryCardDto>>(filteredLabCards));
         }

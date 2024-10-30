@@ -12,6 +12,6 @@ public interface IProductService
     Task<Product> RestoreRemovedProductAsync(Product product, int restoredById, CancellationToken cancellationToken);
     
     Task<bool> DeleteProductAsync(int id, CancellationToken cancellationToken);
-    IEnumerable<Product> GetProducts(int page, int size);
-    IEnumerable<Product> SearchProduct(string title);
+    Task<IEnumerable<Product>> GetProducts(int page, int size, CancellationToken cancellationToken);
+    Task<IEnumerable<Product>> SearchProduct(string title, CancellationToken cancellationToken);
 }

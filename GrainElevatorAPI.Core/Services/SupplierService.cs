@@ -1,6 +1,7 @@
 ﻿using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GrainElevatorAPI.Core.Services;
 
@@ -25,25 +26,10 @@ public class SupplierService : ISupplierService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при додаванні Постачальника", ex);
+            throw new Exception("Помилка сервісу при створенні Постачальника", ex);
         }
     }
 
-    public IEnumerable<Supplier> GetSuppliers(int page, int size)
-    {
-        try
-        {
-            return _repository.GetAll<Supplier>()
-                .Skip((page - 1) * size)
-                .Take(size)
-                .ToList();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Помилка при отриманні списку Постачальників", ex);
-        }
-    }
-    
     public async Task<Supplier> GetSupplierByIdAsync(int id, CancellationToken cancellationToken)
     {
         try
@@ -52,21 +38,37 @@ public class SupplierService : ISupplierService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Постачальника з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Постачальника з ID {id}", ex);
         }
     }
     
-    public IEnumerable<Supplier> SearchSupplier(string title)
+    public async Task<IEnumerable<Supplier>> GetSuppliers(int page, int size, CancellationToken cancellationToken)
     {
         try
         {
-            return _repository.GetAll<Supplier>()
-                .Where(s => s.Title.ToLower().Contains(title.ToLower()))
-                .ToList();
+            return await _repository.GetAll<Supplier>()
+                .Skip((page - 1) * size)
+                .Take(size)
+                .ToListAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Постачальника з назвою {title}", ex);
+            throw new Exception("Помилка сервісу при отриманні списку Постачальників", ex);
+        }
+    }
+    
+    
+    public async Task<IEnumerable<Supplier>> SearchSupplier(string title, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await _repository.GetAll<Supplier>()
+                .Where(s => s.Title.ToLower().Contains(title.ToLower()))
+                .ToListAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка сервісу при отриманні Постачальника з назвою {title}", ex);
         }
     }
 
@@ -81,7 +83,7 @@ public class SupplierService : ISupplierService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при оновленні Постачальника з ID  {supplier.Id}", ex);
+            throw new Exception($"Помилка сервісу при оновленні Постачальника з ID  {supplier.Id}", ex);
         }
     }
 
@@ -96,7 +98,7 @@ public class SupplierService : ISupplierService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Постачальника з ID  {supplier.Id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Постачальника з ID  {supplier.Id}", ex);
         }
     }
     
@@ -112,7 +114,7 @@ public class SupplierService : ISupplierService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при відновленні Постачальника з ID  {supplier.Id}", ex);
+            throw new Exception($"Помилка сервісу при відновленні Постачальника з ID  {supplier.Id}", ex);
         }
     }
     
@@ -130,7 +132,7 @@ public class SupplierService : ISupplierService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Постачальника з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Постачальника з ID {id}", ex);
         }
     }
     

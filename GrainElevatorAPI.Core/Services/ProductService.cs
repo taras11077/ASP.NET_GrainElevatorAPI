@@ -1,6 +1,7 @@
 ﻿using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GrainElevatorAPI.Core.Services;
 
@@ -24,25 +25,10 @@ public class ProductService : IProductService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при додаванні Назви продукту", ex);
+            throw new Exception("Помилка сервісу при додаванні Продукції", ex);
         }
     }
  
-    public IEnumerable<Product> GetProducts(int page, int size)
-    {
-        try
-        {
-            return _repository.GetAll<Product>()
-                .Skip((page - 1) * size)
-                .Take(size)
-                .ToList();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Помилка при отриманні списку Назв продукту", ex);
-        }
-    }
-
     public async Task<Product> GetProductByIdAsync(int id, CancellationToken cancellationToken)
     {
         try
@@ -51,21 +37,36 @@ public class ProductService : IProductService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Назви продукту з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Продукції з ID {id}", ex);
         }
     }
 
-    public IEnumerable<Product> SearchProduct(string title)
+    
+    public async Task<IEnumerable<Product>> GetProducts(int page, int size, CancellationToken cancellationToken)
     {
         try
         {
-            return _repository.GetAll<Product>()
-                .Where(p => p.Title.ToLower().Contains(title.ToLower()))
-                .ToList();
+            return await _repository.GetAll<Product>()
+                .Skip((page - 1) * size)
+                .Take(size)
+                .ToListAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Назви продукту з назвою {title}", ex);
+            throw new Exception("Помилка сервісу при отриманні списку Продукції", ex);
+        }
+    }
+    public async Task<IEnumerable<Product>> SearchProduct(string title, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await _repository.GetAll<Product>()
+                .Where(p => p.Title.ToLower().Contains(title.ToLower()))
+                .ToListAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка сервісу при отриманні Продукції з назвою {title}", ex);
         }
     }
     
@@ -80,7 +81,7 @@ public class ProductService : IProductService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при оновленні Назви продукту з ID  {product.Id}", ex);
+            throw new Exception($"Помилка сервісу при оновленні Продукції з ID  {product.Id}", ex);
         }
     }
     
@@ -95,7 +96,7 @@ public class ProductService : IProductService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Продукції з ID  {product.Id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Продукції з ID  {product.Id}", ex);
         }
     }
     
@@ -111,7 +112,7 @@ public class ProductService : IProductService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при відновленні Продукції з ID  {product.Id}", ex);
+            throw new Exception($"Помилка сервісу при відновленні Продукції з ID  {product.Id}", ex);
         }
     }
 
@@ -129,7 +130,7 @@ public class ProductService : IProductService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Назви продукту з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Продукції з ID {id}", ex);
         }
     }
 }

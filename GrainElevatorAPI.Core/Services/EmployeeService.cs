@@ -26,37 +26,37 @@ public class EmployeeService : IEmployeeService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні співробітника з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при отриманні співробітника з ID {id}", ex);
         }
     }
 
-    public async Task<Employee> GetEmployeeByEmailAsync(string email)
+    public async Task<Employee?> GetEmployeeByEmailAsync(string email, CancellationToken cancellationToken)
     {
         try
         {
             return await _repository.GetAll<Employee>()
                 .Where(r => r.Email.ToLower() == email.ToLower())
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Співробітника з електронною поштою {email}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Співробітника з електронною поштою {email}", ex);
         }
     }
     
 
-    public IEnumerable<Employee> GetAllEmployees(int page, int size)
+    public async Task<IEnumerable<Employee>> GetAllEmployeesAsync(int page, int size, CancellationToken cancellationToken)
     {
         try
         {
-            return _repository.GetAll<Employee>()
+            return await _repository.GetAll<Employee>()
                 .Skip((page - 1) * size)
                 .Take(size)
-                .ToList();
+                .ToListAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при отриманні списку співробітників", ex);
+            throw new Exception("Помилка сервісу при отриманні списку співробітників", ex);
         }
     }
 
@@ -73,7 +73,7 @@ public class EmployeeService : IEmployeeService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при оновленні співробітника з ID  {employee.Id}", ex);
+            throw new Exception($"Помилка сервісу при оновленні співробітника з ID  {employee.Id}", ex);
         }
     }
     
@@ -88,7 +88,7 @@ public class EmployeeService : IEmployeeService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Вхідної накладної з ID  {employee.Id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Вхідної накладної з ID  {employee.Id}", ex);
         }
     }
     
@@ -104,7 +104,7 @@ public class EmployeeService : IEmployeeService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при відновленні Вхідної накладної з ID  {employee.Id}", ex);
+            throw new Exception($"Помилка сервісу при відновленні Вхідної накладної з ID  {employee.Id}", ex);
         }
     }
 
@@ -122,20 +122,20 @@ public class EmployeeService : IEmployeeService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні співробітника з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні співробітника з ID {id}", ex);
         }
         
     }
 
-    public async Task<IEnumerable<Employee>> GetEmployeesByConditionAsync(Expression<Func<Employee, bool>> predicate)
+    public async Task<IEnumerable<Employee>> GetEmployeesByConditionAsync(Expression<Func<Employee, bool>> predicate, CancellationToken cancellationToken)
     {
         try
         {
-            return await _repository.GetQuery(predicate).ToListAsync();
+            return await _repository.GetQuery(predicate).ToListAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка під час виконання пошуку співробітників", ex);
+            throw new Exception("Помилка сервісу під час виконання пошуку співробітників", ex);
         }
     }
 }

@@ -65,7 +65,8 @@ public class WarehouseProductCategoryController: ControllerBase
     {
         try
         {
-            var warehouseProductCategories = _warehouseProductCategoryService.GetWarehouseProductCategories(page, size);
+            var cancellationToken = GetCancellationToken();
+            var warehouseProductCategories = _warehouseProductCategoryService.GetWarehouseProductCategories(page, size, cancellationToken);
             return Ok(_mapper.Map<IEnumerable<WarehouseProductCategoryDto>>(warehouseProductCategories));
         }
         catch (Exception ex)
@@ -114,6 +115,7 @@ public class WarehouseProductCategoryController: ControllerBase
     {
         try
         {
+            var cancellationToken = GetCancellationToken();
             // передаємо параметри у сервіс для фільтрації
             var filteredCategories = _warehouseProductCategoryService.SearchWarehouseProductCategories(
                 id, 
@@ -123,7 +125,8 @@ public class WarehouseProductCategoryController: ControllerBase
                 createdById, 
                 removedAt, 
                 page, 
-                size);
+                size, 
+                cancellationToken);
 
             return Ok(_mapper.Map<IEnumerable<WarehouseProductCategoryDto>>(filteredCategories));
         }

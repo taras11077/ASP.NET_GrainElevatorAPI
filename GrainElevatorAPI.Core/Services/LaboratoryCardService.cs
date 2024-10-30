@@ -23,20 +23,21 @@ public class LaboratoryCardService : ILaboratoryCardService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при створенні Лабораторної карточки", ex);
+            throw new Exception("Помилка сервісу при створенні Лабораторної карточки", ex);
         }
     }
-    public IQueryable<LaboratoryCard> GetLaboratoryCards(int page, int size)
+    public async Task<IEnumerable<LaboratoryCard>> GetLaboratoryCards(int page, int size, CancellationToken cancellationToken)
     {
         try
         {
-            return _repository.GetAll<LaboratoryCard>()
+            return await _repository.GetAll<LaboratoryCard>()
                 .Skip((page - 1) * size)
-                .Take(size);
+                .Take(size)
+                .ToListAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при отриманні списку Лабораторних карточок", ex);
+            throw new Exception("Помилка сервісу при отриманні списку Лабораторних карточок", ex);
         }
     }
     public async Task<LaboratoryCard> GetLaboratoryCardByIdAsync(int id, CancellationToken cancellationToken)
@@ -47,11 +48,11 @@ public class LaboratoryCardService : ILaboratoryCardService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Лабораторної карточки з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Лабораторної карточки з ID {id}", ex);
         }
     }
 
-     public IEnumerable<LaboratoryCard> SearchLaboratoryCards(int? id,
+     public async Task<IEnumerable<LaboratoryCard>> SearchLaboratoryCards(int? id,
         string? labCardNumber,
         double? weedImpurity,
         double? moisture,
@@ -64,11 +65,12 @@ public class LaboratoryCardService : ILaboratoryCardService
         int? createdById,
         DateTime? removedAt,
         int page,
-        int size)
+        int size,
+        CancellationToken cancellationToken)
     {
         try
         {
-            var query = GetLaboratoryCards(page, size)
+            var query = _repository.GetAll<LaboratoryCard>()
                 .Include(lc => lc.InputInvoice)
                 .AsQueryable();
 
@@ -115,11 +117,11 @@ public class LaboratoryCardService : ILaboratoryCardService
             if (removedAt.HasValue)
                 query = query.Where(lc => lc.RemovedAt == removedAt.Value);
             
-            return query.ToList();
+            return await query.ToListAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при пошуку Лабораторних карточок", ex);
+            throw new Exception("Помилка сервісу при пошуку Лабораторних карточок", ex);
         }
     }
     
@@ -134,7 +136,7 @@ public class LaboratoryCardService : ILaboratoryCardService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при оновленні Лабораторної карточки з ID  {laboratoryCard.Id}", ex);
+            throw new Exception($"Помилка сервісу при оновленні Лабораторної карточки з ID  {laboratoryCard.Id}", ex);
         }
     }
 
@@ -149,7 +151,7 @@ public class LaboratoryCardService : ILaboratoryCardService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Лабораторної карточки з ID  {laboratoryCard.Id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Лабораторної карточки з ID  {laboratoryCard.Id}", ex);
         }
     }
     
@@ -165,7 +167,7 @@ public class LaboratoryCardService : ILaboratoryCardService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при відновленні Лабораторної карточки з ID  {laboratoryCard.Id}", ex);
+            throw new Exception($"Помилка сервісу при відновленні Лабораторної карточки з ID  {laboratoryCard.Id}", ex);
         }
     }
     
@@ -183,7 +185,7 @@ public class LaboratoryCardService : ILaboratoryCardService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Лабораторної карточки з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Лабораторної карточки з ID {id}", ex);
         }
     }
 }

@@ -55,7 +55,7 @@ public class WarehouseUnitService: IWarehouseUnitService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при обробці операції переміщення до складу продукції Реєстру з ID {register.Id}", ex);
+            throw new Exception($"Помилка сервісу при обробці операції переміщення до складу продукції Реєстру з ID {register.Id}", ex);
         }
     }
 
@@ -100,17 +100,18 @@ public class WarehouseUnitService: IWarehouseUnitService
     }
 
     
-    public IQueryable<WarehouseUnit> GetPagedWarehouseUnits(int page, int size)
+    public async Task<IEnumerable<WarehouseUnit>> GetPagedWarehouseUnits(int page, int size, CancellationToken cancellationToken)
     {
         try
         {
-            return _repository.GetAll<WarehouseUnit>()
+            return await _repository.GetAll<WarehouseUnit>()
                 .Skip((page - 1) * size)
-                .Take(size);
+                .Take(size)
+                .ToListAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при отриманні списку Cкладських одиниць", ex);
+            throw new Exception("Помилка сервісу при отриманні списку Cкладських одиниць", ex);
         }
     }
 
@@ -122,22 +123,22 @@ public class WarehouseUnitService: IWarehouseUnitService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Cкладської одиниці з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Cкладської одиниці з ID {id}", ex);
         }
     }
 
-    public IEnumerable<WarehouseUnit> SearchWarehouseUnits(int? id,
+    public async Task<IEnumerable<WarehouseUnit>> SearchWarehouseUnits(int? id,
         int? supplierId,
         int? productId,
         int? createdById,
         DateTime? removedAt,
         int page,
-        int size)
+        int size, 
+        CancellationToken cancellationToken)
     {
         try
         {
-            var query = GetPagedWarehouseUnits(page, size)
-                .AsQueryable();
+            var query = _repository.GetAll<WarehouseUnit>();
 
             if (id.HasValue)
             {
@@ -157,11 +158,11 @@ public class WarehouseUnitService: IWarehouseUnitService
             if (removedAt.HasValue)
                 query = query.Where(wu => wu.RemovedAt == removedAt.Value);
             
-            return query.ToList();
+            return await query .ToListAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при пошуку Cкладських одиниць за параметрами", ex);
+            throw new Exception("Помилка сервісу при пошуку Cкладських одиниць за параметрами", ex);
         }
     }
     
@@ -176,7 +177,7 @@ public class WarehouseUnitService: IWarehouseUnitService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при оновленні Cкладської одиниці з ID  {warehouseUnit.Id}", ex);
+            throw new Exception($"Помилка сервісу при оновленні Cкладської одиниці з ID  {warehouseUnit.Id}", ex);
         }
     }
 
@@ -191,7 +192,7 @@ public class WarehouseUnitService: IWarehouseUnitService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Cкладської одиниці з ID  {warehouseUnit.Id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Cкладської одиниці з ID  {warehouseUnit.Id}", ex);
         }
     }
     
@@ -207,7 +208,7 @@ public class WarehouseUnitService: IWarehouseUnitService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при відновленні Cкладської одиниці з ID  {warehouseUnit.Id}", ex);
+            throw new Exception($"Помилка сервісу при відновленні Cкладської одиниці з ID  {warehouseUnit.Id}", ex);
         }
     }
     
@@ -225,7 +226,7 @@ public class WarehouseUnitService: IWarehouseUnitService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Cкладської одиниці з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Cкладської одиниці з ID {id}", ex);
         }
     }
 }

@@ -62,7 +62,8 @@ public class RoleController : ControllerBase
     {
         try
         {
-            var roles = _roleService.GetRoles(page, size);
+            var cancellationToken = GetCancellationToken();
+            var roles = _roleService.GetRoles(page, size, cancellationToken);
             return Ok(roles);
         }
         catch (Exception ex)
@@ -98,7 +99,8 @@ public class RoleController : ControllerBase
     {
         try
         {
-            var roles = _roleService.SearchRoles(title);
+            var cancellationToken = GetCancellationToken();
+            var roles = _roleService.SearchRoles(title, cancellationToken);
             return Ok(_mapper.Map<IEnumerable<RoleDto>>(roles));
         }
         catch (Exception ex)

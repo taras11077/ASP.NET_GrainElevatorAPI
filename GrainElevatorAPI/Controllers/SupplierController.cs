@@ -59,7 +59,8 @@ public class SupplierController : ControllerBase
 	{
 		try
 		{
-			var suppliers = _supplierService.GetSuppliers(page, size);
+			var cancellationToken = GetCancellationToken();
+			var suppliers = _supplierService.GetSuppliers(page, size, cancellationToken);
 			return Ok(_mapper.Map<IEnumerable<SupplierDto>>(suppliers));
 		}
 		catch (Exception ex)
@@ -93,7 +94,8 @@ public class SupplierController : ControllerBase
 	{
 		try
 		{
-			var suppliers = _supplierService.SearchSupplier(title);
+			var cancellationToken = GetCancellationToken();
+			var suppliers = _supplierService.SearchSupplier(title, cancellationToken);
 			return Ok(_mapper.Map<IEnumerable<SupplierDto>>(suppliers));
 		}
 		catch (Exception ex)

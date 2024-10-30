@@ -7,8 +7,8 @@ public interface IEmployeeService
 {
     Task<Employee> GetEmployeeByIdAsync(int id, CancellationToken cancellationToken);
     
-    Task<Employee> GetEmployeeByEmailAsync(string email);
-    IEnumerable<Employee> GetAllEmployees(int page, int size);
+    Task<Employee?> GetEmployeeByEmailAsync(string email, CancellationToken cancellationToken);
+    Task<IEnumerable<Employee>> GetAllEmployeesAsync(int page, int size, CancellationToken cancellationToken);
 
     Task<Employee> UpdateEmployeeAsync(Employee employee, string passwordHash, int modifiedById, CancellationToken cancellationToken);
     
@@ -16,5 +16,5 @@ public interface IEmployeeService
     Task<Employee> RestoreRemovedEmployeeAsync(Employee employee, int restoredById, CancellationToken cancellationToken);
     
     Task<bool> DeleteEmployeeAsync(int id, CancellationToken cancellationToken);
-    Task<IEnumerable<Employee>> GetEmployeesByConditionAsync(Expression<Func<Employee, bool>> predicate);
+    Task<IEnumerable<Employee>> GetEmployeesByConditionAsync(Expression<Func<Employee, bool>> predicate, CancellationToken cancellationToken);
 }

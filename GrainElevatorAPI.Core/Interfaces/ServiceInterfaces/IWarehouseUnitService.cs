@@ -10,12 +10,13 @@ public interface IWarehouseUnitService
     Task<WarehouseUnit> SoftDeleteWarehouseUnitAsync(WarehouseUnit warehouseUnit, int removedById, CancellationToken cancellationToken);
     Task<WarehouseUnit> RestoreRemovedWarehouseUnitAsync(WarehouseUnit warehouseUnit, int restoredById, CancellationToken cancellationToken);
     Task<bool> DeleteWarehouseUnitAsync(int id, CancellationToken cancellationToken);
-    IQueryable<WarehouseUnit> GetPagedWarehouseUnits(int page, int size);
-    IEnumerable<WarehouseUnit> SearchWarehouseUnits(int? id,
+    Task<IEnumerable<WarehouseUnit>> GetPagedWarehouseUnits(int page, int size, CancellationToken cancellationToken);
+    Task<IEnumerable<WarehouseUnit>> SearchWarehouseUnits(int? id,
         int? supplierId,
         int? productId,
         int? createdById,
         DateTime? removedAt,
         int page,
-        int size);
+        int size, 
+        CancellationToken cancellationToken);
 }

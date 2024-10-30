@@ -83,7 +83,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         {
             // відкат транзакції в разі помилки
             await _repository.RollbackTransactionAsync(cancellationToken);
-            throw new Exception("Помилка при створенні Реєстру", ex);
+            throw new Exception("Помилка сервісу при створенні Реєстру", ex);
         }
         
     }
@@ -102,7 +102,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Реєстру з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Реєстру з ID {id}", ex);
         }
     }
 
@@ -114,7 +114,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при оновленні Реєстру з ID  {invoiceRegister.Id}", ex);
+            throw new Exception($"Помилка сервісу при оновленні Реєстру з ID  {invoiceRegister.Id}", ex);
         }
     }
 
@@ -133,35 +133,36 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Реєстру з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Реєстру з ID {id}", ex);
         }
     }
 
-    public IQueryable<InvoiceRegister> GetRegisters(int page, int size)
+    public async Task<IEnumerable<InvoiceRegister>> GetRegisters(int page, int size, CancellationToken cancellationToken)
     {
         try
         {
-            return _repository.GetAll<InvoiceRegister>()
+            return await _repository.GetAll<InvoiceRegister>()
                 .Skip((page - 1) * size)
-                .Take(size);
+                .Take(size)
+                .ToListAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при отриманні списку Реєстрів", ex);
+            throw new Exception("Помилка сервісу при отриманні списку Реєстрів", ex);
         }
     }
 
-    public IEnumerable<InvoiceRegister> SearchRegisters(string registerNumber)
+    public async Task<IEnumerable<InvoiceRegister>> SearchRegisters(string registerNumber, CancellationToken cancellationToken)
     {
         try
         {
-            return _repository.GetAll<InvoiceRegister>()
+            return await _repository.GetAll<InvoiceRegister>()
                 .Where(r => r.RegisterNumber.ToLower().Contains(registerNumber.ToLower()))
-                .ToList();
+                .ToListAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Реєстру за номером {registerNumber}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Реєстру за номером {registerNumber}", ex);
         }
     }
 }

@@ -75,7 +75,8 @@ public class InvoiceRegisterController : ControllerBase
     {
         try
         {
-            var registers = _invoiceRegisterService.GetRegisters(page, size);
+            var cancellationToken = GetCancellationToken();
+            var registers = _invoiceRegisterService.GetRegisters(page, size, cancellationToken);
             return Ok(_mapper.Map<IEnumerable<InvoiceRegisterDto>>(registers));
         }
         catch (Exception ex)

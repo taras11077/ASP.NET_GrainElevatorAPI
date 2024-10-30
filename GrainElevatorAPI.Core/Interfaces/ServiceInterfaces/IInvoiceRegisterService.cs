@@ -16,6 +16,6 @@ public interface IInvoiceRegisterService
     Task<InvoiceRegister> GetRegisterByIdAsync(int id, CancellationToken cancellationToken);
     Task<InvoiceRegister> UpdateRegisterAsync(InvoiceRegister invoiceRegister, CancellationToken cancellationToken);
     Task<bool> DeleteRegisterAsync(int id, CancellationToken cancellationToken);
-    IQueryable<InvoiceRegister> GetRegisters(int page, int size);
-    IEnumerable<InvoiceRegister> SearchRegisters(string registerNumber);
+    Task<IEnumerable<InvoiceRegister>> GetRegisters(int page, int size, CancellationToken cancellationToken);
+    Task<IEnumerable<InvoiceRegister>> SearchRegisters(string registerNumber, CancellationToken cancellationToken);
 }

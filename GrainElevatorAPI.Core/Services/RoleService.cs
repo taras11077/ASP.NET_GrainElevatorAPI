@@ -23,7 +23,7 @@ public class RoleService : IRoleService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при створенні ролі", ex);
+            throw new Exception("Помилка сервісу при створенні Ролі", ex);
         }
     }
     
@@ -41,7 +41,7 @@ public class RoleService : IRoleService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при додаванні ролі", ex);
+            throw new Exception("Помилка сервісу при додаванні Ролі", ex);
         }
     }
 
@@ -53,50 +53,50 @@ public class RoleService : IRoleService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Ролі з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Ролі з ID {id}", ex);
         }
     }
 
-    public async Task<Role> GetRoleByTitleAsync(string title)
+    public async Task<Role?> GetRoleByTitleAsync(string title, CancellationToken cancellationToken)
     {
         try
         {
             return await _repository.GetAll<Role>()
                 .Where(r => r.Title.ToLower() == title.ToLower())
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Ролі з назвою {title}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Ролі з назвою {title}", ex);
         }
     }
 
-    public IEnumerable<Role> GetRoles(int page, int size)
+    public async Task<IEnumerable<Role>> GetRoles(int page, int size, CancellationToken cancellationToken)
     {
         try
         {
-            return _repository.GetAll<Role>()
+            return await _repository.GetAll<Role>()
                 .Skip((page - 1) * size)
                 .Take(size)
-                .ToList();
+                .ToListAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при отриманні списку ролів", ex);
+            throw new Exception("Помилка сервісу при отриманні списку Ролів", ex);
         }
     }
 
-    public IEnumerable<Role> SearchRoles(string title)
+    public async Task<IEnumerable<Role>> SearchRoles(string title, CancellationToken cancellationToken)
     {
         try
         {
-            return _repository.GetAll<Role>()
+            return await _repository.GetAll<Role>()
                 .Where(r => r.Title.ToLower().Contains(title.ToLower()))
-                .ToList();
+                .ToListAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні ролі з назвою {title}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Ролі з назвою {title}", ex);
         }
     }
     
@@ -111,7 +111,7 @@ public class RoleService : IRoleService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при оновленні ролі з ID  {role.Id}", ex);
+            throw new Exception($"Помилка сервісу при оновленні Ролі з ID  {role.Id}", ex);
         }
     }
     
@@ -126,7 +126,7 @@ public class RoleService : IRoleService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Продукції з ID  {role.Id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Ролі з ID  {role.Id}", ex);
         }
     }
     
@@ -142,7 +142,7 @@ public class RoleService : IRoleService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при відновленні Продукції з ID  {role.Id}", ex);
+            throw new Exception($"Помилка сервісу при відновленні Ролі з ID  {role.Id}", ex);
         }
     }
 
@@ -160,7 +160,7 @@ public class RoleService : IRoleService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Ролі з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Ролі з ID {id}", ex);
         }
     }
     

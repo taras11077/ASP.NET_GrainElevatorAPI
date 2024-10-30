@@ -23,20 +23,21 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при додаванні Категорії продукції", ex);
+            throw new Exception("Помилка сервісу при додаванні Категорії продукції", ex);
         }
     }
-    public IQueryable<WarehouseProductCategory> GetWarehouseProductCategories(int page, int size)
+    public async Task<IEnumerable<WarehouseProductCategory>> GetWarehouseProductCategories(int page, int size, CancellationToken cancellationToken)
     {
         try
         {
-            return _repository.GetAll<WarehouseProductCategory>()
+            return await _repository.GetAll<WarehouseProductCategory>()
                 .Skip((page - 1) * size)
-                .Take(size);
+                .Take(size)
+                .ToListAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при отриманні списку Категорій продукції", ex);
+            throw new Exception("Помилка сервісу при отриманні списку Категорій продукції", ex);
         }
     }
     
@@ -49,22 +50,23 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Категорії продукції з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Категорії продукції з ID {id}", ex);
         }
     }
 
-     public IEnumerable<WarehouseProductCategory> SearchWarehouseProductCategories(int? id,
+     public async Task<IEnumerable<WarehouseProductCategory>> SearchWarehouseProductCategories(int? id,
          string? title,
          int? supplierId,
          int? productId,
          int? createdById,
          DateTime? removedAt,
          int page,
-         int size)
+         int size, 
+         CancellationToken cancellationToken)
     {
         try
         {
-            var query = GetWarehouseProductCategories(page, size)
+            var query = _repository.GetAll<WarehouseProductCategory>()
                 .Include(wpc => wpc.WarehouseUnit)
                 .AsQueryable();
 
@@ -90,11 +92,11 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
             if (removedAt.HasValue)
                 query = query.Where(wpc => wpc.RemovedAt == removedAt.Value);
             
-            return query.ToList();
+            return await query.ToListAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при пошуку Категорій продукції", ex);
+            throw new Exception("Помилка сервісу при пошуку Категорій продукції", ex);
         }
     }
     
@@ -109,7 +111,7 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при оновленні Категорії продукції з ID  {warehouseProductCategory.Id}", ex);
+            throw new Exception($"Помилка сервісу при оновленні Категорії продукції з ID  {warehouseProductCategory.Id}", ex);
         }
     }
 
@@ -124,7 +126,7 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Категорії продукції з ID  {warehouseProductCategory.Id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Категорії продукції з ID  {warehouseProductCategory.Id}", ex);
         }
     }
     
@@ -140,7 +142,7 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при відновленні Категорії продукції з ID  {warehouseProductCategory.Id}", ex);
+            throw new Exception($"Помилка сервісу при відновленні Категорії продукції з ID  {warehouseProductCategory.Id}", ex);
         }
     }
     
@@ -158,7 +160,7 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Категорії продукції з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Категорії продукції з ID {id}", ex);
         }
     }
 }

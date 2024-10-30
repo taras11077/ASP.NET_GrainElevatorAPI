@@ -10,8 +10,8 @@ public interface ILaboratoryCardService
     Task<LaboratoryCard> SoftDeleteLaboratoryCardAsync(LaboratoryCard laboratoryCard, int removedById, CancellationToken cancellationToken);
     Task<LaboratoryCard> RestoreRemovedLaboratoryCardAsync(LaboratoryCard laboratoryCard, int restoredById, CancellationToken cancellationToken);
     Task<bool> DeleteLaboratoryCardAsync(int id, CancellationToken cancellationToken);
-    IQueryable<LaboratoryCard> GetLaboratoryCards(int page, int size);
-    IEnumerable<LaboratoryCard> SearchLaboratoryCards(int? id,
+    Task<IEnumerable<LaboratoryCard>> GetLaboratoryCards(int page, int size, CancellationToken cancellationToken);
+    Task<IEnumerable<LaboratoryCard>> SearchLaboratoryCards(int? id,
         string? labCardNumber,
         double? weedImpurity,
         double? moisture,
@@ -24,5 +24,6 @@ public interface ILaboratoryCardService
         int? createdById,
         DateTime? removedAt,
         int page,
-        int size);
+        int size,
+        CancellationToken cancellationToken);
 }

@@ -41,7 +41,8 @@ public class EmployeeController : ControllerBase
     {
         try
         {
-            var employees = _employeeService.GetAllEmployees(page, size);
+            var cancellationToken = GetCancellationToken();
+            var employees = await _employeeService.GetAllEmployeesAsync(page, size, cancellationToken);
             return Ok(_mapper.Map<IEnumerable<EmployeeDto>>(employees));
         }
         catch (Exception ex)
@@ -75,7 +76,8 @@ public class EmployeeController : ControllerBase
     {
         try
         {
-            var employees = await _employeeService.GetEmployeesByConditionAsync(e => e.FirstName.Contains(name) || e.LastName.Contains(name));
+            var cancellationToken = GetCancellationToken();
+            var employees = await _employeeService.GetEmployeesByConditionAsync(e => e.FirstName.Contains(name) || e.LastName.Contains(name), cancellationToken);
             return Ok(_mapper.Map<IEnumerable<EmployeeDto>>(employees));
         }
         catch (Exception ex)
