@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
+using GrainElevatorAPI.DTO.DTOs;
+using GrainElevatorAPI.DTO.Requests.CreateRequests;
+using GrainElevatorAPI.DTO.Requests.UpdateRequests;
 using GrainElevatorAPI.DTOs;
+using GrainElevatorAPI.DTOs.Requests;
 using GrainElevatorAPI.Extensions;
-using GrainElevatorAPI.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GrainElevatorAPI.Controllers;

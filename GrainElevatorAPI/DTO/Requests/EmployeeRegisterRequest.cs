@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GrainElevatorAPI.Requests;
+namespace GrainElevatorAPI.DTOs.Requests;
 
 public class EmployeeRegisterRequest : EmployeeLoginRequest
 {

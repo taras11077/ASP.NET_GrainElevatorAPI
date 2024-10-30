@@ -146,7 +146,7 @@ async Task EnsureAdminCreated(IServiceProvider services)
     }
     
     // перевірка, чи існує адміністратор з таким email
-    var existingAdmin = await authService.FindByEmailAsync(adminEmail);
+    var existingAdmin = await authService.FindByEmailAsync(adminEmail, cancellationToken);
     if (existingAdmin != null)
     {
         logger.LogInformation($"Адміністратор з email {adminEmail} вже існує. Продовження виконання програми.");

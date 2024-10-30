@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GrainElevatorAPI.DTOs;
+namespace GrainElevatorAPI.DTO.DTOs;
 
 public class WarehouseProductCategoryDto
 {

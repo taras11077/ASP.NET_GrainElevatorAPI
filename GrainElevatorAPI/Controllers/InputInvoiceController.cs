@@ -1,9 +1,12 @@
 using AutoMapper;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
+using GrainElevatorAPI.DTO.DTOs;
+using GrainElevatorAPI.DTO.Requests.CreateRequests;
+using GrainElevatorAPI.DTO.Requests.UpdateRequests;
 using GrainElevatorAPI.DTOs;
+using GrainElevatorAPI.DTOs.Requests;
 using GrainElevatorAPI.Extensions;
-using GrainElevatorAPI.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,11 +47,17 @@ public class InputInvoiceController : ControllerBase
         {
             var cancellationToken = GetCancellationToken();
             
-            var newInputInvoice = _mapper.Map<InputInvoice>(request);
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             
-            var createdInputInvoice = await _inputInvoiceService.AddInputInvoiceAsync(newInputInvoice, createdById, cancellationToken);
-            _logger.LogInformation($"Прибуткову накладну з ID = {createdInputInvoice.Id} створено.");
+            var createdInputInvoice = await _inputInvoiceService.CreateInputInvoiceAsync(
+                request.InvoiceNumber,
+                request.SupplierTitle,
+                request.ProductTitle,
+                createdById, 
+                cancellationToken);
+            
+            _logger.LogInformation($"Створено прибуткову накладну з ID = {createdInputInvoice.Id}.");
+            
             return CreatedAtAction(nameof(GetInputInvoice), new { id = createdInputInvoice.Id },
                 _mapper.Map<InputInvoiceDto>(createdInputInvoice));
         }
@@ -62,11 +71,12 @@ public class InputInvoiceController : ControllerBase
 
     [HttpGet]
     //[Authorize(Roles = "admin, laboratory")]
-    public ActionResult<IEnumerable<InputInvoice>> GetInputInvoice([FromQuery] int page = 1, [FromQuery] int size = 10)
+    public ActionResult<IEnumerable<InputInvoice>> GetInputInvoices([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
         {
-            var inputInvoices = _inputInvoiceService.GetInputInvoices(page, size);
+            var cancellationToken = GetCancellationToken();
+            var inputInvoices = _inputInvoiceService.GetInputInvoices(page, size, cancellationToken);
             return Ok(_mapper.Map<IEnumerable<InputInvoiceDto>>(inputInvoices));
         }
         catch (Exception ex)
@@ -116,9 +126,10 @@ public class InputInvoiceController : ControllerBase
     {
         try
         {
+            var cancellationToken = GetCancellationToken();
             // передаємо параметри у сервіс для фільтрації
             var filteredInvoices = _inputInvoiceService.SearchInputInvoices(
-                id, invoiceNumber, arrivalDate, vehicleNumber, physicalWeight, supplierId, productId, createdById, removedAt, page, size);
+                id, invoiceNumber, arrivalDate, vehicleNumber, physicalWeight, supplierId, productId, createdById, removedAt, page, size, cancellationToken);
 
             return Ok(_mapper.Map<IEnumerable<InputInvoiceDto>>(filteredInvoices));
         }

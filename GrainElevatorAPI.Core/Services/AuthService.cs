@@ -69,13 +69,13 @@ public class AuthService : IAuthService
         return employee;
     }
 
-    public async Task<Employee> FindByEmailAsync(string email)
+    public async Task<Employee?> FindByEmailAsync(string email, CancellationToken cancellationToken)
     {
         try
         {
             return await _repository.GetAll<Employee>()
                 .Where(r => r.Email.ToLower() == email.ToLower())
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellationToken);
         }
         catch (Exception ex)
         {

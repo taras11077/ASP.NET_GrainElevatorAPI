@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GrainElevatorAPI.Requests;
+namespace GrainElevatorAPI.DTO.Requests.CreateRequests;
 
 public class InvoiceRegisterCreateRequest
 {

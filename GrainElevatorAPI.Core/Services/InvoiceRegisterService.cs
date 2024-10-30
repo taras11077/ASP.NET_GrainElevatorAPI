@@ -32,7 +32,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
     {
         try
         {
-            // начало транзакции
+            // початок транзакції
             await _repository.BeginTransactionAsync(cancellationToken);
             
             // створення Реєстру (доробка продукції)

@@ -2,7 +2,7 @@ using AutoMapper;
 using GrainElevatorAPI.Auth;
 using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
-using GrainElevatorAPI.Requests;
+using GrainElevatorAPI.DTOs.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GrainElevatorAPI.Controllers;

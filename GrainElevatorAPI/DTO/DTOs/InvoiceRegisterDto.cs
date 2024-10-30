@@ -1,6 +1,4 @@
-﻿using GrainElevatorAPI.Core.Models;
-
-namespace GrainElevatorAPI.DTOs;
+﻿namespace GrainElevatorAPI.DTO.DTOs;
 
 public class InvoiceRegisterDto
 {

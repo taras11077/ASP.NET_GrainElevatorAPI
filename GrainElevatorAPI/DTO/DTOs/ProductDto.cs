@@ -1,6 +1,6 @@
-﻿namespace GrainElevatorAPI.DTOs;
+﻿namespace GrainElevatorAPI.DTO.DTOs;
 
-public class SupplierDto
+public class ProductDto
 {
     public int Id { get; set; }
     public string Title { get; set; }

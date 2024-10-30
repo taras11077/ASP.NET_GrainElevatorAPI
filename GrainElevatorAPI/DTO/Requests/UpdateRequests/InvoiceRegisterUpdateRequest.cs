@@ -1,6 +1,6 @@
 ﻿using GrainElevatorAPI.Core.Models;
 
-namespace GrainElevatorAPI.Requests;
+namespace GrainElevatorAPI.DTO.Requests.UpdateRequests;
 
 public class InvoiceRegisterUpdateRequest
 {

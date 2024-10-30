@@ -1,5 +1,6 @@
 ﻿using GrainElevatorAPI.Core.Models;
-using GrainElevatorAPI.Requests;
+using GrainElevatorAPI.DTO.Requests.UpdateRequests;
+using GrainElevatorAPI.DTOs.Requests;
 
 namespace GrainElevatorAPI.Extensions;
 

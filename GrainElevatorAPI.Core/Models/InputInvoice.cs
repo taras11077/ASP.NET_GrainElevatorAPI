@@ -29,7 +29,7 @@ public class InputInvoice : AuditableEntity, IInputInvoice
     
     
     
-    [Range(1, int.MaxValue, ErrorMessage = "SupplierId must be a positive number.")]
+    [Range(1, int.MaxValue, ErrorMessage = "LaboratoryCardId must be a positive number.")]
     public int? LaboratoryCardId { get; set; }
     
     [Range(1, int.MaxValue, ErrorMessage = "SupplierId must be a positive number.")]

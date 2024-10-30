@@ -1,7 +1,9 @@
 using AutoMapper;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
+using GrainElevatorAPI.DTO.DTOs;
+using GrainElevatorAPI.DTO.Requests.CreateRequests;
 using GrainElevatorAPI.DTOs;
-using GrainElevatorAPI.Requests;
+using GrainElevatorAPI.DTOs.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;

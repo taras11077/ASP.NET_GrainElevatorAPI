@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using GrainElevatorAPI.Core.Models;
+using GrainElevatorAPI.DTO.DTOs;
+using GrainElevatorAPI.DTO.Requests.CreateRequests;
+using GrainElevatorAPI.DTO.Requests.UpdateRequests;
 using GrainElevatorAPI.DTOs;
-using GrainElevatorAPI.Requests;
+using GrainElevatorAPI.DTOs.Requests;
 
 namespace GrainElevatorAPI.Mappers;
 

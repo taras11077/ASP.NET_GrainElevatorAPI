@@ -1,4 +1,4 @@
-﻿namespace GrainElevatorAPI.Requests;
+﻿namespace GrainElevatorAPI.DTO.Requests.UpdateRequests;
 
 public class WarehouseUnitUpdateRequest
 {

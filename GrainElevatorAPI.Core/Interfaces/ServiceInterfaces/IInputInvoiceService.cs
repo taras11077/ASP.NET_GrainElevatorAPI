@@ -4,12 +4,12 @@ namespace GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 
 public interface IInputInvoiceService
 {
-    Task<InputInvoice> AddInputInvoiceAsync(InputInvoice inputInvoice, int createdById, CancellationToken cancellationToken);
+    Task<InputInvoice> CreateInputInvoiceAsync(string invoiceNumber, string supplierTitle, string productTitle, int createdById, CancellationToken cancellationToken);
     Task<InputInvoice> GetInputInvoiceByIdAsync(int id, CancellationToken cancellationToken);
     
-    IEnumerable<InputInvoice> GetInputInvoices(int page, int size);
+    Task<IEnumerable<InputInvoice>> GetInputInvoices(int page, int size, CancellationToken cancellationToken);
 
-    IEnumerable<InputInvoice> SearchInputInvoices(int? id,
+    Task<IEnumerable<InputInvoice>> SearchInputInvoices(int? id,
         string? invoiceNumber,
         DateTime? arrivalDate,
         string? vehicleNumber,
@@ -19,7 +19,8 @@ public interface IInputInvoiceService
         int? createdById,
         DateTime? removedAt,
         int page,
-        int size);
+        int size, 
+        CancellationToken cancellationToken);
     Task<InputInvoice> UpdateInputInvoiceAsync(InputInvoice inputInvoice, int modifiedById, CancellationToken cancellationToken);
     
     Task<InputInvoice> SoftDeleteInputInvoiceAsync(InputInvoice inputInvoice, int removedById, CancellationToken cancellationToken);

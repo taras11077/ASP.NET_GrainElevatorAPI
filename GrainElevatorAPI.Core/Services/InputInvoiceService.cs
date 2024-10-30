@@ -1,6 +1,7 @@
 ﻿using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace GrainElevatorAPI.Core.Services;
@@ -17,33 +18,70 @@ public class InputInvoiceService : IInputInvoiceService
     }
     
     
-    public async Task<InputInvoice> AddInputInvoiceAsync(InputInvoice inputInvoice, int createdById, CancellationToken cancellationToken)
+    public async Task<InputInvoice> CreateInputInvoiceAsync(string invoiceNumber, string supplierTitle, string productTitle, int createdById, CancellationToken cancellationToken)
     {
         try
         {
-            inputInvoice.CreatedAt = DateTime.UtcNow;
-            inputInvoice.CreatedById = createdById;
+            // початок транзакції
+            await _repository.BeginTransactionAsync(cancellationToken);
             
-            return await _repository.AddAsync(inputInvoice, cancellationToken);
+            var supplier = await _repository.GetAll<Supplier>()
+                .FirstOrDefaultAsync(s => s.Title == supplierTitle, cancellationToken);
+        
+            if (supplier == null)
+            {
+                supplier = new Supplier { Title = supplierTitle };
+                await _repository.AddAsync(supplier, cancellationToken);
+            }
+            
+            var product = await _repository.GetAll<Product>()
+                .FirstOrDefaultAsync(p => p.Title == productTitle, cancellationToken);
+        
+            if (product == null)
+            {
+                product = new Product { Title = productTitle };
+                await _repository.AddAsync(product, cancellationToken);
+            }
+            
+            var inputInvoice = new InputInvoice
+            {
+                InvoiceNumber = invoiceNumber,
+                CreatedAt = DateTime.UtcNow,
+                CreatedById = createdById,
+                SupplierId = supplier.Id,
+                ProductId = product.Id,
+                Supplier = supplier,
+                Product = product
+            };
+
+            var addedInvoice = await _repository.AddAsync(inputInvoice, cancellationToken);
+            await _repository.SaveChangesAsync(cancellationToken);
+            
+            // фіксація транзакції
+            await _repository.CommitTransactionAsync(cancellationToken);
+
+            return addedInvoice;
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при додаванні Вхідної накладної", ex);
+            // відкат транзакції в разі помилки
+            await _repository.RollbackTransactionAsync(cancellationToken);
+            throw new Exception("Помилка сервісу при додаванні Вхідної накладної", ex);
         }
     }
 
-    public IEnumerable<InputInvoice> GetInputInvoices(int page, int size)
+    public async Task<IEnumerable<InputInvoice>> GetInputInvoices(int page, int size, CancellationToken cancellationToken)
     {
         try
         {
-            return _repository.GetAll<InputInvoice>()
+            return await _repository.GetAll<InputInvoice>()
                 .Skip((page - 1) * size)
                 .Take(size)
-                .ToList();
+                .ToListAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при отриманні списку Вхідних Накладних", ex);
+            throw new Exception("Помилка сервісу при отриманні списку Вхідних Накладних", ex);
         }
     }
     public async Task<InputInvoice> GetInputInvoiceByIdAsync(int id, CancellationToken cancellationToken)
@@ -54,12 +92,12 @@ public class InputInvoiceService : IInputInvoiceService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при отриманні Вхідної накладної з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Вхідної накладної з ID {id}", ex);
         }
     }
     
     
-    public IEnumerable<InputInvoice> SearchInputInvoices(
+    public async Task<IEnumerable<InputInvoice>> SearchInputInvoices(
         int? id,
         string? invoiceNumber,
         DateTime? arrivalDate,
@@ -70,12 +108,12 @@ public class InputInvoiceService : IInputInvoiceService
         int? createdById,
         DateTime? removedAt,
         int page,
-        int size)
+        int size, 
+        CancellationToken cancellationToken)
     {
         try
         {
-            // отримуємо всі накладні та конвертуємо у IQueryable для фільтрації
-            var query = GetInputInvoices(page, size).AsQueryable();
+            var query = _repository.GetAll<InputInvoice>();
             
             if (id.HasValue)
                 query = query.Where(ii => ii.Id == id.Value);
@@ -104,11 +142,14 @@ public class InputInvoiceService : IInputInvoiceService
             if (removedAt.HasValue)
                 query = query.Where(ii => ii.RemovedAt == removedAt.Value);
             
-            return query.ToList();
+            return await query
+                .Skip((page - 1) * size)
+                .Take(size)
+                .ToListAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при пошуку Вхідних накладних", ex);
+            throw new Exception("Помилка сервісу при пошуку Вхідних накладних", ex);
         }
     }
     public async Task<InputInvoice> UpdateInputInvoiceAsync(InputInvoice inputInvoice, int modifiedById, CancellationToken cancellationToken)
@@ -122,7 +163,7 @@ public class InputInvoiceService : IInputInvoiceService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при оновленні Вхідної накладної з ID  {inputInvoice.Id}", ex);
+            throw new Exception($"Помилка сервісу при оновленні Вхідної накладної з ID  {inputInvoice.Id}", ex);
         }
     }
     
@@ -137,7 +178,7 @@ public class InputInvoiceService : IInputInvoiceService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Вхідної накладної з ID  {inputInvoice.Id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Вхідної накладної з ID  {inputInvoice.Id}", ex);
         }
     }
     
@@ -153,7 +194,7 @@ public class InputInvoiceService : IInputInvoiceService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при відновленні Вхідної накладної з ID  {inputInvoice.Id}", ex);
+            throw new Exception($"Помилка сервісу при відновленні Вхідної накладної з ID  {inputInvoice.Id}", ex);
         }
     }
     
@@ -171,7 +212,7 @@ public class InputInvoiceService : IInputInvoiceService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка при видаленні Вхідної накладної з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Вхідної накладної з ID {id}", ex);
         }
     }
     
