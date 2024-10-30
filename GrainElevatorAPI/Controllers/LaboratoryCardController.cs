@@ -24,6 +24,11 @@ public class LaboratoryCardController : ControllerBase
         _logger = logger;
     }
     
+    private CancellationToken GetCancellationToken()
+    {
+        return HttpContext.RequestAborted;
+    }
+    
 
     [HttpPost]
     //[Authorize(Roles = "Admin, Laboratory")]
@@ -36,10 +41,11 @@ public class LaboratoryCardController : ControllerBase
         
         try
         {
+            var cancellationToken = GetCancellationToken();
             var newLaboratoryCard = _mapper.Map<LaboratoryCard>(request);
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             
-            var createdLaboratoryCard = await _laboratoryCardService.AddLaboratoryCardAsync(newLaboratoryCard, createdById);
+            var createdLaboratoryCard = await _laboratoryCardService.CreateLaboratoryCardAsync(newLaboratoryCard, createdById, cancellationToken);
             return CreatedAtAction(nameof(GetLaboratoryCard), new { id = createdLaboratoryCard.Id },
                 _mapper.Map<LaboratoryCardDto>(createdLaboratoryCard));
         }
@@ -74,7 +80,8 @@ public class LaboratoryCardController : ControllerBase
     {
         try
         {
-            var laboratoryCard = await _laboratoryCardService.GetLaboratoryCardByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var laboratoryCard = await _laboratoryCardService.GetLaboratoryCardByIdAsync(id, cancellationToken);
             if (laboratoryCard == null)
             {
                 return NotFound($"Лабораторної карточки з ID {id} не знайдено.");
@@ -150,7 +157,8 @@ public class LaboratoryCardController : ControllerBase
         
         try
         {
-            var laboratoryCardDb = await _laboratoryCardService.GetLaboratoryCardByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var laboratoryCardDb = await _laboratoryCardService.GetLaboratoryCardByIdAsync(id, cancellationToken);
             if (laboratoryCardDb == null)
             {
                 return NotFound($"Лабораторної карточки з ID {id} не знайдено.");
@@ -158,7 +166,7 @@ public class LaboratoryCardController : ControllerBase
             
             laboratoryCardDb.UpdateFromRequest(request);
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var updatedLaboratoryCard = await _laboratoryCardService.UpdateLaboratoryCardAsync(laboratoryCardDb, modifiedById);
+            var updatedLaboratoryCard = await _laboratoryCardService.UpdateLaboratoryCardAsync(laboratoryCardDb, modifiedById, cancellationToken);
             
             return Ok(_mapper.Map<LaboratoryCardDto>(updatedLaboratoryCard));
         }
@@ -176,14 +184,15 @@ public class LaboratoryCardController : ControllerBase
     {
         try
         {
-            var laboratoryCardDb = await _laboratoryCardService.GetLaboratoryCardByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var laboratoryCardDb = await _laboratoryCardService.GetLaboratoryCardByIdAsync(id, cancellationToken);
             if (laboratoryCardDb == null)
             {
                 return NotFound($"Лабораторної карточки з ID {id} не знайдено.");
             }
             
             var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var removedLaboratoryCard = await _laboratoryCardService.SoftDeleteLaboratoryCardAsync(laboratoryCardDb, removedById);
+            var removedLaboratoryCard = await _laboratoryCardService.SoftDeleteLaboratoryCardAsync(laboratoryCardDb, removedById, cancellationToken);
             
             return Ok(_mapper.Map<LaboratoryCardDto>(removedLaboratoryCard));
         }
@@ -201,14 +210,15 @@ public class LaboratoryCardController : ControllerBase
     {
         try
         {
-            var laboratoryCardDb = await _laboratoryCardService.GetLaboratoryCardByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var laboratoryCardDb = await _laboratoryCardService.GetLaboratoryCardByIdAsync(id, cancellationToken);
             if (laboratoryCardDb == null)
             {
                 return NotFound($"Лабораторної карточки з ID {id} не знайдено.");
             }
 
             var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var restoredLaboratoryCard = await _laboratoryCardService.RestoreRemovedLaboratoryCardAsync(laboratoryCardDb, restoredById);
+            var restoredLaboratoryCard = await _laboratoryCardService.RestoreRemovedLaboratoryCardAsync(laboratoryCardDb, restoredById, cancellationToken);
             
             return Ok(_mapper.Map<LaboratoryCardDto>(restoredLaboratoryCard));
         }
@@ -226,7 +236,8 @@ public class LaboratoryCardController : ControllerBase
     {
         try
         {
-            var success = await _laboratoryCardService.DeleteLaboratoryCardAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var success = await _laboratoryCardService.DeleteLaboratoryCardAsync(id, cancellationToken);
             if (!success)
             {
                 return NotFound($"Лабораторної карточки з ID {id} не знайдено.");

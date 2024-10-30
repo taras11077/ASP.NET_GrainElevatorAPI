@@ -4,8 +4,8 @@ namespace GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 
 public interface IInputInvoiceService
 {
-    Task<InputInvoice> AddInputInvoiceAsync(InputInvoice inputInvoice, int createdById);
-    Task<InputInvoice> GetInputInvoiceByIdAsync(int id);
+    Task<InputInvoice> AddInputInvoiceAsync(InputInvoice inputInvoice, int createdById, CancellationToken cancellationToken);
+    Task<InputInvoice> GetInputInvoiceByIdAsync(int id, CancellationToken cancellationToken);
     
     IEnumerable<InputInvoice> GetInputInvoices(int page, int size);
 
@@ -20,10 +20,10 @@ public interface IInputInvoiceService
         DateTime? removedAt,
         int page,
         int size);
-    Task<InputInvoice> UpdateInputInvoiceAsync(InputInvoice inputInvoice, int modifiedById);
+    Task<InputInvoice> UpdateInputInvoiceAsync(InputInvoice inputInvoice, int modifiedById, CancellationToken cancellationToken);
     
-    Task<InputInvoice> SoftDeleteInputInvoiceAsync(InputInvoice inputInvoice, int removedById);
-    Task<InputInvoice> RestoreRemovedInputInvoiceAsync(InputInvoice inputInvoice, int restoredById);
-    Task<bool> DeleteInputInvoiceAsync(int id);
+    Task<InputInvoice> SoftDeleteInputInvoiceAsync(InputInvoice inputInvoice, int removedById, CancellationToken cancellationToken);
+    Task<InputInvoice> RestoreRemovedInputInvoiceAsync(InputInvoice inputInvoice, int restoredById, CancellationToken cancellationToken);
+    Task<bool> DeleteInputInvoiceAsync(int id, CancellationToken cancellationToken);
     
 }

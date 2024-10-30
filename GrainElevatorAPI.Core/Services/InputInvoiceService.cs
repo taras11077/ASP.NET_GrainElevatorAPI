@@ -17,14 +17,14 @@ public class InputInvoiceService : IInputInvoiceService
     }
     
     
-    public async Task<InputInvoice> AddInputInvoiceAsync(InputInvoice inputInvoice, int createdById)
+    public async Task<InputInvoice> AddInputInvoiceAsync(InputInvoice inputInvoice, int createdById, CancellationToken cancellationToken)
     {
         try
         {
             inputInvoice.CreatedAt = DateTime.UtcNow;
             inputInvoice.CreatedById = createdById;
             
-            return await _repository.AddAsync(inputInvoice);
+            return await _repository.AddAsync(inputInvoice, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -46,11 +46,11 @@ public class InputInvoiceService : IInputInvoiceService
             throw new Exception("Помилка при отриманні списку Вхідних Накладних", ex);
         }
     }
-    public async Task<InputInvoice> GetInputInvoiceByIdAsync(int id)
+    public async Task<InputInvoice> GetInputInvoiceByIdAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
-            return await _repository.GetByIdAsync<InputInvoice>(id);
+            return await _repository.GetByIdAsync<InputInvoice>(id, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -88,6 +88,9 @@ public class InputInvoiceService : IInputInvoiceService
 
             if (!string.IsNullOrEmpty(vehicleNumber))
                 query = query.Where(ii => ii.VehicleNumber == vehicleNumber);
+            
+            if (physicalWeight.HasValue)
+                query = query.Where(ii => ii.PhysicalWeight == physicalWeight.Value);
 
             if (supplierId.HasValue)
                 query = query.Where(ii => ii.SupplierId == supplierId.Value);
@@ -108,14 +111,14 @@ public class InputInvoiceService : IInputInvoiceService
             throw new Exception("Помилка при пошуку Вхідних накладних", ex);
         }
     }
-    public async Task<InputInvoice> UpdateInputInvoiceAsync(InputInvoice inputInvoice, int modifiedById)
+    public async Task<InputInvoice> UpdateInputInvoiceAsync(InputInvoice inputInvoice, int modifiedById, CancellationToken cancellationToken)
     {
         try
         {
             inputInvoice.ModifiedAt = DateTime.UtcNow;
             inputInvoice.ModifiedById = modifiedById;
             
-            return await _repository.UpdateAsync(inputInvoice);
+            return await _repository.UpdateAsync(inputInvoice, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -123,14 +126,14 @@ public class InputInvoiceService : IInputInvoiceService
         }
     }
     
-    public async Task<InputInvoice> SoftDeleteInputInvoiceAsync(InputInvoice inputInvoice, int removedById)
+    public async Task<InputInvoice> SoftDeleteInputInvoiceAsync(InputInvoice inputInvoice, int removedById, CancellationToken cancellationToken)
     {
         try
         {
             inputInvoice.RemovedAt = DateTime.UtcNow;
             inputInvoice.RemovedById = removedById;
             
-            return await _repository.UpdateAsync(inputInvoice);
+            return await _repository.UpdateAsync(inputInvoice, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -138,7 +141,7 @@ public class InputInvoiceService : IInputInvoiceService
         }
     }
     
-    public async Task<InputInvoice> RestoreRemovedInputInvoiceAsync(InputInvoice inputInvoice, int restoredById)
+    public async Task<InputInvoice> RestoreRemovedInputInvoiceAsync(InputInvoice inputInvoice, int restoredById, CancellationToken cancellationToken)
     {
         try
         {
@@ -146,7 +149,7 @@ public class InputInvoiceService : IInputInvoiceService
             inputInvoice.RestoredAt = DateTime.UtcNow;
             inputInvoice.RestoreById = restoredById;
             
-            return await _repository.UpdateAsync(inputInvoice);
+            return await _repository.UpdateAsync(inputInvoice, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -154,14 +157,14 @@ public class InputInvoiceService : IInputInvoiceService
         }
     }
     
-    public async Task<bool> DeleteInputInvoiceAsync(int id)
+    public async Task<bool> DeleteInputInvoiceAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
-            var supplier = await _repository.GetByIdAsync<InputInvoice>(id);
+            var supplier = await _repository.GetByIdAsync<InputInvoice>(id, cancellationToken);
             if (supplier != null)
             {
-                await _repository.DeleteAsync<InputInvoice>(id);
+                await _repository.DeleteAsync<InputInvoice>(id, cancellationToken);
                 return true;
             }
             return false;

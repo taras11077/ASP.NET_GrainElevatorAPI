@@ -28,6 +28,11 @@ public class EmployeeController : ControllerBase
         _logger = logger;
     }
 
+    
+    private CancellationToken GetCancellationToken()
+    {
+        return HttpContext.RequestAborted;
+    }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees(int page = 1, int size = 10)
@@ -49,7 +54,8 @@ public class EmployeeController : ControllerBase
     {
         try
         {
-            var employee = await _employeeService.GetEmployeeByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var employee = await _employeeService.GetEmployeeByIdAsync(id, cancellationToken);
             if (employee == null)
             {
                 return NotFound($"Співробітника з ID {id} не знайдено.");
@@ -82,7 +88,8 @@ public class EmployeeController : ControllerBase
     {
         try
         {
-            var employeeDb = await _employeeService.GetEmployeeByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var employeeDb = await _employeeService.GetEmployeeByIdAsync(id, cancellationToken);
             if (employeeDb == null)
             {
                 return NotFound($"Співробітника з ID {id} не знайдено.");
@@ -91,7 +98,7 @@ public class EmployeeController : ControllerBase
             employeeDb.UpdateFromRequest(request);
             
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var updatedEmployee = await _employeeService.UpdateEmployeeAsync(employeeDb, request.PasswordHash, modifiedById);
+            var updatedEmployee = await _employeeService.UpdateEmployeeAsync(employeeDb, request.PasswordHash, modifiedById, cancellationToken);
             
             return Ok(_mapper.Map<EmployeeDto>(updatedEmployee));
         }
@@ -108,14 +115,15 @@ public class EmployeeController : ControllerBase
     {
         try
         {
-            var employeeDb = await _employeeService.GetEmployeeByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var employeeDb = await _employeeService.GetEmployeeByIdAsync(id, cancellationToken);
             if (employeeDb == null)
             {
                 return NotFound($"Співробітника з ID {id} не знайдено.");
             }
 
             var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var removedEmployee = await _employeeService.SoftDeleteEmployeeAsync(employeeDb, removedById);
+            var removedEmployee = await _employeeService.SoftDeleteEmployeeAsync(employeeDb, removedById, cancellationToken);
             
             return Ok(_mapper.Map<EmployeeDto>(removedEmployee));
         }
@@ -133,14 +141,15 @@ public class EmployeeController : ControllerBase
     {
         try
         {
-            var employeeDb = await _employeeService.GetEmployeeByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var employeeDb = await _employeeService.GetEmployeeByIdAsync(id, cancellationToken);
             if (employeeDb == null)
             {
                 return NotFound($"Співробітника з ID {id} не знайдено.");
             }
             
             var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var restoredEmployee = await _employeeService.RestoreRemovedEmployeeAsync(employeeDb, restoredById);
+            var restoredEmployee = await _employeeService.RestoreRemovedEmployeeAsync(employeeDb, restoredById, cancellationToken);
 
             return Ok(_mapper.Map<EmployeeDto>(restoredEmployee));
         }
@@ -157,7 +166,8 @@ public class EmployeeController : ControllerBase
     {
         try
         {
-            var success = await _employeeService.DeleteEmployeeAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var success = await _employeeService.DeleteEmployeeAsync(id, cancellationToken);
             if (!success)
             {
                 return NotFound($"Співробітника з ID {id} не знайдено.");

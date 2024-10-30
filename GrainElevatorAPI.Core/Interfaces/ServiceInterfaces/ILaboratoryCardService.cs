@@ -4,12 +4,12 @@ namespace GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 
 public interface ILaboratoryCardService
 {
-    Task<LaboratoryCard> AddLaboratoryCardAsync(LaboratoryCard laboratoryCard, int createdById);
-    Task<LaboratoryCard> GetLaboratoryCardByIdAsync(int id);
-    Task<LaboratoryCard> UpdateLaboratoryCardAsync(LaboratoryCard laboratoryCard, int modifiedById);
-    Task<LaboratoryCard> SoftDeleteLaboratoryCardAsync(LaboratoryCard laboratoryCard, int removedById);
-    Task<LaboratoryCard> RestoreRemovedLaboratoryCardAsync(LaboratoryCard laboratoryCard, int restoredById);
-    Task<bool> DeleteLaboratoryCardAsync(int id);
+    Task<LaboratoryCard> CreateLaboratoryCardAsync(LaboratoryCard laboratoryCard, int createdById, CancellationToken cancellationToken);
+    Task<LaboratoryCard> GetLaboratoryCardByIdAsync(int id, CancellationToken cancellationToken);
+    Task<LaboratoryCard> UpdateLaboratoryCardAsync(LaboratoryCard laboratoryCard, int modifiedById, CancellationToken cancellationToken);
+    Task<LaboratoryCard> SoftDeleteLaboratoryCardAsync(LaboratoryCard laboratoryCard, int removedById, CancellationToken cancellationToken);
+    Task<LaboratoryCard> RestoreRemovedLaboratoryCardAsync(LaboratoryCard laboratoryCard, int restoredById, CancellationToken cancellationToken);
+    Task<bool> DeleteLaboratoryCardAsync(int id, CancellationToken cancellationToken);
     IQueryable<LaboratoryCard> GetLaboratoryCards(int page, int size);
     IEnumerable<LaboratoryCard> SearchLaboratoryCards(int? id,
         string? labCardNumber,

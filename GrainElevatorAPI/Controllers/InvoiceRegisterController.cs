@@ -41,10 +41,10 @@ public class InvoiceRegisterController : ControllerBase
     
         try
         {
-            var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-
             var cancellationToken = GetCancellationToken();
-        
+            
+            var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            
             // створення Реєстру (доробка продукції)
             var createdRegister = await _invoiceRegisterService.CreateRegisterAsync(
                 request.SupplierId,

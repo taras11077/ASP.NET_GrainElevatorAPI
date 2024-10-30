@@ -12,18 +12,18 @@ public class LaboratoryCardService : ILaboratoryCardService
     public LaboratoryCardService(IRepository repository) => _repository = repository;
 
 
-    public async Task<LaboratoryCard> AddLaboratoryCardAsync(LaboratoryCard laboratoryCard, int createdById)
+    public async Task<LaboratoryCard> CreateLaboratoryCardAsync(LaboratoryCard laboratoryCard, int createdById, CancellationToken cancellationToken)
     {
         try
         {
             laboratoryCard.CreatedAt = DateTime.UtcNow;
             laboratoryCard.CreatedById = createdById;
             
-            return await _repository.AddAsync(laboratoryCard);
+            return await _repository.AddAsync(laboratoryCard, cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка при додаванні Лабораторної карточки", ex);
+            throw new Exception("Помилка при створенні Лабораторної карточки", ex);
         }
     }
     public IQueryable<LaboratoryCard> GetLaboratoryCards(int page, int size)
@@ -39,11 +39,11 @@ public class LaboratoryCardService : ILaboratoryCardService
             throw new Exception("Помилка при отриманні списку Лабораторних карточок", ex);
         }
     }
-    public async Task<LaboratoryCard> GetLaboratoryCardByIdAsync(int id)
+    public async Task<LaboratoryCard> GetLaboratoryCardByIdAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
-            return await _repository.GetByIdAsync<LaboratoryCard>(id);
+            return await _repository.GetByIdAsync<LaboratoryCard>(id, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -123,14 +123,14 @@ public class LaboratoryCardService : ILaboratoryCardService
         }
     }
     
-    public async Task<LaboratoryCard> UpdateLaboratoryCardAsync(LaboratoryCard laboratoryCard, int modifiedById)
+    public async Task<LaboratoryCard> UpdateLaboratoryCardAsync(LaboratoryCard laboratoryCard, int modifiedById, CancellationToken cancellationToken)
     {
         try
         {
             laboratoryCard.ModifiedAt = DateTime.UtcNow;
             laboratoryCard.ModifiedById = modifiedById;
             
-            return await _repository.UpdateAsync(laboratoryCard);
+            return await _repository.UpdateAsync(laboratoryCard, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -138,14 +138,14 @@ public class LaboratoryCardService : ILaboratoryCardService
         }
     }
 
-    public async Task<LaboratoryCard> SoftDeleteLaboratoryCardAsync(LaboratoryCard laboratoryCard, int removedById)
+    public async Task<LaboratoryCard> SoftDeleteLaboratoryCardAsync(LaboratoryCard laboratoryCard, int removedById, CancellationToken cancellationToken)
     {
         try
         {
             laboratoryCard.RemovedAt = DateTime.UtcNow;
             laboratoryCard.RemovedById = removedById;
             
-            return await _repository.UpdateAsync(laboratoryCard);
+            return await _repository.UpdateAsync(laboratoryCard, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -153,7 +153,7 @@ public class LaboratoryCardService : ILaboratoryCardService
         }
     }
     
-    public async Task<LaboratoryCard> RestoreRemovedLaboratoryCardAsync(LaboratoryCard laboratoryCard, int restoredById)
+    public async Task<LaboratoryCard> RestoreRemovedLaboratoryCardAsync(LaboratoryCard laboratoryCard, int restoredById, CancellationToken cancellationToken)
     {
         try
         {
@@ -161,7 +161,7 @@ public class LaboratoryCardService : ILaboratoryCardService
             laboratoryCard.RestoredAt = DateTime.UtcNow;
             laboratoryCard.RestoreById = restoredById;
             
-            return await _repository.UpdateAsync(laboratoryCard);
+            return await _repository.UpdateAsync(laboratoryCard, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -169,14 +169,14 @@ public class LaboratoryCardService : ILaboratoryCardService
         }
     }
     
-    public async Task<bool> DeleteLaboratoryCardAsync(int id)
+    public async Task<bool> DeleteLaboratoryCardAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
-            var laboratoryCard = await _repository.GetByIdAsync<LaboratoryCard>(id);
+            var laboratoryCard = await _repository.GetByIdAsync<LaboratoryCard>(id, cancellationToken);
             if (laboratoryCard != null)
             {
-                await _repository.DeleteAsync<LaboratoryCard>(id);
+                await _repository.DeleteAsync<LaboratoryCard>(id, cancellationToken);
                 return true;
             }
             return false;

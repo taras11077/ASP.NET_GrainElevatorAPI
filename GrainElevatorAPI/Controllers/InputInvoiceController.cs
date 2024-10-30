@@ -25,7 +25,12 @@ public class InputInvoiceController : ControllerBase
         _logger = logger;
     }
     
-
+    private CancellationToken GetCancellationToken()
+    {
+        return HttpContext.RequestAborted;
+    }
+    
+    
     [HttpPost]
     //[Authorize(Roles = "Admin, laboratory")]
     public async Task<ActionResult<InputInvoice>> CreateInputInvoice(InputInvoiceCreateRequest request)
@@ -37,10 +42,12 @@ public class InputInvoiceController : ControllerBase
         
         try
         {
+            var cancellationToken = GetCancellationToken();
+            
             var newInputInvoice = _mapper.Map<InputInvoice>(request);
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             
-            var createdInputInvoice = await _inputInvoiceService.AddInputInvoiceAsync(newInputInvoice, createdById);
+            var createdInputInvoice = await _inputInvoiceService.AddInputInvoiceAsync(newInputInvoice, createdById, cancellationToken);
             _logger.LogInformation($"Прибуткову накладну з ID = {createdInputInvoice.Id} створено.");
             return CreatedAtAction(nameof(GetInputInvoice), new { id = createdInputInvoice.Id },
                 _mapper.Map<InputInvoiceDto>(createdInputInvoice));
@@ -76,7 +83,8 @@ public class InputInvoiceController : ControllerBase
     {
         try
         {
-            var inputInvoice = await _inputInvoiceService.GetInputInvoiceByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var inputInvoice = await _inputInvoiceService.GetInputInvoiceByIdAsync(id, cancellationToken);
             if (inputInvoice == null)
             {
                 return NotFound($"Прибуткову накладну з ID {id} не знайдено.");
@@ -133,7 +141,8 @@ public class InputInvoiceController : ControllerBase
         
         try
         {
-            var inputInvoiceDb = await _inputInvoiceService.GetInputInvoiceByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var inputInvoiceDb = await _inputInvoiceService.GetInputInvoiceByIdAsync(id, cancellationToken);
             if (inputInvoiceDb == null)
             {
                 return NotFound($"Прибуткову накладну з ID {id} не знайдено.");
@@ -141,7 +150,7 @@ public class InputInvoiceController : ControllerBase
             
             inputInvoiceDb.UpdateFromRequest(request);
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var updatedInputInvoice = await _inputInvoiceService.UpdateInputInvoiceAsync(inputInvoiceDb, modifiedById);
+            var updatedInputInvoice = await _inputInvoiceService.UpdateInputInvoiceAsync(inputInvoiceDb, modifiedById, cancellationToken);
 
             return Ok(_mapper.Map<InputInvoiceDto>(updatedInputInvoice));
         }
@@ -159,14 +168,15 @@ public class InputInvoiceController : ControllerBase
     {
         try
         {
-            var inputInvoiceDb = await _inputInvoiceService.GetInputInvoiceByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var inputInvoiceDb = await _inputInvoiceService.GetInputInvoiceByIdAsync(id, cancellationToken);
             if (inputInvoiceDb == null)
             {
                 return NotFound($"Прибуткову накладну з ID {id} не знайдено.");
             }
 
             var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var removedInputInvoice = await _inputInvoiceService.SoftDeleteInputInvoiceAsync(inputInvoiceDb, removedById);
+            var removedInputInvoice = await _inputInvoiceService.SoftDeleteInputInvoiceAsync(inputInvoiceDb, removedById, cancellationToken);
             
             return Ok(_mapper.Map<InputInvoiceDto>(removedInputInvoice));
         }
@@ -184,14 +194,15 @@ public class InputInvoiceController : ControllerBase
     {
         try
         {
-            var inputInvoiceDb = await _inputInvoiceService.GetInputInvoiceByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var inputInvoiceDb = await _inputInvoiceService.GetInputInvoiceByIdAsync(id, cancellationToken);
             if (inputInvoiceDb == null)
             {
                 return NotFound($"Прибуткову накладну з ID {id} не знайдено.");
             }
             
             var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var restoredInputInvoice = await _inputInvoiceService.RestoreRemovedInputInvoiceAsync(inputInvoiceDb, restoredById);
+            var restoredInputInvoice = await _inputInvoiceService.RestoreRemovedInputInvoiceAsync(inputInvoiceDb, restoredById, cancellationToken);
 
             return Ok(_mapper.Map<InputInvoiceDto>(restoredInputInvoice));
         }
@@ -208,7 +219,8 @@ public class InputInvoiceController : ControllerBase
     {
         try
         {
-            var success = await _inputInvoiceService.DeleteInputInvoiceAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var success = await _inputInvoiceService.DeleteInputInvoiceAsync(id, cancellationToken);
             if (!success)
             {
                 return NotFound($"Прибуткову накладну з ID {id} не знайдено.");
