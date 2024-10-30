@@ -4,12 +4,12 @@ namespace GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 
 public interface IWarehouseProductCategoryService
 {
-    Task<WarehouseProductCategory> CreateWarehouseProductCategoryAsync(WarehouseProductCategory warehouseProductCategory, int createdById);
-    Task<WarehouseProductCategory> GetWarehouseProductCategoryByIdAsync(int id);
-    Task<WarehouseProductCategory> UpdateWarehouseProductCategoryAsync(WarehouseProductCategory warehouseProductCategory, int modifiedById);
-    Task<WarehouseProductCategory> SoftDeleteWarehouseProductCategoryAsync(WarehouseProductCategory warehouseProductCategory, int removedById);
-    Task<WarehouseProductCategory> RestoreRemovedWarehouseProductCategoryAsync(WarehouseProductCategory warehouseProductCategory, int restoredById);
-    Task<bool> DeleteWarehouseProductCategoryAsync(int id);
+    Task<WarehouseProductCategory> CreateWarehouseProductCategoryAsync(WarehouseProductCategory warehouseProductCategory, int createdById, CancellationToken cancellationToken);
+    Task<WarehouseProductCategory> GetWarehouseProductCategoryByIdAsync(int id, CancellationToken cancellationToken);
+    Task<WarehouseProductCategory> UpdateWarehouseProductCategoryAsync(WarehouseProductCategory warehouseProductCategory, int modifiedById, CancellationToken cancellationToken);
+    Task<WarehouseProductCategory> SoftDeleteWarehouseProductCategoryAsync(WarehouseProductCategory warehouseProductCategory, int removedById, CancellationToken cancellationToken);
+    Task<WarehouseProductCategory> RestoreRemovedWarehouseProductCategoryAsync(WarehouseProductCategory warehouseProductCategory, int restoredById, CancellationToken cancellationToken);
+    Task<bool> DeleteWarehouseProductCategoryAsync(int id, CancellationToken cancellationToken);
     IQueryable<WarehouseProductCategory> GetWarehouseProductCategories(int page, int size);
     IEnumerable<WarehouseProductCategory> SearchWarehouseProductCategories(int? id,
         string? title,

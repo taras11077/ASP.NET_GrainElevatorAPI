@@ -24,6 +24,10 @@ public class SupplierController : ControllerBase
 		_logger = logger;
 	}
 
+	private CancellationToken GetCancellationToken()
+	{
+		return HttpContext.RequestAborted;
+	}
 
 	[HttpPost]
 	public async Task<ActionResult<Supplier>> CreateSupplier(SupplierCreateRequest request)
@@ -32,11 +36,12 @@ public class SupplierController : ControllerBase
 
 		try
 		{
+			var cancellationToken = GetCancellationToken();
 			var newSupplier = _mapper.Map<Supplier>(request);
 			var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
 
-			var createdSupplier = await _supplierService.AddSupplierAsync(newSupplier, createdById);
-			return CreatedAtAction(nameof(GetSupplier), new { id = createdSupplier.Id },
+			var createdSupplier = await _supplierService.CreateSupplierAsync(newSupplier, createdById, cancellationToken);
+			return CreatedAtAction(nameof(GetSupplierById), new { id = createdSupplier.Id },
 				_mapper.Map<SupplierDto>(createdSupplier));
 		}
 		catch (Exception ex)
@@ -64,11 +69,12 @@ public class SupplierController : ControllerBase
 
 
 	[HttpGet("{id}")]
-	public async Task<ActionResult<Supplier>> GetSupplier(int id)
+	public async Task<ActionResult<Supplier>> GetSupplierById(int id)
 	{
 		try
 		{
-			var supplier = await _supplierService.GetSupplierByIdAsync(id);
+			var cancellationToken = GetCancellationToken();
+			var supplier = await _supplierService.GetSupplierByIdAsync(id, cancellationToken);
 			if (supplier == null) return NotFound($"Постачальника з ID {id} не знайдено.");
 			
 			return Ok(_mapper.Map<SupplierDto>(supplier));
@@ -103,12 +109,13 @@ public class SupplierController : ControllerBase
 
 		try
 		{
-			var supplierDb = await _supplierService.GetSupplierByIdAsync(id);
+			var cancellationToken = GetCancellationToken();
+			var supplierDb = await _supplierService.GetSupplierByIdAsync(id, cancellationToken);
 			if (supplierDb == null) return NotFound($"Постачальника з ID {id} не знайдено.");
 			
 			supplierDb.Title = request.Title;
 			var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-			var updatedSupplier = await _supplierService.UpdateSupplierAsync(supplierDb, modifiedById);
+			var updatedSupplier = await _supplierService.UpdateSupplierAsync(supplierDb, modifiedById, cancellationToken);
 			
 			return Ok(_mapper.Map<SupplierDto>(updatedSupplier));
 		}
@@ -126,11 +133,12 @@ public class SupplierController : ControllerBase
 	{
 		try
 		{
-			var supplierDb = await _supplierService.GetSupplierByIdAsync(id);
+			var cancellationToken = GetCancellationToken();
+			var supplierDb = await _supplierService.GetSupplierByIdAsync(id, cancellationToken);
 			if (supplierDb == null) return NotFound($"Постачальника з ID {id} не знайдено.");
 
 			var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-			var removedSupplier = await _supplierService.SoftDeleteSupplierAsync(supplierDb, removedById);
+			var removedSupplier = await _supplierService.SoftDeleteSupplierAsync(supplierDb, removedById, cancellationToken);
 			
 			return Ok(_mapper.Map<SupplierDto>(removedSupplier));
 		}
@@ -148,11 +156,12 @@ public class SupplierController : ControllerBase
 	{
 		try
 		{
-			var supplierDb = await _supplierService.GetSupplierByIdAsync(id);
+			var cancellationToken = GetCancellationToken();
+			var supplierDb = await _supplierService.GetSupplierByIdAsync(id, cancellationToken);
 			if (supplierDb == null) return NotFound($"Постачальника з ID {id} не знайдено.");
 			
 			var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-			var restoredSupplier = await _supplierService.RestoreRemovedSupplierAsync(supplierDb, restoredById);
+			var restoredSupplier = await _supplierService.RestoreRemovedSupplierAsync(supplierDb, restoredById, cancellationToken);
 			
 			return Ok(_mapper.Map<SupplierDto>(restoredSupplier));
 		}
@@ -169,7 +178,8 @@ public class SupplierController : ControllerBase
 	{
 		try
 		{
-			var success = await _supplierService.DeleteSupplierAsync(id);
+			var cancellationToken = GetCancellationToken();
+			var success = await _supplierService.DeleteSupplierAsync(id, cancellationToken);
 			if (!success) return NotFound($"Постачальника з ID {id} не знайдено.");
 
 			return NoContent();

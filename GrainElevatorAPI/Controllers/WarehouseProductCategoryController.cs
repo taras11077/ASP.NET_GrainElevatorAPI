@@ -24,7 +24,11 @@ public class WarehouseProductCategoryController: ControllerBase
         _logger = logger;
     }
     
-
+    private CancellationToken GetCancellationToken()
+    {
+        return HttpContext.RequestAborted;
+    }
+    
     [HttpPost]
     //[Authorize(Roles = "Admin, Accountant")]
     public async Task<ActionResult<WarehouseProductCategory>> CreateWarehouseProductCategory(WarehouseProductCategoryCreateRequest request)
@@ -36,10 +40,11 @@ public class WarehouseProductCategoryController: ControllerBase
         
         try
         {
+            var cancellationToken = GetCancellationToken();
             var newWarehouseProductCategory = _mapper.Map<WarehouseProductCategory>(request);
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             
-            var createdWarehouseProductCategory = await _warehouseProductCategoryService.CreateWarehouseProductCategoryAsync(newWarehouseProductCategory, createdById);
+            var createdWarehouseProductCategory = await _warehouseProductCategoryService.CreateWarehouseProductCategoryAsync(newWarehouseProductCategory, createdById, cancellationToken);
             return CreatedAtAction(nameof(GetWarehouseProductCategory), new { id = createdWarehouseProductCategory.Id },
                 _mapper.Map<WarehouseProductCategoryDto>(createdWarehouseProductCategory));
         }
@@ -74,7 +79,8 @@ public class WarehouseProductCategoryController: ControllerBase
     {
         try
         {
-            var warehouseProductCategory = await _warehouseProductCategoryService.GetWarehouseProductCategoryByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var warehouseProductCategory = await _warehouseProductCategoryService.GetWarehouseProductCategoryByIdAsync(id, cancellationToken);
             if (warehouseProductCategory == null)
             {
                 return NotFound($"Категорії продукції з ID {id} не знайдено.");
@@ -137,7 +143,8 @@ public class WarehouseProductCategoryController: ControllerBase
         
         try
         {
-            var warehouseProductCategoryDb = await _warehouseProductCategoryService.GetWarehouseProductCategoryByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var warehouseProductCategoryDb = await _warehouseProductCategoryService.GetWarehouseProductCategoryByIdAsync(id, cancellationToken);
             if (warehouseProductCategoryDb == null)
             {
                 return NotFound($"Категорії продукції з ID {id} не знайдено.");
@@ -145,7 +152,7 @@ public class WarehouseProductCategoryController: ControllerBase
             
             warehouseProductCategoryDb.UpdateFromRequest(request);
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var updatedWarehouseProductCategory = await _warehouseProductCategoryService.UpdateWarehouseProductCategoryAsync(warehouseProductCategoryDb, modifiedById);
+            var updatedWarehouseProductCategory = await _warehouseProductCategoryService.UpdateWarehouseProductCategoryAsync(warehouseProductCategoryDb, modifiedById, cancellationToken);
             
             return Ok(_mapper.Map<WarehouseProductCategoryDto>(updatedWarehouseProductCategory));
         }
@@ -163,14 +170,15 @@ public class WarehouseProductCategoryController: ControllerBase
     {
         try
         {
-            var warehouseProductCategoryDb = await _warehouseProductCategoryService.GetWarehouseProductCategoryByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var warehouseProductCategoryDb = await _warehouseProductCategoryService.GetWarehouseProductCategoryByIdAsync(id, cancellationToken);
             if (warehouseProductCategoryDb == null)
             {
                 return NotFound($"Категорії продукції з ID {id} не знайдено.");
             }
             
             var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var removedWarehouseProductCategory = await _warehouseProductCategoryService.SoftDeleteWarehouseProductCategoryAsync(warehouseProductCategoryDb, removedById);
+            var removedWarehouseProductCategory = await _warehouseProductCategoryService.SoftDeleteWarehouseProductCategoryAsync(warehouseProductCategoryDb, removedById, cancellationToken);
             
             return Ok(_mapper.Map<WarehouseProductCategoryDto>(removedWarehouseProductCategory));
         }
@@ -188,14 +196,15 @@ public class WarehouseProductCategoryController: ControllerBase
     {
         try
         {
-            var warehouseProductCategoryDb = await _warehouseProductCategoryService.GetWarehouseProductCategoryByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var warehouseProductCategoryDb = await _warehouseProductCategoryService.GetWarehouseProductCategoryByIdAsync(id, cancellationToken);
             if (warehouseProductCategoryDb == null)
             {
                 return NotFound($"Категорії продукції з ID {id} не знайдено.");
             }
 
             var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var restoredWarehouseProductCategory = await _warehouseProductCategoryService.RestoreRemovedWarehouseProductCategoryAsync(warehouseProductCategoryDb, restoredById);
+            var restoredWarehouseProductCategory = await _warehouseProductCategoryService.RestoreRemovedWarehouseProductCategoryAsync(warehouseProductCategoryDb, restoredById, cancellationToken);
             
             return Ok(_mapper.Map<WarehouseProductCategoryDto>(restoredWarehouseProductCategory));
         }
@@ -213,7 +222,8 @@ public class WarehouseProductCategoryController: ControllerBase
     {
         try
         {
-            var success = await _warehouseProductCategoryService.DeleteWarehouseProductCategoryAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var success = await _warehouseProductCategoryService.DeleteWarehouseProductCategoryAsync(id, cancellationToken);
             if (!success)
             {
                 return NotFound($"Категорії продукції з ID {id} не знайдено.");

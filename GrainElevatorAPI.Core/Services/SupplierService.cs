@@ -14,14 +14,14 @@ public class SupplierService : ISupplierService
     }
     
     
-    public async Task<Supplier> AddSupplierAsync(Supplier supplier, int createdById)
+    public async Task<Supplier> CreateSupplierAsync(Supplier supplier, int createdById, CancellationToken cancellationToken)
     {
         try
         {
             supplier.CreatedAt = DateTime.UtcNow;
             supplier.CreatedById = createdById;
             
-            return await _repository.AddAsync(supplier);
+            return await _repository.AddAsync(supplier, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -44,11 +44,11 @@ public class SupplierService : ISupplierService
         }
     }
     
-    public async Task<Supplier> GetSupplierByIdAsync(int id)
+    public async Task<Supplier> GetSupplierByIdAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
-            return await _repository.GetByIdAsync<Supplier>(id);
+            return await _repository.GetByIdAsync<Supplier>(id, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -70,14 +70,14 @@ public class SupplierService : ISupplierService
         }
     }
 
-    public async Task<Supplier> UpdateSupplierAsync(Supplier supplier, int modifiedById)
+    public async Task<Supplier> UpdateSupplierAsync(Supplier supplier, int modifiedById, CancellationToken cancellationToken)
     {
         try
         {
             supplier.ModifiedAt = DateTime.UtcNow;
             supplier.ModifiedById = modifiedById;
             
-            return await _repository.UpdateAsync(supplier);
+            return await _repository.UpdateAsync(supplier, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -85,14 +85,14 @@ public class SupplierService : ISupplierService
         }
     }
 
-    public async Task<Supplier> SoftDeleteSupplierAsync(Supplier supplier, int removedById)
+    public async Task<Supplier> SoftDeleteSupplierAsync(Supplier supplier, int removedById, CancellationToken cancellationToken)
     {
         try
         {
             supplier.RemovedAt = DateTime.UtcNow;
             supplier.RemovedById = removedById;
             
-            return await _repository.UpdateAsync(supplier);
+            return await _repository.UpdateAsync(supplier, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -100,7 +100,7 @@ public class SupplierService : ISupplierService
         }
     }
     
-    public async Task<Supplier> RestoreRemovedSupplierAsync(Supplier supplier, int restoredById)
+    public async Task<Supplier> RestoreRemovedSupplierAsync(Supplier supplier, int restoredById, CancellationToken cancellationToken)
     {
         try
         {
@@ -108,7 +108,7 @@ public class SupplierService : ISupplierService
             supplier.RestoredAt = DateTime.UtcNow;
             supplier.RestoreById = restoredById;
             
-            return await _repository.UpdateAsync(supplier);
+            return await _repository.UpdateAsync(supplier, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -116,14 +116,14 @@ public class SupplierService : ISupplierService
         }
     }
     
-    public async Task<bool> DeleteSupplierAsync(int id)
+    public async Task<bool> DeleteSupplierAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
-            var supplier = await _repository.GetByIdAsync<Supplier>(id);
+            var supplier = await _repository.GetByIdAsync<Supplier>(id, cancellationToken);
             if (supplier != null)
             {
-                await _repository.DeleteAsync<Supplier>(id);
+                await _repository.DeleteAsync<Supplier>(id, cancellationToken);
                 return true;
             }
             return false;

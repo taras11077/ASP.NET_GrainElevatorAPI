@@ -24,6 +24,11 @@ public class ProductController : ControllerBase
         _logger = logger;
     }
     
+    private CancellationToken GetCancellationToken()
+    {
+        return HttpContext.RequestAborted;
+    }
+    
     [HttpPost]
     //[Authorize(Roles = "admin")]
     public async Task<ActionResult<Product>> CreateProduct(ProductCreateRequest request)
@@ -35,11 +40,12 @@ public class ProductController : ControllerBase
         
         try
         {
+            var cancellationToken = GetCancellationToken();
             var newProduct = _mapper.Map<Product>(request);
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             
-            var createdProduct = await _productService.AddProductAsync(newProduct, createdById);
-            return CreatedAtAction(nameof(GetProduct), new { id = createdProduct.Id }, _mapper.Map<ProductDto>(createdProduct));
+            var createdProduct = await _productService.CreateProductAsync(newProduct, createdById, cancellationToken);
+            return CreatedAtAction(nameof(GetProductById), new { id = createdProduct.Id }, _mapper.Map<ProductDto>(createdProduct));
         }
         catch (Exception ex)
         {
@@ -66,11 +72,12 @@ public class ProductController : ControllerBase
     
     
     [HttpGet("{id}")]
-    public async Task<ActionResult<Product>> GetProduct(int id)
+    public async Task<ActionResult<Product>> GetProductById(int id)
     {
         try
         {
-            var product = await _productService.GetProductByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var product = await _productService.GetProductByIdAsync(id, cancellationToken);
             if (product == null)
             {
                 return NotFound($"Продукт з ID {id} не знайдено.");
@@ -109,7 +116,8 @@ public class ProductController : ControllerBase
         
         try
         {
-            var productDb = await _productService.GetProductByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var productDb = await _productService.GetProductByIdAsync(id, cancellationToken);
             if (productDb == null)
             {
                 return NotFound($"Продукт з ID {id} не знайдений.");
@@ -117,7 +125,7 @@ public class ProductController : ControllerBase
             
             productDb.Title = request.Title;
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var updatedProduct = await _productService.UpdateProductAsync(productDb, modifiedById);
+            var updatedProduct = await _productService.UpdateProductAsync(productDb, modifiedById, cancellationToken);
             
             return Ok(_mapper.Map<ProductDto>(updatedProduct));
         }
@@ -135,14 +143,15 @@ public class ProductController : ControllerBase
     {
         try
         {
-            var productDb = await _productService.GetProductByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var productDb = await _productService.GetProductByIdAsync(id, cancellationToken);
             if (productDb == null)
             {
                 return NotFound($"Продукт з ID {id} не знайдено.");
             }
             
             var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var removedProduct = await _productService.SoftDeleteProductAsync(productDb, removedById);
+            var removedProduct = await _productService.SoftDeleteProductAsync(productDb, removedById, cancellationToken);
             
             return Ok(_mapper.Map<ProductDto>(removedProduct));
         }
@@ -160,14 +169,15 @@ public class ProductController : ControllerBase
     {
         try
         {
-            var productDb = await _productService.GetProductByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var productDb = await _productService.GetProductByIdAsync(id, cancellationToken);
             if (productDb == null)
             {
                 return NotFound($"Продукт з ID {id} не знайдено.");
             }
             
             var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var restoredProduct = await _productService.RestoreRemovedProductAsync(productDb, restoredById);
+            var restoredProduct = await _productService.RestoreRemovedProductAsync(productDb, restoredById, cancellationToken);
             
             return Ok(_mapper.Map<ProductDto>(restoredProduct));
         }
@@ -184,7 +194,8 @@ public class ProductController : ControllerBase
     {
         try
         {
-            var success = await _productService.DeleteProductAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var success = await _productService.DeleteProductAsync(id, cancellationToken);
             if (!success)
             {
                 return NotFound($"Продукт з ID {id} не знайдено.");

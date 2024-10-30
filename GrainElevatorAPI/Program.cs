@@ -126,6 +126,8 @@ async Task EnsureAdminCreated(IServiceProvider services)
     var roleService = services.GetRequiredService<IRoleService>();
     var authService = services.GetRequiredService<IAuthService>();
     var logger = services.GetRequiredService<ILogger<Program>>();
+    
+    var cancellationToken = CancellationToken.None;
 
     // отримання даних адміністратора з конфігурації
     var adminEmail = configuration["AdminSettings:AdminEmail"];
@@ -140,7 +142,7 @@ async Task EnsureAdminCreated(IServiceProvider services)
             Title = "Admin",
             CreatedAt = DateTime.UtcNow
         };
-        await roleService.CreateRoleAsync(adminRole);
+        await roleService.CreateRoleAsync(adminRole, cancellationToken);
     }
     
     // перевірка, чи існує адміністратор з таким email
@@ -154,7 +156,7 @@ async Task EnsureAdminCreated(IServiceProvider services)
     // реєстрація адміністратора 
     try
     {
-        var adminEmployee = await authService.Register(adminEmail, adminPassword, adminRole.Id);
+        var adminEmployee = await authService.Register(adminEmail, adminPassword, adminRole.Id, cancellationToken);
         logger.LogInformation($"Адміністратор {adminEmployee.Email} успішно створений.");
     }
     catch (Exception ex)

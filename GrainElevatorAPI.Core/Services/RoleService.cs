@@ -14,12 +14,12 @@ public class RoleService : IRoleService
         _repository = repository;
     }
     
-    public async Task<Role> CreateRoleAsync(Role role)
+    public async Task<Role> CreateRoleAsync(Role role, CancellationToken cancellationToken)
     {
         try
         {
             role.CreatedAt = DateTime.UtcNow;
-            return await _repository.AddAsync(role);
+            return await _repository.AddAsync(role, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -28,7 +28,7 @@ public class RoleService : IRoleService
     }
     
     
-    public async Task<Role> AddRoleAsync(Role role, int? createdById)
+    public async Task<Role> AddRoleAsync(Role role, int? createdById, CancellationToken cancellationToken)
     {
         try
         {
@@ -37,7 +37,7 @@ public class RoleService : IRoleService
             if (createdById.HasValue)
                 role.CreatedById = createdById;
             
-            return await _repository.AddAsync(role);
+            return await _repository.AddAsync(role, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -45,18 +45,18 @@ public class RoleService : IRoleService
         }
     }
 
-    public async Task<Role> GetRoleByIdAsync(int id)
+    public async Task<Role> GetRoleByIdAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
-            return await _repository.GetByIdAsync<Role>(id);
+            return await _repository.GetByIdAsync<Role>(id, cancellationToken);
         }
         catch (Exception ex)
         {
             throw new Exception($"Помилка при отриманні Ролі з ID {id}", ex);
         }
     }
-    
+
     public async Task<Role> GetRoleByTitleAsync(string title)
     {
         try
@@ -100,14 +100,14 @@ public class RoleService : IRoleService
         }
     }
     
-    public async Task<Role> UpdateRoleAsync(Role role, int modifiedById)
+    public async Task<Role> UpdateRoleAsync(Role role, int modifiedById, CancellationToken cancellationToken)
     {
         try
         {
             role.ModifiedAt = DateTime.UtcNow;
             role.ModifiedById = modifiedById;
             
-            return await _repository.UpdateAsync(role);
+            return await _repository.UpdateAsync(role, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -115,14 +115,14 @@ public class RoleService : IRoleService
         }
     }
     
-    public async Task<Role> SoftDeleteRoleAsync(Role role, int removedById)
+    public async Task<Role> SoftDeleteRoleAsync(Role role, int removedById, CancellationToken cancellationToken)
     {
         try
         {
             role.RemovedAt = DateTime.UtcNow;
             role.RemovedById = removedById;
             
-            return await _repository.UpdateAsync(role);
+            return await _repository.UpdateAsync(role, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -130,7 +130,7 @@ public class RoleService : IRoleService
         }
     }
     
-    public async Task<Role> RestoreRemovedRoleAsync(Role role, int restoredById)
+    public async Task<Role> RestoreRemovedRoleAsync(Role role, int restoredById, CancellationToken cancellationToken)
     {
         try
         {
@@ -138,7 +138,7 @@ public class RoleService : IRoleService
             role.RestoredAt = DateTime.UtcNow;
             role.RestoreById = restoredById;
             
-            return await _repository.UpdateAsync(role);
+            return await _repository.UpdateAsync(role, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -146,14 +146,14 @@ public class RoleService : IRoleService
         }
     }
 
-    public async Task<bool> DeleteRoleAsync(int id)
+    public async Task<bool> DeleteRoleAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
-            var role = await _repository.GetByIdAsync<Role>(id);
+            var role = await _repository.GetByIdAsync<Role>(id, cancellationToken);
             if (role != null)
             {
-                await _repository.DeleteAsync<Role>(id);
+                await _repository.DeleteAsync<Role>(id, cancellationToken);
                 return true;
             }
             return false;

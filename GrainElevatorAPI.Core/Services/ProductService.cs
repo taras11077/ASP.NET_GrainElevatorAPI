@@ -13,14 +13,14 @@ public class ProductService : IProductService
         _repository = repository;
     }
     
- public async Task<Product> AddProductAsync(Product product, int createdById)
+ public async Task<Product> CreateProductAsync(Product product, int createdById, CancellationToken cancellationToken)
     {
         try
         {
             product.CreatedAt = DateTime.UtcNow;
             product.CreatedById = createdById;
             
-            return await _repository.AddAsync(product);
+            return await _repository.AddAsync(product, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -43,11 +43,11 @@ public class ProductService : IProductService
         }
     }
 
-    public async Task<Product> GetProductByIdAsync(int id)
+    public async Task<Product> GetProductByIdAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
-            return await _repository.GetByIdAsync<Product>(id);
+            return await _repository.GetByIdAsync<Product>(id, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -69,14 +69,14 @@ public class ProductService : IProductService
         }
     }
     
-    public async Task<Product> UpdateProductAsync(Product product, int modifiedById)
+    public async Task<Product> UpdateProductAsync(Product product, int modifiedById, CancellationToken cancellationToken)
     {
         try
         {
             product.ModifiedAt = DateTime.UtcNow;
             product.ModifiedById = modifiedById;
             
-            return await _repository.UpdateAsync(product);
+            return await _repository.UpdateAsync(product, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -84,14 +84,14 @@ public class ProductService : IProductService
         }
     }
     
-    public async Task<Product> SoftDeleteProductAsync(Product product, int removedById)
+    public async Task<Product> SoftDeleteProductAsync(Product product, int removedById, CancellationToken cancellationToken)
     {
         try
         {
             product.RemovedAt = DateTime.UtcNow;
             product.RemovedById = removedById;
             
-            return await _repository.UpdateAsync(product);
+            return await _repository.UpdateAsync(product, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -99,7 +99,7 @@ public class ProductService : IProductService
         }
     }
     
-    public async Task<Product> RestoreRemovedProductAsync(Product product, int restoredById)
+    public async Task<Product> RestoreRemovedProductAsync(Product product, int restoredById, CancellationToken cancellationToken)
     {
         try
         {
@@ -107,7 +107,7 @@ public class ProductService : IProductService
             product.RestoredAt = DateTime.UtcNow;
             product.RestoreById = restoredById;
             
-            return await _repository.UpdateAsync(product);
+            return await _repository.UpdateAsync(product, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -115,14 +115,14 @@ public class ProductService : IProductService
         }
     }
 
-    public async Task<bool> DeleteProductAsync(int id)
+    public async Task<bool> DeleteProductAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
-            var product = await _repository.GetByIdAsync<Product>(id);
+            var product = await _repository.GetByIdAsync<Product>(id, cancellationToken);
             if (product != null)
             {
-                await _repository.DeleteAsync<Product>(id);
+                await _repository.DeleteAsync<Product>(id, cancellationToken);
                 return true;
             }
             return false;

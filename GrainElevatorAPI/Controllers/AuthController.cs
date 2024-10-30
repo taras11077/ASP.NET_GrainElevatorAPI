@@ -38,7 +38,7 @@ public class AuthController : Controller
             var cancellationToken = GetCancellationToken();
             var employeeDb = await _authService.Register(request.Email, request.Password, request.RoleId, cancellationToken);
             
-            var role = await _roleService.GetRoleByIdAsync(employeeDb.RoleId);
+            var role = await _roleService.GetRoleByIdAsync(employeeDb.RoleId, cancellationToken);
             if (role == null)
             {
                 return BadRequest("Роль не знайдено.");
@@ -68,7 +68,7 @@ public class AuthController : Controller
                 return Unauthorized("Неправільний нікнейм або пароль.");
             }
             
-            var role = await _roleService.GetRoleByIdAsync(employee.RoleId);
+            var role = await _roleService.GetRoleByIdAsync(employee.RoleId, cancellationToken);
             if (role == null)
             {
                 return BadRequest("Роль не знайдено.");

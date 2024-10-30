@@ -12,14 +12,14 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
     public WarehouseProductCategoryService(IRepository repository) => _repository = repository;
 
 
-    public async Task<WarehouseProductCategory> CreateWarehouseProductCategoryAsync(WarehouseProductCategory warehouseProductCategory, int createdById)
+    public async Task<WarehouseProductCategory> CreateWarehouseProductCategoryAsync(WarehouseProductCategory warehouseProductCategory, int createdById, CancellationToken cancellationToken)
     {
         try
         {
             warehouseProductCategory.CreatedAt = DateTime.UtcNow;
             warehouseProductCategory.CreatedById = createdById;
             
-            return await _repository.AddAsync(warehouseProductCategory);
+            return await _repository.AddAsync(warehouseProductCategory, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -41,11 +41,11 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
     }
     
     
-    public async Task<WarehouseProductCategory> GetWarehouseProductCategoryByIdAsync(int id)
+    public async Task<WarehouseProductCategory> GetWarehouseProductCategoryByIdAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
-            return await _repository.GetByIdAsync<WarehouseProductCategory>(id);
+            return await _repository.GetByIdAsync<WarehouseProductCategory>(id, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -98,14 +98,14 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
         }
     }
     
-    public async Task<WarehouseProductCategory> UpdateWarehouseProductCategoryAsync(WarehouseProductCategory warehouseProductCategory, int modifiedById)
+    public async Task<WarehouseProductCategory> UpdateWarehouseProductCategoryAsync(WarehouseProductCategory warehouseProductCategory, int modifiedById, CancellationToken cancellationToken)
     {
         try
         {
             warehouseProductCategory.ModifiedAt = DateTime.UtcNow;
             warehouseProductCategory.ModifiedById = modifiedById;
             
-            return await _repository.UpdateAsync(warehouseProductCategory);
+            return await _repository.UpdateAsync(warehouseProductCategory, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -113,14 +113,14 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
         }
     }
 
-    public async Task<WarehouseProductCategory> SoftDeleteWarehouseProductCategoryAsync(WarehouseProductCategory warehouseProductCategory, int removedById)
+    public async Task<WarehouseProductCategory> SoftDeleteWarehouseProductCategoryAsync(WarehouseProductCategory warehouseProductCategory, int removedById, CancellationToken cancellationToken)
     {
         try
         {
             warehouseProductCategory.RemovedAt = DateTime.UtcNow;
             warehouseProductCategory.RemovedById = removedById;
             
-            return await _repository.UpdateAsync(warehouseProductCategory);
+            return await _repository.UpdateAsync(warehouseProductCategory, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -128,7 +128,7 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
         }
     }
     
-    public async Task<WarehouseProductCategory> RestoreRemovedWarehouseProductCategoryAsync(WarehouseProductCategory warehouseProductCategory, int restoredById)
+    public async Task<WarehouseProductCategory> RestoreRemovedWarehouseProductCategoryAsync(WarehouseProductCategory warehouseProductCategory, int restoredById, CancellationToken cancellationToken)
     {
         try
         {
@@ -136,7 +136,7 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
             warehouseProductCategory.RestoredAt = DateTime.UtcNow;
             warehouseProductCategory.RestoreById = restoredById;
             
-            return await _repository.UpdateAsync(warehouseProductCategory);
+            return await _repository.UpdateAsync(warehouseProductCategory, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -144,14 +144,14 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
         }
     }
     
-    public async Task<bool> DeleteWarehouseProductCategoryAsync(int id)
+    public async Task<bool> DeleteWarehouseProductCategoryAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
-            var warehouseProductCategory = await _repository.GetByIdAsync<WarehouseProductCategory>(id);
+            var warehouseProductCategory = await _repository.GetByIdAsync<WarehouseProductCategory>(id, cancellationToken);
             if (warehouseProductCategory != null)
             {
-                await _repository.DeleteAsync<WarehouseProductCategory>(id);
+                await _repository.DeleteAsync<WarehouseProductCategory>(id, cancellationToken);
                 return true;
             }
             return false;

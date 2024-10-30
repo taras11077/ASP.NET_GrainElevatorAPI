@@ -25,6 +25,12 @@ public class RoleController : ControllerBase
         _logger = logger;
     }
     
+    
+    private CancellationToken GetCancellationToken()
+    {
+        return HttpContext.RequestAborted;
+    }
+    
     [HttpPost]
     public async Task<ActionResult<Role>> CreateRole(RoleCreateRequest request)
     {
@@ -35,11 +41,12 @@ public class RoleController : ControllerBase
         
         try
         {
+            var cancellationToken = GetCancellationToken();
             var newRole = _mapper.Map<Role>(request);
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             
-            var createdRole = await _roleService.AddRoleAsync(newRole, createdById);
-            return CreatedAtAction(nameof(GetRole), new { id = createdRole.Id }, _mapper.Map<RoleDto>(createdRole));
+            var createdRole = await _roleService.AddRoleAsync(newRole, createdById, cancellationToken);
+            return CreatedAtAction(nameof(GetRoleById), new { id = createdRole.Id }, _mapper.Map<RoleDto>(createdRole));
         }
         catch (Exception ex)
         {
@@ -65,11 +72,12 @@ public class RoleController : ControllerBase
 
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Role>> GetRole(int id)
+    public async Task<ActionResult<Role>> GetRoleById(int id)
     {
         try
         {
-            var role = await _roleService.GetRoleByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var role = await _roleService.GetRoleByIdAsync(id, cancellationToken);
             if (role == null)
             {
                 return NotFound($"Роль з ID {id} не знайдено.");
@@ -108,7 +116,8 @@ public class RoleController : ControllerBase
         
         try
         {
-            var roleDb = await _roleService.GetRoleByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var roleDb = await _roleService.GetRoleByIdAsync(id, cancellationToken);
             if (roleDb == null)
             {
                 return NotFound($"Роль з ID {id} не знайдено.");
@@ -116,7 +125,7 @@ public class RoleController : ControllerBase
             
             roleDb.Title = request.Title;
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var updatedRole = await _roleService.UpdateRoleAsync(roleDb, modifiedById);
+            var updatedRole = await _roleService.UpdateRoleAsync(roleDb, modifiedById, cancellationToken);
             
             return Ok(_mapper.Map<RoleDto>(updatedRole));
         }
@@ -133,14 +142,15 @@ public class RoleController : ControllerBase
     {
         try
         {
-            var roleDb = await _roleService.GetRoleByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var roleDb = await _roleService.GetRoleByIdAsync(id, cancellationToken);
             if (roleDb == null)
             {
                 return NotFound($"Роль з ID {id} не знайдено.");
             }
             
             var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var removedRole = await _roleService.SoftDeleteRoleAsync(roleDb, removedById);
+            var removedRole = await _roleService.SoftDeleteRoleAsync(roleDb, removedById, cancellationToken);
             
             return Ok(_mapper.Map<RoleDto>(removedRole));
         }
@@ -158,14 +168,15 @@ public class RoleController : ControllerBase
     {
         try
         {
-            var roleDb = await _roleService.GetRoleByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var roleDb = await _roleService.GetRoleByIdAsync(id, cancellationToken);
             if (roleDb == null)
             {
                 return NotFound($"Роль з ID {id} не знайдено.");
             }
             
             var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var restoredRole = await _roleService.RestoreRemovedRoleAsync(roleDb, restoredById);
+            var restoredRole = await _roleService.RestoreRemovedRoleAsync(roleDb, restoredById, cancellationToken);
             
             return Ok(_mapper.Map<RoleDto>(restoredRole));
         }
@@ -181,7 +192,8 @@ public class RoleController : ControllerBase
     {
         try
         {
-            var success = await _roleService.DeleteRoleAsync(id);
+            var cancellationToken = GetCancellationToken();
+            var success = await _roleService.DeleteRoleAsync(id, cancellationToken);
             if (!success)
             {
                 return NotFound($"Роль з ID {id} не знайдено.");
