@@ -17,7 +17,7 @@ public class WarehouseUnitService: IWarehouseUnitService
         _invoiceRegisterService = invoiceRegisterService;
     }
     
-    public async Task<WarehouseUnit> WarehouseTransferAsync(InvoiceRegister register, int createdById)
+    public async Task<WarehouseUnit> WarehouseTransferAsync(InvoiceRegister register, int createdById, CancellationToken cancellationToken)
     {
         try
         {
@@ -45,12 +45,12 @@ public class WarehouseUnitService: IWarehouseUnitService
                     }
                 };
         
-                await _repository.AddAsync(warehouseUnit);
+                await _repository.AddAsync(warehouseUnit, cancellationToken);
             }
             else
             {
                 // оновлення існуючого WarehouseUnit новими даними з Register
-                await UpdateWarehouseUnitWithRegisterData(warehouseUnit, register);
+                await UpdateWarehouseUnitWithRegisterData(warehouseUnit, register, cancellationToken);
             }
 
             return warehouseUnit;
@@ -62,7 +62,7 @@ public class WarehouseUnitService: IWarehouseUnitService
     }
 
     
-    public async Task UpdateWarehouseUnitWithRegisterData(WarehouseUnit warehouseUnit, InvoiceRegister register)
+    private async Task UpdateWarehouseUnitWithRegisterData(WarehouseUnit warehouseUnit, InvoiceRegister register, CancellationToken cancellationToken)
     {
         // пошук категорії для кондиційної продукції
         var conditionedProduct = warehouseUnit.ProductCategories
@@ -98,7 +98,7 @@ public class WarehouseUnitService: IWarehouseUnitService
             wasteProduct.Value = register.WasteReg;
         }
 
-        await _repository.UpdateAsync(warehouseUnit);
+        await _repository.UpdateAsync(warehouseUnit, cancellationToken);
     }
 
     
@@ -116,11 +116,11 @@ public class WarehouseUnitService: IWarehouseUnitService
         }
     }
 
-    public async Task<WarehouseUnit> GetWarehouseUnitByIdAsync(int id)
+    public async Task<WarehouseUnit> GetWarehouseUnitByIdAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
-            return await _repository.GetByIdAsync<WarehouseUnit>(id);
+            return await _repository.GetByIdAsync<WarehouseUnit>(id, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -167,14 +167,14 @@ public class WarehouseUnitService: IWarehouseUnitService
         }
     }
     
-    public async Task<WarehouseUnit> UpdateWarehouseUnitAsync(WarehouseUnit warehouseUnit, int modifiedById)
+    public async Task<WarehouseUnit> UpdateWarehouseUnitAsync(WarehouseUnit warehouseUnit, int modifiedById, CancellationToken cancellationToken)
     {
         try
         {
             warehouseUnit.ModifiedAt = DateTime.UtcNow;
             warehouseUnit.ModifiedById = modifiedById;
             
-            return await _repository.UpdateAsync(warehouseUnit);
+            return await _repository.UpdateAsync(warehouseUnit, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -182,14 +182,14 @@ public class WarehouseUnitService: IWarehouseUnitService
         }
     }
 
-    public async Task<WarehouseUnit> SoftDeleteWarehouseUnitAsync(WarehouseUnit warehouseUnit, int removedById)
+    public async Task<WarehouseUnit> SoftDeleteWarehouseUnitAsync(WarehouseUnit warehouseUnit, int removedById, CancellationToken cancellationToken)
     {
         try
         {
             warehouseUnit.RemovedAt = DateTime.UtcNow;
             warehouseUnit.RemovedById = removedById;
             
-            return await _repository.UpdateAsync(warehouseUnit);
+            return await _repository.UpdateAsync(warehouseUnit, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -197,7 +197,7 @@ public class WarehouseUnitService: IWarehouseUnitService
         }
     }
     
-    public async Task<WarehouseUnit> RestoreRemovedWarehouseUnitAsync(WarehouseUnit warehouseUnit, int restoredById)
+    public async Task<WarehouseUnit> RestoreRemovedWarehouseUnitAsync(WarehouseUnit warehouseUnit, int restoredById, CancellationToken cancellationToken)
     {
         try
         {
@@ -205,7 +205,7 @@ public class WarehouseUnitService: IWarehouseUnitService
             warehouseUnit.RestoredAt = DateTime.UtcNow;
             warehouseUnit.RestoreById = restoredById;
             
-            return await _repository.UpdateAsync(warehouseUnit);
+            return await _repository.UpdateAsync(warehouseUnit, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -213,14 +213,14 @@ public class WarehouseUnitService: IWarehouseUnitService
         }
     }
     
-    public async Task<bool> DeleteWarehouseUnitAsync(int id)
+    public async Task<bool> DeleteWarehouseUnitAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
-            var warehouseUnit = await _repository.GetByIdAsync<WarehouseUnit>(id);
+            var warehouseUnit = await _repository.GetByIdAsync<WarehouseUnit>(id, cancellationToken);
             if (warehouseUnit != null)
             {
-                await _repository.DeleteAsync<WarehouseUnit>(id);
+                await _repository.DeleteAsync<WarehouseUnit>(id, cancellationToken);
                 return true;
             }
             return false;

@@ -3,18 +3,21 @@ using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
 using GrainElevatorAPI.Core.Calculators.Impl;
+using Microsoft.EntityFrameworkCore;
 
 namespace GrainElevatorAPI.Core.Services;
 
 public class InvoiceRegisterService : IInvoiceRegisterService
 {
     private readonly IRepository _repository;
+    private readonly IWarehouseUnitService _warehouseUnitService;
     private readonly IRegisterCalculator _calculator;
-
-    public InvoiceRegisterService(IRepository repository, IRegisterCalculator calculator)
+    
+    public InvoiceRegisterService(IRepository repository, IRegisterCalculator calculator, IWarehouseUnitService warehouseUnitService)
     {
         _repository = repository;
         _calculator = calculator;
+        _warehouseUnitService = warehouseUnitService;
     }
 
     public async Task<InvoiceRegister> CreateRegisterAsync(
@@ -24,10 +27,15 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         double weedImpurityBase, 
         double moistureBase, 
         IEnumerable<int> laboratoryCardIds, 
-        int createdById)
+        int createdById, 
+        CancellationToken cancellationToken)
     {
         try
         {
+            // начало транзакции
+            await _repository.BeginTransactionAsync(cancellationToken);
+            
+            // створення Реєстру (доробка продукції)
             var laboratoryCards = _repository.GetAll<LaboratoryCard>()
                 .Where(lc => laboratoryCardIds.Contains(lc.Id))
                 .ToList();
@@ -61,26 +69,36 @@ public class InvoiceRegisterService : IInvoiceRegisterService
                 register = (InvoiceRegister)_calculator.CalcProductionBatch(labCard.InputInvoice, labCard, register, productionBatch);
             }
 
-            return await _repository.AddAsync(register);
+            await _repository.AddAsync(register, cancellationToken);
+            
+            // створення або оновлення складського юніта (переміщення продукції Реєстру на Склад)
+            await _warehouseUnitService.WarehouseTransferAsync(register, createdById, cancellationToken);
+            
+            // фіксація транзакції
+            await _repository.CommitTransactionAsync(cancellationToken);
+            
+            return register;
         }
         catch (Exception ex)
         {
+            // відкат транзакції в разі помилки
+            await _repository.RollbackTransactionAsync(cancellationToken);
             throw new Exception("Помилка при створенні Реєстру", ex);
         }
         
     }
     
-    // допоміжний метод для генерації номера реєстрації
+    // допоміжний метод для генерації номера реєстрe
     private string GenerateRegisterNumber()
     {
         return $"№{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
     }
 
-    public async Task<InvoiceRegister> GetRegisterByIdAsync(int id)
+    public async Task<InvoiceRegister> GetRegisterByIdAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
-            return await _repository.GetByIdAsync<InvoiceRegister>(id);
+            return await _repository.GetByIdAsync<InvoiceRegister>(id, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -88,11 +106,11 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         }
     }
 
-    public async Task<InvoiceRegister> UpdateRegisterAsync(InvoiceRegister invoiceRegister)
+    public async Task<InvoiceRegister> UpdateRegisterAsync(InvoiceRegister invoiceRegister, CancellationToken cancellationToken)
     {
         try
         {
-            return await _repository.UpdateAsync(invoiceRegister);
+            return await _repository.UpdateAsync(invoiceRegister, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -100,14 +118,14 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         }
     }
 
-    public async Task<bool> DeleteRegisterAsync(int id)
+    public async Task<bool> DeleteRegisterAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
-            var register = await _repository.GetByIdAsync<InvoiceRegister>(id);
+            var register = await _repository.GetByIdAsync<InvoiceRegister>(id, cancellationToken);
             if (register != null)
             {
-                await _repository.DeleteAsync<InvoiceRegister>(id);
+                await _repository.DeleteAsync<InvoiceRegister>(id, cancellationToken);
                 return true;
             }
 

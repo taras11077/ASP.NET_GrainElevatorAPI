@@ -16,7 +16,7 @@ public class AuthService : IAuthService
     }
     
     // реєстрація співробітника   
-    public async Task<Employee> Register(string email, string password, int roleId)
+    public async Task<Employee> Register(string email, string password, int roleId, CancellationToken cancellationToken)
     {
         // валідація вводу
         if (email == null || string.IsNullOrEmpty(email.Trim()) || email.Length < 4 ||
@@ -40,13 +40,13 @@ public class AuthService : IAuthService
             RoleId = roleId,
         };
     
-        await _repository.AddAsync(newEmployee);
+        await _repository.AddAsync(newEmployee, cancellationToken);
     
         return newEmployee;
     }
     
     // логування співробітника      
-    public async Task<Employee> Login(string email, string password)
+    public async Task<Employee> Login(string email, string password, CancellationToken cancellationToken)
     {
         // валідація вводу
         if (email == null || string.IsNullOrEmpty(email.Trim()) || 
@@ -64,7 +64,7 @@ public class AuthService : IAuthService
         
         // оновлення часу останнього відвідування
         employee.LastSeenOnline = DateTime.UtcNow;
-        await _repository.UpdateAsync(employee);
+        await _repository.UpdateAsync(employee, cancellationToken);
     
         return employee;
     }

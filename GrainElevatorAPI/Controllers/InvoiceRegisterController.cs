@@ -13,16 +13,20 @@ namespace GrainElevatorAPI.Controllers;
 public class InvoiceRegisterController : ControllerBase
 {
     private readonly IInvoiceRegisterService _invoiceRegisterService;
-    private readonly IWarehouseUnitService _warehouseUnitService;
     private readonly IMapper _mapper;
     private readonly ILogger<InvoiceRegisterController> _logger;
 
-    public InvoiceRegisterController(IInvoiceRegisterService invoiceRegisterService , IWarehouseUnitService warehouseUnitService, IMapper mapper, ILogger<InvoiceRegisterController> logger)
+    public InvoiceRegisterController(IInvoiceRegisterService invoiceRegisterService, IMapper mapper, ILogger<InvoiceRegisterController> logger)
     {
         _invoiceRegisterService = invoiceRegisterService;
-        _warehouseUnitService = warehouseUnitService;
         _mapper = mapper;
         _logger = logger;
+    }
+    
+    // приватний метод для отримання токена скасування (спрацьовує якщо клієнт скасує запит)
+    private CancellationToken GetCancellationToken()
+    {
+        return HttpContext.RequestAborted;
     }
     
     
@@ -37,8 +41,9 @@ public class InvoiceRegisterController : ControllerBase
     
         try
         {
-
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+
+            var cancellationToken = GetCancellationToken();
         
             // створення Реєстру (доробка продукції)
             var createdRegister = await _invoiceRegisterService.CreateRegisterAsync(
@@ -48,10 +53,8 @@ public class InvoiceRegisterController : ControllerBase
                 request.WeedImpurityBase,
                 request.MoistureBase,
                 request.LaboratoryCardIds,
-                createdById);
-            
-            // створення Складського юніту (переміщення на склад)
-            await  _warehouseUnitService.WarehouseTransferAsync(createdRegister, createdById);
+                createdById,
+                cancellationToken);
             
             return CreatedAtAction(nameof(GetRegisters), new { id = createdRegister.Id },
                 _mapper.Map<InvoiceRegisterDto>(createdRegister));
@@ -87,7 +90,9 @@ public class InvoiceRegisterController : ControllerBase
     {
         try
         {
-            var register = await _invoiceRegisterService.GetRegisterByIdAsync(id);
+            var cancellationToken = GetCancellationToken();
+            
+            var register = await _invoiceRegisterService.GetRegisterByIdAsync(id, cancellationToken);
             if (register == null)
             {
                 return NotFound($"Реєстру з ID {id} не знайдено.");
@@ -110,7 +115,9 @@ public class InvoiceRegisterController : ControllerBase
     {
         try
         {
-            var success = await _invoiceRegisterService.DeleteRegisterAsync(id);
+            var cancellationToken = GetCancellationToken();
+            
+            var success = await _invoiceRegisterService.DeleteRegisterAsync(id, cancellationToken);
             if (!success)
             {
                 return NotFound($"Реєстру з ID {id} не знайдено.");

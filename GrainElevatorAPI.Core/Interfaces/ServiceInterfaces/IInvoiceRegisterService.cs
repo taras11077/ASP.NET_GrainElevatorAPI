@@ -11,10 +11,11 @@ public interface IInvoiceRegisterService
         double weedImpurityBase,
         double moistureBase,
         IEnumerable<int> laboratoryCardIds,
-        int createdById);
-    Task<InvoiceRegister> GetRegisterByIdAsync(int id);
-    Task<InvoiceRegister> UpdateRegisterAsync(InvoiceRegister invoiceRegister);
-    Task<bool> DeleteRegisterAsync(int id);
+        int createdById,
+        CancellationToken cancellationToken);
+    Task<InvoiceRegister> GetRegisterByIdAsync(int id, CancellationToken cancellationToken);
+    Task<InvoiceRegister> UpdateRegisterAsync(InvoiceRegister invoiceRegister, CancellationToken cancellationToken);
+    Task<bool> DeleteRegisterAsync(int id, CancellationToken cancellationToken);
     IQueryable<InvoiceRegister> GetRegisters(int page, int size);
     IEnumerable<InvoiceRegister> SearchRegisters(string registerNumber);
 }

@@ -18,11 +18,11 @@ public class EmployeeService : IEmployeeService
     }
     
     
-    public async Task<Employee> GetEmployeeByIdAsync(int id)
+    public async Task<Employee> GetEmployeeByIdAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
-            return await _repository.GetByIdAsync<Employee>(id);
+            return await _repository.GetByIdAsync<Employee>(id, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -61,7 +61,7 @@ public class EmployeeService : IEmployeeService
     }
 
     
-    public async Task<Employee> UpdateEmployeeAsync(Employee employee, string passwordHash, int modifiedById)
+    public async Task<Employee> UpdateEmployeeAsync(Employee employee, string passwordHash, int modifiedById, CancellationToken cancellationToken)
     {
         try
         {
@@ -69,7 +69,7 @@ public class EmployeeService : IEmployeeService
             employee.ModifiedAt = DateTime.UtcNow;
             employee.ModifiedById = modifiedById;
             
-            return await _repository.UpdateAsync(employee);
+            return await _repository.UpdateAsync(employee, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -77,14 +77,14 @@ public class EmployeeService : IEmployeeService
         }
     }
     
-    public async Task<Employee> SoftDeleteEmployeeAsync(Employee employee, int removedById)
+    public async Task<Employee> SoftDeleteEmployeeAsync(Employee employee, int removedById, CancellationToken cancellationToken)
     {
         try
         {
             employee.RemovedAt = DateTime.UtcNow;
             employee.RemovedById = removedById;
             
-            return await _repository.UpdateAsync(employee);
+            return await _repository.UpdateAsync(employee, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -92,7 +92,7 @@ public class EmployeeService : IEmployeeService
         }
     }
     
-    public async Task<Employee> RestoreRemovedEmployeeAsync(Employee employee, int restoredById)
+    public async Task<Employee> RestoreRemovedEmployeeAsync(Employee employee, int restoredById, CancellationToken cancellationToken)
     {
         try
         {
@@ -100,7 +100,7 @@ public class EmployeeService : IEmployeeService
             employee.RestoredAt = DateTime.UtcNow;
             employee.RestoreById = restoredById;
             
-            return await _repository.UpdateAsync(employee);
+            return await _repository.UpdateAsync(employee, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -108,14 +108,14 @@ public class EmployeeService : IEmployeeService
         }
     }
 
-    public async Task<bool> DeleteEmployeeAsync(int id)
+    public async Task<bool> DeleteEmployeeAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
-            var employee = await _repository.GetByIdAsync<Employee>(id);
+            var employee = await _repository.GetByIdAsync<Employee>(id, cancellationToken);
             if (employee != null)
             {
-                await _repository.DeleteAsync<Employee>(id);
+                await _repository.DeleteAsync<Employee>(id, cancellationToken);
                 return true;
             }
             return false;
@@ -131,7 +131,7 @@ public class EmployeeService : IEmployeeService
     {
         try
         {
-            return await _repository.GetQuery(predicate);
+            return await _repository.GetQuery(predicate).ToListAsync();
         }
         catch (Exception ex)
         {

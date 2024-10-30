@@ -24,13 +24,19 @@ public class AuthController : Controller
         _logger = logger;
     }
     
+    private CancellationToken GetCancellationToken()
+    {
+        return HttpContext.RequestAborted;
+    }
+    
 // реєстрація користувача
     [HttpPost("register")]
     public async Task<IActionResult> Register(EmployeeRegisterRequest request)
     {
         return await HandleRequestAsync(request, async () =>
         {
-            var employeeDb = await _authService.Register(request.Email, request.Password, request.RoleId);
+            var cancellationToken = GetCancellationToken();
+            var employeeDb = await _authService.Register(request.Email, request.Password, request.RoleId, cancellationToken);
             
             var role = await _roleService.GetRoleByIdAsync(employeeDb.RoleId);
             if (role == null)
@@ -54,7 +60,8 @@ public class AuthController : Controller
     {
         return await HandleRequestAsync(request, async () =>
         {
-            var employee = await _authService.Login(request.Email, request.Password);
+            var cancellationToken = GetCancellationToken();
+            var employee = await _authService.Login(request.Email, request.Password, cancellationToken);
             
             if (employee == null)
             {
