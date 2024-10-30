@@ -9,12 +9,10 @@ namespace GrainElevatorAPI.Core.Services;
 public class WarehouseUnitService: IWarehouseUnitService
 {
     private readonly IRepository _repository;
-    private readonly IInvoiceRegisterService _invoiceRegisterService;
 
-    public WarehouseUnitService(IRepository repository, IInvoiceRegisterService invoiceRegisterService)
+    public WarehouseUnitService(IRepository repository)
     {
         _repository = repository;
-        _invoiceRegisterService = invoiceRegisterService;
     }
     
     public async Task<WarehouseUnit> WarehouseTransferAsync(InvoiceRegister register, int createdById, CancellationToken cancellationToken)
