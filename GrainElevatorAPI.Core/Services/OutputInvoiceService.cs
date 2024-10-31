@@ -37,7 +37,7 @@ public class OutputInvoiceService : IOutputInvoiceService
 
         if (warehouseUnit == null)
         {
-            throw new Exception($"Складський юніт із SupplierId {supplierId} та ProductId {productId} не знайдено.");
+            throw new KeyNotFoundException($"Складський юніт із SupplierId {supplierId} та ProductId {productId} не знайдено.");
         }
         
         var productCategoryEntity = await _repository.GetAll<WarehouseProductCategory>()
@@ -45,13 +45,13 @@ public class OutputInvoiceService : IOutputInvoiceService
 
         if (productCategoryEntity == null)
         {
-            throw new Exception($"Категорію продукту {productCategory} не знайдено на складі.");
+            throw new KeyNotFoundException($"Категорію продукту {productCategory} не знайдено на складі.");
         }
 
         // перевірка доступного залишку продукту
         if (productCategoryEntity.Value == null || productCategoryEntity.Value < productWeight)
         {
-            throw new Exception($"Недостатньо продукції в категорії {productCategory}. Доступно: {productCategoryEntity.Value}");
+            throw new InvalidOperationException($"Недостатньо продукції в категорії {productCategory}. Доступно: {productCategoryEntity.Value}");
         }
 
         // зменшення значення категорії продукту
@@ -79,6 +79,17 @@ public class OutputInvoiceService : IOutputInvoiceService
         await _repository.CommitTransactionAsync(cancellationToken);
 
         return addedInvoice;
+    }
+    catch (KeyNotFoundException ex)
+    {
+        // Відкат транзакції у випадку відсутності запису
+        await _repository.RollbackTransactionAsync(cancellationToken);
+        throw new ArgumentException("Не знайдено необхідних даних для створення видаткової накладної.", ex);
+    }
+    catch (InvalidOperationException ex)
+    {
+        await _repository.RollbackTransactionAsync(cancellationToken);
+        throw new InvalidOperationException("Недостатньо продукції на складі для видаткової накладної.", ex);
     }
     catch (Exception ex)
     {

@@ -62,10 +62,20 @@ public class OutputInvoiceController: ControllerBase
             return CreatedAtAction(nameof(GetOutputInvoice), new { id = createdOutputInvoice.Id },
                 _mapper.Map<OutputInvoiceDto>(createdOutputInvoice));
         }
+        catch (ArgumentException ex)
+        {
+            _logger.LogWarning($"Помилка валідації при створенні Видаткової накладної: {ex.Message}");
+            return BadRequest($"Помилка валідації: {ex.Message}");
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning($"Некоректна операція при створенні Видаткової накладної: {ex.Message}");
+            return StatusCode(409, $"Конфлікт даних: {ex.Message}");
+        }
         catch (Exception ex)
         {
             _logger.LogError($"Внутрішня помилка сервера при створенні Видаткової накладної: {ex.Message}");
-            return StatusCode(500, $"Внутрішня помилка сервера при створенні Видаткової накладної: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
         }
     }
 
