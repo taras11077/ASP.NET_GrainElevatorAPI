@@ -42,7 +42,7 @@ public class OutputInvoice : AuditableEntity, IOutputInvoice
 	[Range(1, int.MaxValue, ErrorMessage = "WarehouseUnitId must be a positive number.")]
 	public int WarehouseUnitId { get; set; }
 	
-	public virtual required Supplier Supplier { get; set; }
-	public virtual required Product Product { get; set; }
-	public virtual required WarehouseUnit WarehouseUnit { get; set; }
+	public virtual Supplier Supplier { get; set; }
+	public virtual Product Product { get; set; }
+	public virtual WarehouseUnit WarehouseUnit { get; set; }
 }

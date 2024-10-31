@@ -61,13 +61,15 @@ public class WarehouseProductCategoryController: ControllerBase
 
     [HttpGet]
     //[Authorize(Roles = "Admin, Accountant")]
-    public ActionResult<IEnumerable<WarehouseProductCategory>> GetWarehouseProductCategory([FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<ActionResult<IEnumerable<WarehouseProductCategory>>> GetWarehouseProductCategory([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
-            var warehouseProductCategories = _warehouseProductCategoryService.GetWarehouseProductCategories(page, size, cancellationToken);
-            return Ok(_mapper.Map<IEnumerable<WarehouseProductCategoryDto>>(warehouseProductCategories));
+            var warehouseProductCategories = await _warehouseProductCategoryService.GetWarehouseProductCategories(page, size, cancellationToken);
+            
+            var warehouseProductCategoryDtos = _mapper.Map<IEnumerable<WarehouseProductCategoryDto>>(warehouseProductCategories);
+            return Ok(warehouseProductCategoryDtos);
         }
         catch (Exception ex)
         {
@@ -102,7 +104,7 @@ public class WarehouseProductCategoryController: ControllerBase
     
     [HttpGet("search")]
     //[Authorize(Roles = "Admin, Accountant")]
-    public ActionResult<IEnumerable<WarehouseProductCategoryDto>> SearchWarehouseProductCategories(
+    public async Task<ActionResult<IEnumerable<WarehouseProductCategory>>> SearchWarehouseProductCategories(
         [FromQuery] int? id = null,
         [FromQuery] string? title = null,
         [FromQuery] int? supplierId = null,
@@ -117,7 +119,7 @@ public class WarehouseProductCategoryController: ControllerBase
         {
             var cancellationToken = GetCancellationToken();
             // передаємо параметри у сервіс для фільтрації
-            var filteredCategories = _warehouseProductCategoryService.SearchWarehouseProductCategories(
+            var filteredCategories = await _warehouseProductCategoryService.SearchWarehouseProductCategories(
                 id, 
                 title, 
                 supplierId, 
@@ -128,7 +130,8 @@ public class WarehouseProductCategoryController: ControllerBase
                 size, 
                 cancellationToken);
 
-            return Ok(_mapper.Map<IEnumerable<WarehouseProductCategoryDto>>(filteredCategories));
+            var warehouseProductCategoryDtos = _mapper.Map<IEnumerable<WarehouseProductCategoryDto>>(filteredCategories);
+            return Ok(warehouseProductCategoryDtos);
         }
         catch (Exception ex)
         {

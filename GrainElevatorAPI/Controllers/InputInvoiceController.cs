@@ -71,13 +71,15 @@ public class InputInvoiceController : ControllerBase
 
     [HttpGet]
     //[Authorize(Roles = "admin, laboratory")]
-    public ActionResult<IEnumerable<InputInvoice>> GetInputInvoices([FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<ActionResult<IEnumerable<InputInvoiceDto>>> GetInputInvoices([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
-            var inputInvoices = _inputInvoiceService.GetInputInvoices(page, size, cancellationToken);
-            return Ok(_mapper.Map<IEnumerable<InputInvoiceDto>>(inputInvoices));
+            var inputInvoices = await _inputInvoiceService.GetInputInvoices(page, size, cancellationToken);
+            
+            var inputInvoiceDtos = _mapper.Map<IEnumerable<InputInvoiceDto>>(inputInvoices);
+            return Ok(inputInvoiceDtos);
         }
         catch (Exception ex)
         {
@@ -111,7 +113,7 @@ public class InputInvoiceController : ControllerBase
 
     [HttpGet("search")]
     //[Authorize(Roles = "admin, laboratory")]
-    public ActionResult<IEnumerable<InputInvoiceDto>> SearchInputInvoices(
+    public async Task<ActionResult<IEnumerable<InputInvoiceDto>>> SearchInputInvoices(
         [FromQuery] int? id = null,
         [FromQuery] string? invoiceNumber = null,
         [FromQuery] DateTime? arrivalDate = null,
@@ -128,10 +130,12 @@ public class InputInvoiceController : ControllerBase
         {
             var cancellationToken = GetCancellationToken();
             // передаємо параметри у сервіс для фільтрації
-            var filteredInvoices = _inputInvoiceService.SearchInputInvoices(
+            var filteredInvoices = await _inputInvoiceService.SearchInputInvoices(
                 id, invoiceNumber, arrivalDate, vehicleNumber, physicalWeight, supplierId, productId, createdById, removedAt, page, size, cancellationToken);
 
-            return Ok(_mapper.Map<IEnumerable<InputInvoiceDto>>(filteredInvoices));
+            
+            var inputInvoiceDtos = _mapper.Map<IEnumerable<InputInvoiceDto>>(filteredInvoices);
+            return Ok(inputInvoiceDtos);
         }
         catch (Exception ex)
         {

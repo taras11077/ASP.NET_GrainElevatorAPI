@@ -62,13 +62,15 @@ public class LaboratoryCardController : ControllerBase
 
     [HttpGet]
     //[Authorize(Roles = "Admin, Laboratory")]
-    public ActionResult<IEnumerable<LaboratoryCard>> GetLaboratoryCard([FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<ActionResult<IEnumerable<LaboratoryCard>>> GetLaboratoryCard([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
-            var laboratoryCards = _laboratoryCardService.GetLaboratoryCards(page, size, cancellationToken);
-            return Ok(_mapper.Map<IEnumerable<LaboratoryCardDto>>(laboratoryCards));
+            var laboratoryCards = await _laboratoryCardService.GetLaboratoryCards(page, size, cancellationToken);
+            
+            var laboratoryCardDtos = _mapper.Map<IEnumerable<LaboratoryCardDto>>(laboratoryCards);
+            return Ok(laboratoryCardDtos);
         }
         catch (Exception ex)
         {
@@ -103,7 +105,7 @@ public class LaboratoryCardController : ControllerBase
     
     [HttpGet("search")]
     //[Authorize(Roles = "Admin, Laboratory")]
-    public ActionResult<IEnumerable<LaboratoryCardDto>> SearchLaboratoryCards(
+    public async Task<ActionResult<IEnumerable<LaboratoryCard>>> SearchLaboratoryCards(
         [FromQuery] int? id = null,
         [FromQuery] string? labCardNumber = null,
         [FromQuery] double? weedImpurity = null,
@@ -125,7 +127,7 @@ public class LaboratoryCardController : ControllerBase
         {
             var cancellationToken = GetCancellationToken();
             // передаємо параметри у сервіс для фільтрації
-            var filteredLabCards = _laboratoryCardService.SearchLaboratoryCards(
+            var filteredLabCards = await _laboratoryCardService.SearchLaboratoryCards(
                 id, 
                 labCardNumber, 
                 weedImpurity, 
@@ -142,7 +144,8 @@ public class LaboratoryCardController : ControllerBase
                 size,
                 cancellationToken);
 
-            return Ok(_mapper.Map<IEnumerable<LaboratoryCardDto>>(filteredLabCards));
+            var laboratoryCardDtos = _mapper.Map<IEnumerable<LaboratoryCardDto>>(filteredLabCards);
+            return Ok(laboratoryCardDtos);
         }
         catch (Exception ex)
         {

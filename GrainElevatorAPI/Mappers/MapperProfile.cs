@@ -46,5 +46,14 @@ public class MapperProfile : Profile
         CreateMap<WarehouseProductCategory, WarehouseProductCategoryCreateRequest>().ReverseMap();
         CreateMap<WarehouseProductCategory, WarehouseProductCategoryUpdateRequest>().ReverseMap();
         CreateMap<WarehouseProductCategory, WarehouseProductCategoryDto>().ReverseMap();
+        
+        CreateMap<WarehouseUnit, WarehouseUnitCreateRequest>().ReverseMap();
+        CreateMap<WarehouseUnit, WarehouseUnitUpdateRequest>().ReverseMap();
+        CreateMap<WarehouseUnit, WarehouseUnitDto>().ReverseMap();
+        
+        CreateMap<OutputInvoice, OutputInvoiceCreateRequest>().ReverseMap();
+        CreateMap<OutputInvoice, OutputInvoiceUpdateRequest>().ReverseMap();
+        CreateMap<OutputInvoice, OutputInvoiceDto>().ReverseMap();
+        
     }
 }

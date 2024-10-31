@@ -71,13 +71,15 @@ public class InvoiceRegisterController : ControllerBase
     
     [HttpGet]
     //[Authorize(Roles = "Admin, Technologist")]
-    public ActionResult<IEnumerable<Register>> GetRegisters([FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<ActionResult<IEnumerable<Register>>> GetRegisters([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
-            var registers = _invoiceRegisterService.GetRegisters(page, size, cancellationToken);
-            return Ok(_mapper.Map<IEnumerable<InvoiceRegisterDto>>(registers));
+            var registers = await _invoiceRegisterService.GetRegisters(page, size, cancellationToken);
+
+            var registerDtos = _mapper.Map<IEnumerable<InvoiceRegisterDto>>(registers);
+            return Ok(registerDtos);
         }
         catch (Exception ex)
         {

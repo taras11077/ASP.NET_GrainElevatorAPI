@@ -19,7 +19,8 @@ public class OutputInvoiceDto
 
 	public int ProductId { get; set; }
 
-	public int DepotItemId { get; set; }
+	public int WarehouseUnitId { get; set; }
+	
 
 	public DateTime CreatedAt { get; set; }
 

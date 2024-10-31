@@ -58,13 +58,15 @@ public class RoleController : ControllerBase
     }
     
     [HttpGet]
-    public ActionResult<IEnumerable<Role>> GetRoles([FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<ActionResult<IEnumerable<Role>>> GetRoles([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
-            var roles = _roleService.GetRoles(page, size, cancellationToken);
-            return Ok(roles);
+            var roles = await _roleService.GetRoles(page, size, cancellationToken);
+            
+            var rolesDtos = _mapper.Map<IEnumerable<RoleDto>>(roles);
+            return Ok(rolesDtos);
         }
         catch (Exception ex)
         {
@@ -85,7 +87,9 @@ public class RoleController : ControllerBase
             {
                 return NotFound($"Роль з ID {id} не знайдено.");
             }
-            return Ok(_mapper.Map<RoleDto>(role));
+            
+            var roleDto = _mapper.Map<RoleDto>(role);
+            return Ok(roleDto);
         }
         catch (Exception ex)
         {
@@ -95,13 +99,15 @@ public class RoleController : ControllerBase
     }
     
     [HttpGet("search")]
-    public ActionResult<IEnumerable<Role>> SearchRoles(string title)
+    public async Task<ActionResult<IEnumerable<RoleDto>>> SearchRoles(string title)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
-            var roles = _roleService.SearchRoles(title, cancellationToken);
-            return Ok(_mapper.Map<IEnumerable<RoleDto>>(roles));
+            var roles = await _roleService.SearchRoles(title, cancellationToken);
+            
+            var rolesDtos = _mapper.Map<IEnumerable<RoleDto>>(roles);
+            return Ok(rolesDtos);
         }
         catch (Exception ex)
         {

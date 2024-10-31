@@ -41,6 +41,7 @@ builder.Services.AddTransient<ILaboratoryCardService, LaboratoryCardService>();
 builder.Services.AddTransient<IInvoiceRegisterService, InvoiceRegisterService>();
 builder.Services.AddTransient<IWarehouseProductCategoryService, WarehouseProductCategoryService>();
 builder.Services.AddTransient<IWarehouseUnitService, WarehouseUnitService>();
+builder.Services.AddTransient<IOutputInvoiceService, OutputInvoiceService>();
 
 builder.Services.AddTransient<IInputInvoice, InputInvoice>();
 builder.Services.AddTransient<ILaboratoryCard, LaboratoryCard>();

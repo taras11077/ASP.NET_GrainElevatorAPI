@@ -58,13 +58,15 @@ public class ProductController : ControllerBase
     
     
     [HttpGet]
-    public ActionResult<IEnumerable<Product>> GetProducts([FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<ActionResult<IEnumerable<Product>>> GetProducts([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
-            var products = _productService.GetProducts(page, size, cancellationToken);
-            return Ok(_mapper.Map<IEnumerable<ProductDto>>(products));
+            var products = await _productService.GetProducts(page, size, cancellationToken);
+            
+            var productsDto = _mapper.Map<IEnumerable<ProductDto>>(products);
+            return Ok(productsDto);
         }
         catch (Exception ex)
         {
@@ -95,13 +97,15 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("search")]
-    public ActionResult<IEnumerable<Product>> SearchProducts(string title)
+    public async Task<ActionResult<IEnumerable<Product>>> SearchProducts(string title)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
-            var products = _productService.SearchProduct(title, cancellationToken);
-            return Ok(_mapper.Map<IEnumerable<ProductDto>>(products));
+            var products = await _productService.SearchProduct(title, cancellationToken);
+            
+            var productsDto = _mapper.Map<IEnumerable<ProductDto>>(products);
+            return Ok(productsDto);
         }
         catch (Exception ex)
         {

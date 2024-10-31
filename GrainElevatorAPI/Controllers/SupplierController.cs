@@ -55,13 +55,15 @@ public class SupplierController : ControllerBase
 
 
 	[HttpGet]
-	public ActionResult<IEnumerable<Supplier>> GetSuppliers([FromQuery] int page = 1, [FromQuery] int size = 10)
+	public async Task<ActionResult<IEnumerable<Supplier>>> GetSuppliers([FromQuery] int page = 1, [FromQuery] int size = 10)
 	{
 		try
 		{
 			var cancellationToken = GetCancellationToken();
-			var suppliers = _supplierService.GetSuppliers(page, size, cancellationToken);
-			return Ok(_mapper.Map<IEnumerable<SupplierDto>>(suppliers));
+			var suppliers = await _supplierService.GetSuppliers(page, size, cancellationToken);
+			
+			var supplierDtos = _mapper.Map<IEnumerable<SupplierDto>>(suppliers);
+			return Ok(supplierDtos);
 		}
 		catch (Exception ex)
 		{
@@ -90,13 +92,15 @@ public class SupplierController : ControllerBase
 	}
 
 	[HttpGet("search")]
-	public ActionResult<IEnumerable<Supplier>> SearchSuppliers(string title)
+	public async Task<ActionResult<IEnumerable<Supplier>>> SearchSuppliers(string title)
 	{
 		try
 		{
 			var cancellationToken = GetCancellationToken();
-			var suppliers = _supplierService.SearchSupplier(title, cancellationToken);
-			return Ok(_mapper.Map<IEnumerable<SupplierDto>>(suppliers));
+			var suppliers = await _supplierService.SearchSupplier(title, cancellationToken);
+			
+			var supplierDtos = _mapper.Map<IEnumerable<SupplierDto>>(suppliers);
+			return Ok(supplierDtos);
 		}
 		catch (Exception ex)
 		{

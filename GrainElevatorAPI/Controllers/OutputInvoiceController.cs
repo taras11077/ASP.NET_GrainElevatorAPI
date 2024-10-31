@@ -5,6 +5,7 @@ using GrainElevatorAPI.Core.Models;
 using GrainElevatorAPI.DTO.DTOs;
 using GrainElevatorAPI.DTO.Requests.CreateRequests;
 using GrainElevatorAPI.DTO.Requests.UpdateRequests;
+using GrainElevatorAPI.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GrainElevatorAPI.Controllers;
@@ -48,8 +49,11 @@ public class OutputInvoiceController: ControllerBase
             
             var createdOutputInvoice = await _outputInvoiceService.CreateOutputInvoiceAsync(
                 request.InvoiceNumber,
-                request.SupplierTitle,
-                request.ProductTitle,
+                request.VehicleNumber,
+                request.SupplierId,
+                request.ProductId,
+                request.ProductCategory,
+                request.ProductWeight,
                 createdById, 
                 cancellationToken);
             
@@ -68,13 +72,15 @@ public class OutputInvoiceController: ControllerBase
 
     [HttpGet]
     //[Authorize(Roles = "admin, laboratory")]
-    public ActionResult<IEnumerable<OutputInvoice>> GetOutputInvoices([FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<ActionResult<IEnumerable<OutputInvoice>>> GetOutputInvoices([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
-            var outputInvoices = _outputInvoiceService.GetOutputInvoices(page, size, cancellationToken);
-            return Ok(_mapper.Map<IEnumerable<OutputInvoiceDto>>(outputInvoices));
+            var outputInvoices = await _outputInvoiceService.GetOutputInvoices(page, size, cancellationToken);
+            
+            var outputInvoiceDtos = _mapper.Map<IEnumerable<OutputInvoiceDto>>(outputInvoices);
+            return Ok(outputInvoiceDtos);
         }
         catch (Exception ex)
         {
@@ -108,14 +114,15 @@ public class OutputInvoiceController: ControllerBase
 
     [HttpGet("search")]
     //[Authorize(Roles = "admin, laboratory")]
-    public ActionResult<IEnumerable<OutputInvoiceDto>> SearchOutputInvoices(
+    public async Task<ActionResult<IEnumerable<OutputInvoiceDto>>> SearchOutputInvoices(
         [FromQuery] int? id = null,
         [FromQuery] string? invoiceNumber = null,
-        [FromQuery] DateTime? arrivalDate = null,
+        [FromQuery] DateTime? shipmentDate = null,
         [FromQuery] string? vehicleNumber = null,
-        [FromQuery] int? physicalWeight = null,
         [FromQuery] int? supplierId = null,
         [FromQuery] int? productId = null,
+        [FromQuery] string? productCategory = null,
+        [FromQuery] int? productWeight = null,
         [FromQuery] int? createdById = null,
         [FromQuery] DateTime? removedAt = null,
         [FromQuery] int page = 1,
@@ -125,10 +132,11 @@ public class OutputInvoiceController: ControllerBase
         {
             var cancellationToken = GetCancellationToken();
             // передаємо параметри у сервіс для фільтрації
-            var filteredInvoices = _outputInvoiceService.SearchOutputInvoices(
-                id, invoiceNumber, arrivalDate, vehicleNumber, physicalWeight, supplierId, productId, createdById, removedAt, page, size, cancellationToken);
+            var filteredInvoices = await _outputInvoiceService.SearchOutputInvoices(
+                id, invoiceNumber, shipmentDate, vehicleNumber,  supplierId, productId, productCategory,  productWeight, createdById, removedAt, page, size, cancellationToken);
 
-            return Ok(_mapper.Map<IEnumerable<OutputInvoiceDto>>(filteredInvoices));
+            var outputInvoiceDtos = _mapper.Map<IEnumerable<OutputInvoiceDto>>(filteredInvoices);
+            return Ok(outputInvoiceDtos);
         }
         catch (Exception ex)
         {
