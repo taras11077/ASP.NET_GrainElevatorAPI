@@ -38,8 +38,8 @@ public class WarehouseUnitService: IWarehouseUnitService
                     CreatedById = createdById,
                     ProductCategories = new List<WarehouseProductCategory>
                     {
-                        new WarehouseProductCategory("Кондиційна продукція") { Value = register.AccWeightReg },
-                        new WarehouseProductCategory("Відходи") { Value = register.WasteReg }
+                        new WarehouseProductCategory() {Title = "Кондиційна продукція",  Value = register.AccWeightReg },
+                        new WarehouseProductCategory() {Title = "Відходи", Value = register.WasteReg }
                     }
                 };
         
@@ -67,8 +67,9 @@ public class WarehouseUnitService: IWarehouseUnitService
             .FirstOrDefault(pc => pc.Title == "Кондиційна продукція");
         if (conditionedProduct == null)
         {
-            conditionedProduct = new WarehouseProductCategory("Кондиційна продукція") 
+            conditionedProduct = new WarehouseProductCategory() 
             { 
+                Title = "Кондиційна продукція",
                 Value = register.AccWeightReg, 
                 WarehouseUnitId = warehouseUnit.Id 
             };
@@ -84,8 +85,9 @@ public class WarehouseUnitService: IWarehouseUnitService
             .FirstOrDefault(pc => pc.Title == "Відходи");
         if (wasteProduct == null)
         {
-            wasteProduct = new WarehouseProductCategory("Відходи") 
+            wasteProduct = new WarehouseProductCategory() 
             { 
+                Title = "Відходи",
                 Value = register.WasteReg, 
                 WarehouseUnitId = warehouseUnit.Id 
             };

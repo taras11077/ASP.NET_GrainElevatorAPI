@@ -32,7 +32,7 @@ public class SupplierController : ControllerBase
 	}
 
 	[HttpPost]
-	public async Task<ActionResult<Supplier>> CreateSupplier(SupplierCreateRequest request)
+	public async Task<ActionResult<SupplierDto>> CreateSupplier(SupplierCreateRequest request)
 	{
 		if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -55,7 +55,7 @@ public class SupplierController : ControllerBase
 
 
 	[HttpGet]
-	public async Task<ActionResult<IEnumerable<Supplier>>> GetSuppliers([FromQuery] int page = 1, [FromQuery] int size = 10)
+	public async Task<ActionResult<IEnumerable<SupplierDto>>> GetSuppliers([FromQuery] int page = 1, [FromQuery] int size = 10)
 	{
 		try
 		{
@@ -74,7 +74,7 @@ public class SupplierController : ControllerBase
 
 
 	[HttpGet("{id}")]
-	public async Task<ActionResult<Supplier>> GetSupplierById(int id)
+	public async Task<ActionResult<SupplierDto>> GetSupplierById(int id)
 	{
 		try
 		{
@@ -92,7 +92,7 @@ public class SupplierController : ControllerBase
 	}
 
 	[HttpGet("search")]
-	public async Task<ActionResult<IEnumerable<Supplier>>> SearchSuppliers(string title)
+	public async Task<ActionResult<IEnumerable<SupplierDto>>> SearchSuppliers(string title)
 	{
 		try
 		{

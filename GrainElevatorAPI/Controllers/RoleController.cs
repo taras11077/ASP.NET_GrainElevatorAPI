@@ -34,7 +34,7 @@ public class RoleController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<ActionResult<Role>> CreateRole(RoleCreateRequest request)
+    public async Task<ActionResult<RoleDto>> CreateRole(RoleCreateRequest request)
     {
         if (!ModelState.IsValid)
         {
@@ -58,7 +58,7 @@ public class RoleController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Role>>> GetRoles([FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<ActionResult<IEnumerable<RoleDto>>> GetRoles([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
         {
@@ -77,7 +77,7 @@ public class RoleController : ControllerBase
 
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Role>> GetRoleById(int id)
+    public async Task<ActionResult<RoleDto>> GetRoleById(int id)
     {
         try
         {

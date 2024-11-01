@@ -104,10 +104,18 @@ public class OutputInvoiceService : IOutputInvoiceService
     {
         try
         {
-            return await _repository.GetAll<OutputInvoice>()
+            _logger.LogInformation("Запит починається: отримання видаткових накладних зі сторінкою {Page} та розміром {Size}", page, size);
+            var start = DateTime.UtcNow;
+
+            var result = await _repository.GetAll<OutputInvoice>()
                 .Skip((page - 1) * size)
                 .Take(size)
                 .ToListAsync(cancellationToken);
+
+            var end = DateTime.UtcNow;
+            _logger.LogInformation("Запит завершено: отримано {Count} накладних за {Duration} мс", result.Count, (end - start).TotalMilliseconds);
+
+            return result;
         }
         catch (Exception ex)
         {

@@ -36,7 +36,7 @@ public class InputInvoiceController : ControllerBase
     
     [HttpPost]
     //[Authorize(Roles = "Admin, laboratory")]
-    public async Task<ActionResult<InputInvoice>> CreateInputInvoice(InputInvoiceCreateRequest request)
+    public async Task<ActionResult<InputInvoiceDto>> CreateInputInvoice(InputInvoiceCreateRequest request)
     {
         if (!ModelState.IsValid)
         {
@@ -91,7 +91,7 @@ public class InputInvoiceController : ControllerBase
 
     [HttpGet("{id}")]
     //[Authorize(Roles = "admin, laboratory")]
-    public async Task<ActionResult<InputInvoice>> GetInputInvoice(int id)
+    public async Task<ActionResult<InputInvoiceDto>> GetInputInvoice(int id)
     {
         try
         {
@@ -147,7 +147,7 @@ public class InputInvoiceController : ControllerBase
     
     [HttpPut("{id}")]
     //[Authorize(Roles = "admin, laboratory")]
-    public async Task<IActionResult> UpdateInputInvoice(int id, InputInvoiceUpdateRequest request)
+    public async Task<ActionResult<InputInvoiceDto>> UpdateInputInvoice(int id, InputInvoiceUpdateRequest request)
     {
         if (!ModelState.IsValid)
         {
@@ -167,6 +167,7 @@ public class InputInvoiceController : ControllerBase
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             var updatedInputInvoice = await _inputInvoiceService.UpdateInputInvoiceAsync(inputInvoiceDb, modifiedById, cancellationToken);
 
+            
             return Ok(_mapper.Map<InputInvoiceDto>(updatedInputInvoice));
         }
         catch (Exception ex)
@@ -179,7 +180,7 @@ public class InputInvoiceController : ControllerBase
     
     [HttpPatch("{id}/soft-remove")]
     //[Authorize(Roles = "admin, laboratory")]
-    public async Task<IActionResult> SoftDeleteInputInvoice(int id)
+    public async Task<ActionResult<InputInvoiceDto>> SoftDeleteInputInvoice(int id)
     {
         try
         {
@@ -205,7 +206,7 @@ public class InputInvoiceController : ControllerBase
 
     [HttpPatch("{id}/restore")]
     //[Authorize(Roles = "admin, laboratory")]
-    public async Task<IActionResult> RestoreRemovedInputInvoice(int id)
+    public async Task<ActionResult<InputInvoiceDto>> RestoreRemovedInputInvoice(int id)
     {
         try
         {

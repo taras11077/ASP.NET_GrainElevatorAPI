@@ -37,7 +37,7 @@ public class EmployeeController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees(int page = 1, int size = 10)
+    public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetEmployees(int page = 1, int size = 10)
     {
         try
         {
@@ -55,7 +55,7 @@ public class EmployeeController : ControllerBase
 
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Employee>> GetEmployee(int id)
+    public async Task<ActionResult<EmployeeDto>> GetEmployee(int id)
     {
         try
         {
@@ -74,7 +74,7 @@ public class EmployeeController : ControllerBase
     }
 
     [HttpGet("search")]
-    public async Task<ActionResult<IEnumerable<Employee>>> SearchEmployees(string name)
+    public async Task<ActionResult<IEnumerable<EmployeeDto>>> SearchEmployees(string name)
     {
         try
         {

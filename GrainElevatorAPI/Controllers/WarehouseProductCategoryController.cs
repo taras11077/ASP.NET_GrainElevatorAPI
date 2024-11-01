@@ -34,7 +34,7 @@ public class WarehouseProductCategoryController: ControllerBase
     
     [HttpPost]
     //[Authorize(Roles = "Admin, Accountant")]
-    public async Task<ActionResult<WarehouseProductCategory>> CreateWarehouseProductCategory(WarehouseProductCategoryCreateRequest request)
+    public async Task<ActionResult<WarehouseProductCategoryDto>> CreateWarehouseProductCategory(WarehouseProductCategoryCreateRequest request)
     {
         if (!ModelState.IsValid)
         {
@@ -61,7 +61,7 @@ public class WarehouseProductCategoryController: ControllerBase
 
     [HttpGet]
     //[Authorize(Roles = "Admin, Accountant")]
-    public async Task<ActionResult<IEnumerable<WarehouseProductCategory>>> GetWarehouseProductCategory([FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<ActionResult<IEnumerable<WarehouseProductCategoryDto>>> GetWarehouseProductCategory([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
         {
@@ -81,7 +81,7 @@ public class WarehouseProductCategoryController: ControllerBase
 
     [HttpGet("{id}")]
     //[Authorize(Roles = "Admin, Accountant")]
-    public async Task<ActionResult<WarehouseProductCategory>> GetWarehouseProductCategory(int id)
+    public async Task<ActionResult<WarehouseProductCategoryDto>> GetWarehouseProductCategory(int id)
     {
         try
         {
@@ -104,7 +104,7 @@ public class WarehouseProductCategoryController: ControllerBase
     
     [HttpGet("search")]
     //[Authorize(Roles = "Admin, Accountant")]
-    public async Task<ActionResult<IEnumerable<WarehouseProductCategory>>> SearchWarehouseProductCategories(
+    public async Task<ActionResult<IEnumerable<WarehouseProductCategoryDto>>> SearchWarehouseProductCategories(
         [FromQuery] int? id = null,
         [FromQuery] string? title = null,
         [FromQuery] int? supplierId = null,

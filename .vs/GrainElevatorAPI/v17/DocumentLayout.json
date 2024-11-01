@@ -1,14 +1,13 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\",
+  "WorkspaceRootPath": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorBackend\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{3E2DBCC0-50A7-443D-9FB0-715C589CB826}|GrainElevatorAPI\\GrainElevatorAPI.csproj|e:\\0_step\\00 hw\\000\\grainelevator\\grainelevatorapi\\grainelevatorapi\\controllers\\laboratorycardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{3E2DBCC0-50A7-443D-9FB0-715C589CB826}|GrainElevatorAPI\\GrainElevatorAPI.csproj|e:\\0_step\\00 hw\\000\\grainelevator\\grainelevatorbackend\\grainelevatorapi\\controllers\\laboratorycardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{3E2DBCC0-50A7-443D-9FB0-715C589CB826}|GrainElevatorAPI\\GrainElevatorAPI.csproj|solutionrelative:grainelevatorapi\\controllers\\laboratorycardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{3E2DBCC0-50A7-443D-9FB0-715C589CB826}|GrainElevatorAPI\\GrainElevatorAPI.csproj|e:\\0_step\\00 hw\\000\\grainelevator\\grainelevatorapi\\grainelevatorapi\\controllers\\productionbatchcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3E2DBCC0-50A7-443D-9FB0-715C589CB826}|GrainElevatorAPI\\GrainElevatorAPI.csproj|solutionrelative:grainelevatorapi\\controllers\\productionbatchcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI\\Controllers\\ProductionBatchController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -36,11 +35,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "LaboratoryCardController.cs",
-              "DocumentMoniker": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI\\Controllers\\LaboratoryCardController.cs",
+              "DocumentMoniker": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorBackend\\GrainElevatorAPI\\Controllers\\LaboratoryCardController.cs",
               "RelativeDocumentMoniker": "GrainElevatorAPI\\Controllers\\LaboratoryCardController.cs",
-              "ToolTip": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI\\Controllers\\LaboratoryCardController.cs",
+              "ToolTip": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorBackend\\GrainElevatorAPI\\Controllers\\LaboratoryCardController.cs",
               "RelativeToolTip": "GrainElevatorAPI\\Controllers\\LaboratoryCardController.cs",
-              "ViewState": "AgIAACQAAAAAAAAAAAAAABkAAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAACQAAAAAAAAAAAAAACoAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-10-21T18:51:26.46Z",
               "EditorCaption": ""
@@ -50,13 +49,12 @@
               "DocumentIndex": 1,
               "Title": "ProductionBatchController.cs",
               "DocumentMoniker": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI\\Controllers\\ProductionBatchController.cs",
-              "RelativeDocumentMoniker": "GrainElevatorAPI\\Controllers\\ProductionBatchController.cs",
+              "RelativeDocumentMoniker": "..\\GrainElevatorAPI\\GrainElevatorAPI\\Controllers\\ProductionBatchController.cs",
               "ToolTip": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI\\Controllers\\ProductionBatchController.cs",
-              "RelativeToolTip": "GrainElevatorAPI\\Controllers\\ProductionBatchController.cs",
+              "RelativeToolTip": "..\\GrainElevatorAPI\\GrainElevatorAPI\\Controllers\\ProductionBatchController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-21T18:51:19.027Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-21T18:51:19.027Z"
             }
           ]
         },

@@ -33,7 +33,7 @@ public class ProductController : ControllerBase
     
     [HttpPost]
     //[Authorize(Roles = "admin")]
-    public async Task<ActionResult<Product>> CreateProduct(ProductCreateRequest request)
+    public async Task<ActionResult<ProductDto>> CreateProduct(ProductCreateRequest request)
     {
         if (!ModelState.IsValid)
         {
@@ -58,7 +58,7 @@ public class ProductController : ControllerBase
     
     
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Product>>> GetProducts([FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
         {
@@ -77,7 +77,7 @@ public class ProductController : ControllerBase
     
     
     [HttpGet("{id}")]
-    public async Task<ActionResult<Product>> GetProductById(int id)
+    public async Task<ActionResult<ProductDto>> GetProductById(int id)
     {
         try
         {
@@ -97,7 +97,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("search")]
-    public async Task<ActionResult<IEnumerable<Product>>> SearchProducts(string title)
+    public async Task<ActionResult<IEnumerable<ProductDto>>> SearchProducts(string title)
     {
         try
         {

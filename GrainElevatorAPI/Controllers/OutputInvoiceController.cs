@@ -34,7 +34,7 @@ public class OutputInvoiceController: ControllerBase
     
     [HttpPost]
     //[Authorize(Roles = "Admin, laboratory")]
-    public async Task<ActionResult<OutputInvoice>> CreateOutputInvoice(OutputInvoiceCreateRequest request)
+    public async Task<ActionResult<OutputInvoiceDto>> CreateOutputInvoice(OutputInvoiceCreateRequest request)
     {
         if (!ModelState.IsValid)
         {
@@ -82,14 +82,31 @@ public class OutputInvoiceController: ControllerBase
 
     [HttpGet]
     //[Authorize(Roles = "admin, laboratory")]
-    public async Task<ActionResult<IEnumerable<OutputInvoice>>> GetOutputInvoices([FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<ActionResult> GetOutputInvoices([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
-            var outputInvoices = await _outputInvoiceService.GetOutputInvoices(page, size, cancellationToken);
             
+            // _logger.LogInformation("Початок отримання видаткових накладних із сервісу.");
+            // var serviceStart = DateTime.UtcNow;
+            //
+            // var outputInvoices = await _outputInvoiceService.GetOutputInvoices(page, size, cancellationToken);
+            //
+            // var serviceEnd = DateTime.UtcNow;
+            // _logger.LogInformation("Сервіс завершив запит за {Duration} мс", (serviceEnd - serviceStart).TotalMilliseconds);
+            //
+            // _logger.LogInformation("Початок маппінгу видаткових накладних.");
+            // var mappingStart = DateTime.UtcNow;
+            //
+            // var outputInvoiceDtos = _mapper.Map<IEnumerable<OutputInvoiceDto>>(outputInvoices);
+            //
+            // var mappingEnd = DateTime.UtcNow;
+            // _logger.LogInformation("Маппінг завершено за {Duration} мс", (mappingEnd - mappingStart).TotalMilliseconds);
+            
+            var outputInvoices = await _outputInvoiceService.GetOutputInvoices(page, size, cancellationToken);
             var outputInvoiceDtos = _mapper.Map<IEnumerable<OutputInvoiceDto>>(outputInvoices);
+            
             return Ok(outputInvoiceDtos);
         }
         catch (Exception ex)
@@ -102,11 +119,12 @@ public class OutputInvoiceController: ControllerBase
 
     [HttpGet("{id}")]
     //[Authorize(Roles = "admin, laboratory")]
-    public async Task<ActionResult<OutputInvoice>> GetOutputInvoice(int id)
+    public async Task<ActionResult> GetOutputInvoice(int id)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
+            
             var OutputInvoice = await _outputInvoiceService.GetOutputInvoiceByIdAsync(id, cancellationToken);
             if (OutputInvoice == null)
             {
@@ -124,7 +142,7 @@ public class OutputInvoiceController: ControllerBase
 
     [HttpGet("search")]
     //[Authorize(Roles = "admin, laboratory")]
-    public async Task<ActionResult<IEnumerable<OutputInvoiceDto>>> SearchOutputInvoices(
+    public async Task<ActionResult> SearchOutputInvoices(
         [FromQuery] int? id = null,
         [FromQuery] string? invoiceNumber = null,
         [FromQuery] DateTime? shipmentDate = null,
@@ -178,7 +196,9 @@ public class OutputInvoiceController: ControllerBase
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             var updatedOutputInvoice = await _outputInvoiceService.UpdateOutputInvoiceAsync(OutputInvoiceDb, modifiedById, cancellationToken);
 
-            return Ok(_mapper.Map<OutputInvoiceDto>(updatedOutputInvoice));
+            var updatedOutputInvoiceDto = _mapper.Map<OutputInvoiceDto>(updatedOutputInvoice);
+            
+            return Ok(updatedOutputInvoiceDto);
         }
         catch (Exception ex)
         {
@@ -203,8 +223,10 @@ public class OutputInvoiceController: ControllerBase
 
             var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             var removedOutputInvoice = await _outputInvoiceService.SoftDeleteOutputInvoiceAsync(OutputInvoiceDb, removedById, cancellationToken);
+
+            var removedOutputInvoiceDto = _mapper.Map<OutputInvoiceDto>(removedOutputInvoice);
             
-            return Ok(_mapper.Map<OutputInvoiceDto>(removedOutputInvoice));
+            return Ok(removedOutputInvoiceDto);
         }
         catch (Exception ex)
         {
@@ -230,7 +252,9 @@ public class OutputInvoiceController: ControllerBase
             var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             var restoredOutputInvoice = await _outputInvoiceService.RestoreRemovedOutputInvoiceAsync(OutputInvoiceDb, restoredById, cancellationToken);
 
-            return Ok(_mapper.Map<OutputInvoiceDto>(restoredOutputInvoice));
+            var restoredOutputInvoiceDto = _mapper.Map<OutputInvoiceDto>(restoredOutputInvoice);
+            
+            return Ok(restoredOutputInvoiceDto);
         }
         catch (Exception ex)
         {

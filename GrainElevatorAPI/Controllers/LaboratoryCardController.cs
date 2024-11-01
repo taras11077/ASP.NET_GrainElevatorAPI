@@ -35,7 +35,7 @@ public class LaboratoryCardController : ControllerBase
 
     [HttpPost]
     //[Authorize(Roles = "Admin, Laboratory")]
-    public async Task<ActionResult<LaboratoryCard>> CreateLaboratoryCard(LaboratoryCardCreateRequest request)
+    public async Task<ActionResult<LaboratoryCardDto>> CreateLaboratoryCard(LaboratoryCardCreateRequest request)
     {
         if (!ModelState.IsValid)
         {
@@ -62,7 +62,7 @@ public class LaboratoryCardController : ControllerBase
 
     [HttpGet]
     //[Authorize(Roles = "Admin, Laboratory")]
-    public async Task<ActionResult<IEnumerable<LaboratoryCard>>> GetLaboratoryCard([FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<ActionResult<IEnumerable<LaboratoryCardDto>>> GetLaboratoryCard([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
         {
@@ -82,7 +82,7 @@ public class LaboratoryCardController : ControllerBase
 
     [HttpGet("{id}")]
     //[Authorize(Roles = "Admin, Laboratory")]
-    public async Task<ActionResult<LaboratoryCard>> GetLaboratoryCard(int id)
+    public async Task<ActionResult<LaboratoryCardDto>> GetLaboratoryCard(int id)
     {
         try
         {
@@ -105,7 +105,7 @@ public class LaboratoryCardController : ControllerBase
     
     [HttpGet("search")]
     //[Authorize(Roles = "Admin, Laboratory")]
-    public async Task<ActionResult<IEnumerable<LaboratoryCard>>> SearchLaboratoryCards(
+    public async Task<ActionResult<IEnumerable<LaboratoryCardDto>>> SearchLaboratoryCards(
         [FromQuery] int? id = null,
         [FromQuery] string? labCardNumber = null,
         [FromQuery] double? weedImpurity = null,

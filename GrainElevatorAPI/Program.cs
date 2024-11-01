@@ -29,7 +29,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program));
 
 
-
 builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IEmployeeService, EmployeeService>();
@@ -48,6 +47,12 @@ builder.Services.AddTransient<ILaboratoryCard, LaboratoryCard>();
 builder.Services.AddTransient<IProductionBatch, ProductionBatch>();
 builder.Services.AddTransient<IInvoiceRegister, InvoiceRegister>();
 builder.Services.AddTransient<IRegisterCalculator, StandardRegisterCalculator>();
+builder.Services.AddTransient<IProduct, Product>();
+builder.Services.AddTransient<ISupplier, Supplier>();
+builder.Services.AddTransient<IRole, Role>();
+builder.Services.AddTransient<IWarehouseUnit, WarehouseUnit>();
+builder.Services.AddTransient<IWarehouseProductCategory, WarehouseProductCategory>();
+builder.Services.AddTransient<IOutputInvoice, OutputInvoice>();
 
 builder.Services.AddControllers();
 

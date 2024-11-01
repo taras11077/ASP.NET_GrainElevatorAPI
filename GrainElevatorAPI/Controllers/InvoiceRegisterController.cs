@@ -34,7 +34,7 @@ public class InvoiceRegisterController : ControllerBase
     
     [HttpPost]
     //[Authorize(Roles = "Admin, Technologist")]
-    public async Task<ActionResult<Register>> CreateRegister([FromBody] InvoiceRegisterCreateRequest request)
+    public async Task<ActionResult<InvoiceRegisterDto>> CreateRegister([FromBody] InvoiceRegisterCreateRequest request)
     {
         if (!ModelState.IsValid)
         {
@@ -71,7 +71,7 @@ public class InvoiceRegisterController : ControllerBase
     
     [HttpGet]
     //[Authorize(Roles = "Admin, Technologist")]
-    public async Task<ActionResult<IEnumerable<Register>>> GetRegisters([FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<ActionResult<IEnumerable<InvoiceRegisterDto>>> GetRegisters([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
         {
@@ -91,7 +91,7 @@ public class InvoiceRegisterController : ControllerBase
     
     [HttpGet("{id}")]
     //[Authorize(Roles = "Admin, Technologist")]
-    public async Task<ActionResult<Register>> GetRegisterById(int id)
+    public async Task<ActionResult<InvoiceRegisterDto>> GetRegisterById(int id)
     {
         try
         {
