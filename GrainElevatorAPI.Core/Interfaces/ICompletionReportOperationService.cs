@@ -1,6 +1,6 @@
 ﻿namespace GrainElevatorAPI.Core.Interfaces;
 
-public interface ICompletionReportItemService
+public interface ICompletionReportOperationService
 {
     
 }

@@ -2,11 +2,10 @@
 
 namespace GrainElevatorAPI.Core.Interfaces.ModelInterfaces;
 
-public interface IProductionPriceList
+public interface IPriceList
 {
     int Id { get; set; }
-
-    string ProductTitle { get; set; }
+    int ProductId { get; set; }
     
     ICollection<CompletionReport> CompletionReports { get; set; }
     ICollection<PriceListItem> PriceListItems { get; set; }

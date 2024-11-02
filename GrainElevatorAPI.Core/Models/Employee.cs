@@ -64,10 +64,10 @@ public class Employee : IAuditable, IEmployee
     public virtual ICollection<LaboratoryCard> LaboratoryCards { get; set; } = new List<LaboratoryCard>();
     public virtual ICollection<ProductionBatch> ProductionBatches { get; set; } = new List<ProductionBatch>();
     public virtual ICollection<InvoiceRegister> Registers { get; set; } = new List<InvoiceRegister>();
-    public virtual ICollection<CompletionReportItem> CompletionReportItems { get; set; } = new List<CompletionReportItem>();
+    public virtual ICollection<CompletionReportOperation> CompletionReportItems { get; set; } = new List<CompletionReportOperation>();
     public virtual ICollection<CompletionReport> CompletionReports { get; set; } = new List<CompletionReport>();
     public virtual ICollection<PriceListItem> PriceListItems { get; set; } = new List<PriceListItem>();
-    public virtual ICollection<ProductionPriceList> PriceLists { get; set; } = new List<ProductionPriceList>();
+    public virtual ICollection<PriceList> PriceLists { get; set; } = new List<PriceList>();
     
     public virtual ICollection<WarehouseUnit> WarehouseUnits { get; set; } = new List<WarehouseUnit>();
     public virtual ICollection<WarehouseProductCategory> WarehouseProductCategories { get; set; } = new List<WarehouseProductCategory>();

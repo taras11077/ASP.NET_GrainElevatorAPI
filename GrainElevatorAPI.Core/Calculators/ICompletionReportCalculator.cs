@@ -6,6 +6,6 @@ public interface ICompletionReportCalculator
 {
     double CalcSumWeightReport();
     double CalcDryingQuantity();
-    void CalcByPrice(ProductionPriceList pl);
+    void CalcByPrice(PriceList pl);
 }
 

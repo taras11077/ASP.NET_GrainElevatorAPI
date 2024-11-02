@@ -3,8 +3,7 @@
 public interface IPriceListItem
 {
     int Id { get; set; }
-    string OperationTitle { get; set; }
-    double OperationPrice { get; set; }
+    string OperationName { get; set; }
+    decimal  OperationPrice { get; set; }
     int PriceListId { get; set; }
-
 }

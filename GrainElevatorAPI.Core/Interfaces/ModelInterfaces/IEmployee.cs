@@ -25,10 +25,10 @@ public interface IEmployee
     ICollection<LaboratoryCard> LaboratoryCards { get; set; }
     ICollection<ProductionBatch> ProductionBatches { get; set; }
     ICollection<InvoiceRegister> Registers { get; set; }
-    ICollection<CompletionReportItem> CompletionReportItems { get; set; }
+    ICollection<CompletionReportOperation> CompletionReportItems { get; set; }
     ICollection<CompletionReport> CompletionReports { get; set; }
     ICollection<PriceListItem> PriceListItems { get; set; }
-    ICollection<ProductionPriceList> PriceLists { get; set; }
+    ICollection<PriceList> PriceLists { get; set; }
     ICollection<WarehouseUnit> WarehouseUnits { get; set; }
     ICollection<WarehouseProductCategory> WarehouseProductCategories { get; set; }
     ICollection<OutputInvoice> OutputInvoices { get; set; }

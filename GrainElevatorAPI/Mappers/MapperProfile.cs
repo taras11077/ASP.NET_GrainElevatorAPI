@@ -55,5 +55,22 @@ public class MapperProfile : Profile
         CreateMap<OutputInvoice, OutputInvoiceUpdateRequest>().ReverseMap();
         CreateMap<OutputInvoice, OutputInvoiceDto>().ReverseMap();
         
+        CreateMap<CompletionReport, CompletionReportCreateRequest>().ReverseMap();
+        CreateMap<CompletionReport, CompletionReportUpdateRequest>().ReverseMap();
+        CreateMap<CompletionReport, CompletionReportDto>().ReverseMap();
+        
+        CreateMap<CompletionReportOperation, CompletionReportOperationCreateRequest>().ReverseMap();
+        CreateMap<CompletionReportOperation, CompletionReportOperationUpdateRequest>().ReverseMap();
+        CreateMap<CompletionReportOperation, CompletionReportOperationDto>().ReverseMap();
+        
+        CreateMap<PriceList, PriceListCreateRequest>().ReverseMap();
+        CreateMap<PriceList, PriceListUpdateRequest>().ReverseMap();
+        CreateMap<PriceList, PriceListDto>().ReverseMap();
+        
+        CreateMap<PriceListItem, PriceListItemCreateRequest>().ReverseMap();
+        CreateMap<PriceListItem, PriceListItemUpdateRequest>().ReverseMap();
+        CreateMap<PriceListItem, PriceListItemDto>().ReverseMap();
+        
+        
     }
 }

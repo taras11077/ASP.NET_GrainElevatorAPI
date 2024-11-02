@@ -39,10 +39,10 @@ public class CompletionReportCalculator : ICompletionReportCalculator
                 //    (reg.ProductionBatches as List<ProductionBatch>)?.ForEach(p =>
                 //    {
                 //        if (p.Shrinkage != 0)
-                CompletionReport.QuantitiesDrying += reg.QuantitiesDryingReg;
+                CompletionReport.ReportQuantitiesDrying += reg.QuantitiesDryingReg;
             }
 
-            return Math.Round(CompletionReport.QuantitiesDrying.Value, 2);
+            return Math.Round(CompletionReport.ReportQuantitiesDrying.Value, 2);
 
         }
         catch (Exception)
@@ -53,17 +53,17 @@ public class CompletionReportCalculator : ICompletionReportCalculator
     }
 
     //рассчет финансовой части Акта доработка по заданному Прайсу
-    public void CalcByPrice(ProductionPriceList pl)
+    public void CalcByPrice(PriceList pl)
     {
         try
         {
-            (CompletionReport.CompletionReportItems as List<CompletionReportItem>)?.ForEach(op =>
+            (CompletionReport.CompletionReportItems as List<CompletionReportOperation>)?.ForEach(op =>
             {
                 foreach (var p in pl.PriceListItems)
-                    if (op.TechnologicalOperation == p.OperationTitle)
+                    if (op.OperationName == p.OperationName)
                     {
-                        op.Price = p.OperationPrice;
-                        op.TotalCost = Math.Round(op.Amount * op.Price, 2);
+                        // op.Price = p.OperationPrice;
+                        // op.TotalCost = Math.Round(op.Amount * op.Price, 2);
                     }
             });
         }

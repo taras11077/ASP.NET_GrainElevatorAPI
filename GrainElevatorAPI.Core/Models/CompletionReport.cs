@@ -21,15 +21,23 @@ public class CompletionReport : AuditableEntity, ICompletionReport
 	public DateTime ReportDate { get; set; }
 
 	[Range(0, double.MaxValue, ErrorMessage = "QuantitiesDrying must be a positive number.")]
-	public double? QuantitiesDrying { get; set; }
+	public double? ReportQuantitiesDrying { get; set; }
 
 	[Range(0, double.MaxValue, ErrorMessage = "ReportPhysicalWeight must be a positive number.")]
 	public double? ReportPhysicalWeight { get; set; }
 	
+	
+	
+	[Range(0, double.MaxValue, ErrorMessage = "Price must be a positive number.")]
+	public double Price { get; set; }
+
+	[Range(0, double.MaxValue, ErrorMessage = "TotalCost must be a positive number.")]
+	public double TotalCost { get; set; }
+	
     public bool? IsFinalized { get; set; }
     
     public virtual ICollection<InvoiceRegister> Registers { get; set; } = new List<InvoiceRegister>();
-    public virtual ICollection<CompletionReportItem> CompletionReportItems { get; set; } = new List<CompletionReportItem>();
+    public virtual ICollection<CompletionReportOperation> CompletionReportItems { get; set; } = new List<CompletionReportOperation>();
 
     
     [Range(1, int.MaxValue, ErrorMessage = "SupplierId must be a positive number.")]
@@ -43,7 +51,7 @@ public class CompletionReport : AuditableEntity, ICompletionReport
 
     public virtual Supplier Supplier { get; set; }
     public virtual Product Product { get; set; }
-    public virtual ProductionPriceList? PriceList { get; set; }
+    public virtual PriceList? PriceList { get; set; }
     
 }
 

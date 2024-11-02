@@ -30,9 +30,9 @@ public class GrainElevatorApiContext : DbContext
     public DbSet<ProductionBatch> ProductionBatches { get; set; }
     public DbSet<InvoiceRegister> Registers { get; set; }
     
-    public DbSet<CompletionReportItem> CompletionReportItems { get; set; }
+    public DbSet<CompletionReportOperation> TechnologicalOperations { get; set; }
     public DbSet<PriceListItem> PriceListItems { get; set; }
-    public DbSet<ProductionPriceList> PriceLists { get; set; }
+    public DbSet<PriceList> PriceLists { get; set; }
     public DbSet<CompletionReport> CompletionReports { get; set; }
     
     public DbSet<WarehouseUnit> WarehouseUnits { get; set; }
@@ -286,25 +286,25 @@ public class GrainElevatorApiContext : DbContext
         
         
         
-        modelBuilder.Entity<CompletionReportItem>()
+        modelBuilder.Entity<CompletionReportOperation>()
             .HasOne(to => to.CreatedBy)
             .WithMany(e => e.CompletionReportItems)
             .HasForeignKey(to => to.CreatedById)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<CompletionReportItem>()
+        modelBuilder.Entity<CompletionReportOperation>()
             .HasOne(to => to.ModifiedBy)
             .WithMany()
             .HasForeignKey(to => to.ModifiedById)
             .OnDelete(DeleteBehavior.Restrict);
         
-        modelBuilder.Entity<CompletionReportItem>()
+        modelBuilder.Entity<CompletionReportOperation>()
             .HasOne(to => to.RemovedBy)
             .WithMany()
             .HasForeignKey(to => to.RemovedById)
             .OnDelete(DeleteBehavior.Restrict);
         
-        modelBuilder.Entity<CompletionReportItem>()
+        modelBuilder.Entity<CompletionReportOperation>()
             .HasOne(to => to.RestoreBy)
             .WithMany()
             .HasForeignKey(to => to.RestoreById)
@@ -365,25 +365,25 @@ public class GrainElevatorApiContext : DbContext
         
         
         
-        modelBuilder.Entity<ProductionPriceList>()
+        modelBuilder.Entity<PriceList>()
             .HasOne(pl => pl.CreatedBy)
             .WithMany(e => e.PriceLists)
             .HasForeignKey(pl => pl.CreatedById)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<ProductionPriceList>()
+        modelBuilder.Entity<PriceList>()
             .HasOne(pl => pl.ModifiedBy)
             .WithMany()
             .HasForeignKey(pl => pl.ModifiedById)
             .OnDelete(DeleteBehavior.Restrict);
         
-        modelBuilder.Entity<ProductionPriceList>()
+        modelBuilder.Entity<PriceList>()
             .HasOne(pl => pl.RemovedBy)
             .WithMany()
             .HasForeignKey(pl => pl.RemovedById)
             .OnDelete(DeleteBehavior.Restrict);
         
-        modelBuilder.Entity<ProductionPriceList>()
+        modelBuilder.Entity<PriceList>()
             .HasOne(pl => pl.RestoreBy)
             .WithMany()
             .HasForeignKey(pl => pl.RestoreById)

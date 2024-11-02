@@ -116,21 +116,22 @@ public class InvoiceRegisterController : ControllerBase
     
     [HttpGet("search")]
     //[Authorize(Roles = "Admin, Technologist")]
-    public async Task<ActionResult<IEnumerable<InvoiceRegisterDto>>> SearchRegisters(int? id,
-        string? registerNumber,
-        DateTime? arrivalDate,
-        int? supplierId,
-        int? productId,
-        int? physicalWeightReg,
-        int? shrinkageReg,
-        int? wasteReg,
-        int? accWeightReg,
-        double? weedImpurityBase,
-        double? moistureBase,
-        int? createdById,
-        DateTime? removedAt,
-        int page = 1,
-        int size = 10)
+    public async Task<ActionResult<IEnumerable<InvoiceRegisterDto>>> SearchRegisters(
+        [FromQuery] int? id,
+        [FromQuery] string? registerNumber,
+        [FromQuery] DateTime? arrivalDate,
+        [FromQuery] int? supplierId,
+        [FromQuery] int? productId,
+        [FromQuery] int? physicalWeightReg,
+        [FromQuery] int? shrinkageReg,
+        [FromQuery] int? wasteReg,
+        [FromQuery] int? accWeightReg,
+        [FromQuery] double? weedImpurityBase,
+        [FromQuery] double? moistureBase,
+        [FromQuery] int? createdById,
+        [FromQuery] DateTime? removedAt,
+        [FromQuery] int page = 1,
+        [FromQuery] int size = 10)
     {
         try
         {
