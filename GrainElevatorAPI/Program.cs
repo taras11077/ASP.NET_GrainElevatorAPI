@@ -41,6 +41,11 @@ builder.Services.AddTransient<IInvoiceRegisterService, InvoiceRegisterService>()
 builder.Services.AddTransient<IWarehouseProductCategoryService, WarehouseProductCategoryService>();
 builder.Services.AddTransient<IWarehouseUnitService, WarehouseUnitService>();
 builder.Services.AddTransient<IOutputInvoiceService, OutputInvoiceService>();
+builder.Services.AddTransient<IPriceListItemService, PriceListItemService>();
+builder.Services.AddTransient<IPriceListService, PriceListService>();
+builder.Services.AddTransient<ICompletionReportOperationService, CompletionReportOperationService>();
+builder.Services.AddTransient<ICompletionReportService, CompletionReportService>();
+
 
 builder.Services.AddTransient<IInputInvoice, InputInvoice>();
 builder.Services.AddTransient<ILaboratoryCard, LaboratoryCard>();
@@ -53,6 +58,7 @@ builder.Services.AddTransient<IRole, Role>();
 builder.Services.AddTransient<IWarehouseUnit, WarehouseUnit>();
 builder.Services.AddTransient<IWarehouseProductCategory, WarehouseProductCategory>();
 builder.Services.AddTransient<IOutputInvoice, OutputInvoice>();
+builder.Services.AddTransient<ITechnologicalOperation, TechnologicalOperation>();
 
 builder.Services.AddControllers();
 

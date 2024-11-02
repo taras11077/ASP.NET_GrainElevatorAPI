@@ -18,6 +18,6 @@ public class PriceList : AuditableEntity, IPriceList
 	
     public virtual ICollection<CompletionReport> CompletionReports { get; set; } = new List<CompletionReport>();
     public virtual ICollection<PriceListItem> PriceListItems { get; set; } = new List<PriceListItem>();
-
+    
 }
 

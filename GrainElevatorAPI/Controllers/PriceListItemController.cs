@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GrainElevatorAPI.Controllers;
 
+[Route("api/price-list-item")]
+[ApiController]
 public class PriceListItemController: ControllerBase
 
 {
