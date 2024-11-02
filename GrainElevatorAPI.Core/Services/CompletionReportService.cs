@@ -12,12 +12,32 @@ public class CompletionReportService: ICompletionReportService
     public CompletionReportService(IRepository repository) => _repository = repository;
 
 
-    public async Task<CompletionReport> CreateCompletionReportAsync(CompletionReport completionReport, int createdById, CancellationToken cancellationToken)
+    public async Task<CompletionReport> CreateCompletionReportAsync(
+        string reportNumber,
+        List<int> registerIds,
+        int createdById,
+        CancellationToken cancellationToken)
     {
         try
         {
-            completionReport.CreatedAt = DateTime.UtcNow;
-            completionReport.CreatedById = createdById;
+            var registers = _repository.GetAll<InvoiceRegister>()
+                .Where(r => registerIds.Contains(r.Id))
+                .ToList();
+            
+            var completionReport = new CompletionReport
+            {
+                ReportNumber = reportNumber,
+                ReportDate = DateTime.UtcNow,
+
+                
+                
+                CreatedAt = DateTime.UtcNow,
+                CreatedById = createdById,
+ 
+            };
+            
+            
+           
             
             return await _repository.AddAsync(completionReport, cancellationToken);
         }

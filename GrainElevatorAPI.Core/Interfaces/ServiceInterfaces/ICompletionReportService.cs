@@ -4,7 +4,10 @@ namespace GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 
 public interface ICompletionReportService
 {
-    Task<CompletionReport> CreateCompletionReportAsync(CompletionReport completionReport, int createdById, CancellationToken cancellationToken);
+    Task<CompletionReport> CreateCompletionReportAsync(string reportNumber,
+        List<int> registers,
+        int createdById,
+        CancellationToken cancellationToken);
     Task<IEnumerable<CompletionReport>> GetCompletionReports(int page, int size, CancellationToken cancellationToken);
     Task<CompletionReport> GetCompletionReportByIdAsync(int id, CancellationToken cancellationToken);
     
