@@ -7,16 +7,16 @@ namespace GrainElevator.Storage;
 
 public class GrainElevatorApiContext : DbContext
 {
-    public GrainElevatorApiContext(DbContextOptions<GrainElevatorApiContext> options) : base(options)
-    {
-        
-    }
-
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // public GrainElevatorApiContext(DbContextOptions<GrainElevatorApiContext> options) : base(options)
     // {
-    //     optionsBuilder.UseSqlServer(
-    //         "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=grainElevatorAPI_db;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+    //     
     // }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer(
+            "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=grainElevatorAPI_db;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+    }
 
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Role> Roles { get; set; }
@@ -30,7 +30,8 @@ public class GrainElevatorApiContext : DbContext
     public DbSet<ProductionBatch> ProductionBatches { get; set; }
     public DbSet<InvoiceRegister> Registers { get; set; }
     
-    public DbSet<CompletionReportOperation> TechnologicalOperations { get; set; }
+    public DbSet<TechnologicalOperation> TechnologicalOperations { get; set; }
+    public DbSet<CompletionReportOperation> CompletionReportOperations { get; set; }
     public DbSet<PriceListItem> PriceListItems { get; set; }
     public DbSet<PriceList> PriceLists { get; set; }
     public DbSet<CompletionReport> CompletionReports { get; set; }
