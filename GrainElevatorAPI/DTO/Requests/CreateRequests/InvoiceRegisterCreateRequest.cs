@@ -5,6 +5,9 @@ namespace GrainElevatorAPI.DTO.Requests.CreateRequests;
 public class InvoiceRegisterCreateRequest
 {
     [Required]
+    public string RegisterNumber { get; set; }
+    
+    [Required]
     public int SupplierId { get; set; }
 
     [Required]

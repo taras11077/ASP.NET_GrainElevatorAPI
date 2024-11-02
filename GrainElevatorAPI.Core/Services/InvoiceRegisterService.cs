@@ -1,4 +1,5 @@
 ﻿using GrainElevatorAPI.Core.Calculators;
+using GrainElevatorAPI.Core.Calculators;
 using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
@@ -21,6 +22,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
     }
 
     public async Task<InvoiceRegister> CreateRegisterAsync(
+        string registerNumber,
         int supplierId, 
         int productId, 
         DateTime arrivalDate, 
@@ -37,12 +39,12 @@ public class InvoiceRegisterService : IInvoiceRegisterService
             
             // створення Реєстру (доробка продукції)
             var laboratoryCards = _repository.GetAll<LaboratoryCard>()
-                .Where(lc => laboratoryCardIds.Contains(lc.Id))
+                .Where(r => laboratoryCardIds.Contains(r.Id))
                 .ToList();
 
             var register = new InvoiceRegister
             {
-                RegisterNumber = GenerateRegisterNumber(),
+                RegisterNumber = registerNumber,
                 ArrivalDate = arrivalDate,
                 WeedImpurityBase = weedImpurityBase,
                 MoistureBase = moistureBase,
@@ -88,11 +90,11 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         
     }
     
-    // допоміжний метод для генерації номера реєстрe
-    private string GenerateRegisterNumber()
-    {
-        return $"№{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
-    }
+    // // допоміжний метод для генерації номера реєстру
+    // private string GenerateRegisterNumber()
+    // {
+    //     return $"№{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
+    // }
 
     public async Task<InvoiceRegister> GetRegisterByIdAsync(int id, CancellationToken cancellationToken)
     {
@@ -105,11 +107,109 @@ public class InvoiceRegisterService : IInvoiceRegisterService
             throw new Exception($"Помилка сервісу при отриманні Реєстру з ID {id}", ex);
         }
     }
+    
+    public async Task<IEnumerable<InvoiceRegister>> GetRegistersAsync(int page, int size, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await _repository.GetAll<InvoiceRegister>()
+                .Skip((page - 1) * size)
+                .Take(size)
+                .ToListAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Помилка сервісу при отриманні списку Реєстрів", ex);
+        }
+    }
 
+    
+     public async Task<IEnumerable<InvoiceRegister>> SearchRegistersAsync(int? id,
+        string? registerNumber,
+        DateTime? arrivalDate,
+        int? supplierId,
+        int? productId,
+        int? physicalWeightReg,
+        int? shrinkageReg,
+        int? wasteReg,
+        int? accWeightReg,
+        double? weedImpurityBase,
+        double? moistureBase,
+        int? createdById,
+        DateTime? removedAt,
+        int page,
+        int size,
+        CancellationToken cancellationToken)
+    {
+        try
+        
+        {
+            var query = _repository.GetAll<InvoiceRegister>()
+                .Skip((page - 1) * size)
+                .Take(size);
+
+            if (id.HasValue)
+            {
+                query = query.Where(r => r.Id == id);
+            }
+            
+            if (!string.IsNullOrEmpty(registerNumber))
+            {
+                query = query.Where(r => r.RegisterNumber == registerNumber);
+            }
+
+            if (arrivalDate.HasValue)
+            {
+                query = query.Where(r => r.ArrivalDate.Date == arrivalDate.Value.Date);
+            }
+            
+            if (supplierId.HasValue)
+                query = query.Where(r => r.SupplierId == supplierId.Value);
+
+            if (productId.HasValue)
+                query = query.Where(r => r.ProductId == productId.Value);
+            
+            
+            if (weedImpurityBase.HasValue)
+                query = query.Where(r => r.WeedImpurityBase == weedImpurityBase.Value);
+
+            if (moistureBase.HasValue)
+                query = query.Where(r => r.MoistureBase == moistureBase.Value);
+           
+            if (physicalWeightReg.HasValue)
+                query = query.Where(r => r.PhysicalWeightReg == physicalWeightReg.Value);
+            
+            if (accWeightReg.HasValue)
+                query = query.Where(r => r.AccWeightReg == accWeightReg.Value);
+            
+            if (shrinkageReg.HasValue)
+                query = query.Where(r => r.ShrinkageReg == shrinkageReg.Value);
+            
+            if (wasteReg.HasValue)
+                query = query.Where(r => r.WasteReg == wasteReg.Value);
+            
+            if (createdById.HasValue)
+                query = query.Where(r => r.CreatedById == createdById.Value);
+
+            if (removedAt.HasValue)
+                query = query.Where(r => r.RemovedAt == removedAt.Value);
+            
+            return await query.ToListAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Помилка сервісу при пошуку Реєстру за параметрами", ex);
+        }
+    }
+    
+    
     public async Task<InvoiceRegister> UpdateRegisterAsync(InvoiceRegister invoiceRegister, CancellationToken cancellationToken)
     {
         try
         {
+            //TODO
+            
+            
             return await _repository.UpdateAsync(invoiceRegister, cancellationToken);
         }
         catch (Exception ex)
@@ -117,7 +217,41 @@ public class InvoiceRegisterService : IInvoiceRegisterService
             throw new Exception($"Помилка сервісу при оновленні Реєстру з ID  {invoiceRegister.Id}", ex);
         }
     }
+    
+    public async Task<InvoiceRegister> SoftDeleteRegisterAsync(InvoiceRegister invoiceRegister, int removedById, CancellationToken cancellationToken)
+    {
+        try
+        {
+            invoiceRegister.RemovedAt = DateTime.UtcNow;
+            invoiceRegister.RemovedById = removedById;
+            
+            return await _repository.UpdateAsync(invoiceRegister, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка сервісу при видаленні Реєстру з ID  {invoiceRegister.Id}", ex);
+        }
+    }
+    
+    public async Task<InvoiceRegister> RestoreRemovedRegisterAsync(InvoiceRegister invoiceRegister, int restoredById, CancellationToken cancellationToken)
+    {
+        try
+        {
+            invoiceRegister.RemovedAt = null;
+            invoiceRegister.RestoredAt = DateTime.UtcNow;
+            invoiceRegister.RestoreById = restoredById;
+            
+            return await _repository.UpdateAsync(invoiceRegister, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка сервісу при відновленні Реєстру з ID  {invoiceRegister.Id}", ex);
+        }
+    }
 
+    
+   
+    
     public async Task<bool> DeleteRegisterAsync(int id, CancellationToken cancellationToken)
     {
         try
@@ -133,36 +267,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка сервісу при видаленні Реєстру з ID {id}", ex);
-        }
-    }
-
-    public async Task<IEnumerable<InvoiceRegister>> GetRegisters(int page, int size, CancellationToken cancellationToken)
-    {
-        try
-        {
-            return await _repository.GetAll<InvoiceRegister>()
-                .Skip((page - 1) * size)
-                .Take(size)
-                .ToListAsync(cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Помилка сервісу при отриманні списку Реєстрів", ex);
-        }
-    }
-
-    public async Task<IEnumerable<InvoiceRegister>> SearchRegisters(string registerNumber, CancellationToken cancellationToken)
-    {
-        try
-        {
-            return await _repository.GetAll<InvoiceRegister>()
-                .Where(r => r.RegisterNumber.ToLower().Contains(registerNumber.ToLower()))
-                .ToListAsync(cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Помилка сервісу при отриманні Реєстру за номером {registerNumber}", ex);
+            throw new Exception($"Помилка сервісу при hard-видаленні Реєстру з ID {id}", ex);
         }
     }
 }

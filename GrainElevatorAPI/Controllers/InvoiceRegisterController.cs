@@ -49,6 +49,7 @@ public class InvoiceRegisterController : ControllerBase
             
             // створення Реєстру (доробка продукції)
             var createdRegister = await _invoiceRegisterService.CreateRegisterAsync(
+                request.RegisterNumber,
                 request.SupplierId,
                 request.ProductId,
                 request.ArrivalDate,
@@ -76,7 +77,7 @@ public class InvoiceRegisterController : ControllerBase
         try
         {
             var cancellationToken = GetCancellationToken();
-            var registers = await _invoiceRegisterService.GetRegisters(page, size, cancellationToken);
+            var registers = await _invoiceRegisterService.GetRegistersAsync(page, size, cancellationToken);
 
             var registerDtos = _mapper.Map<IEnumerable<InvoiceRegisterDto>>(registers);
             return Ok(registerDtos);
@@ -110,6 +111,108 @@ public class InvoiceRegisterController : ControllerBase
             
             _logger.LogError($"Внутрішня помилка сервера при отриманні Реєстра з ID {id}: {ex.Message}");
             return StatusCode(500, $"Внутрішня помилка сервера при отриманні Реєстра з ID {id}: {ex.Message}");
+        }
+    }
+    
+    [HttpGet("search")]
+    //[Authorize(Roles = "Admin, Technologist")]
+    public async Task<ActionResult<IEnumerable<InvoiceRegisterDto>>> SearchRegisters(int? id,
+        string? registerNumber,
+        DateTime? arrivalDate,
+        int? supplierId,
+        int? productId,
+        int? physicalWeightReg,
+        int? shrinkageReg,
+        int? wasteReg,
+        int? accWeightReg,
+        double? weedImpurityBase,
+        double? moistureBase,
+        int? createdById,
+        DateTime? removedAt,
+        int page = 1,
+        int size = 10)
+    {
+        try
+        {
+            var cancellationToken = GetCancellationToken();
+            // передаємо параметри у сервіс для фільтрації
+            var filteredRegisters = await _invoiceRegisterService.SearchRegistersAsync(
+                id, 
+                registerNumber,
+                arrivalDate,
+                supplierId,
+                productId,
+                physicalWeightReg,
+                shrinkageReg,
+                wasteReg,
+                accWeightReg,
+                weedImpurityBase,
+                moistureBase,
+                createdById, 
+                removedAt, 
+                page, 
+                size,
+                cancellationToken);
+
+            var registerDtos = _mapper.Map<IEnumerable<InvoiceRegisterDto>>(filteredRegisters);
+            return Ok(registerDtos);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Внутрішня помилка сервера при отриманні Реєстру за параметрами: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при отриманні Реєстру за параметрами: {ex.Message}");
+        }
+    }
+    
+    
+    [HttpPatch("{id}/soft-remove")]
+    //[Authorize(Roles = "Admin, Technologist")]
+    public async Task<IActionResult> SoftDeleteRegister(int id)
+    {
+        try
+        {
+            var cancellationToken = GetCancellationToken();
+            var registerDb = await _invoiceRegisterService.GetRegisterByIdAsync(id, cancellationToken);
+            if (registerDb == null)
+            {
+                return NotFound($"Реєстру з ID {id} не знайдено.");
+            }
+            
+            var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            var removedRegister = await _invoiceRegisterService.SoftDeleteRegisterAsync(registerDb, removedById, cancellationToken);
+            
+            return Ok(_mapper.Map<InvoiceRegisterDto>(removedRegister));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Внутрішня помилка сервера при soft-видаленні Реєстру з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при видаленні Реєстру з ID {id}: {ex.Message}");
+        }
+    }
+    
+
+    [HttpPatch("{id}/restore")]
+    //[Authorize(Roles = "Admin, Technologist")]
+    public async Task<IActionResult> RestoreRemovedRegister(int id)
+    {
+        try
+        {
+            var cancellationToken = GetCancellationToken();
+            var registerDb = await _invoiceRegisterService.GetRegisterByIdAsync(id, cancellationToken);
+            if (registerDb == null)
+            {
+                return NotFound($"Реєстру з ID {id} не знайдено.");
+            }
+
+            var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            var restoredRegister = await _invoiceRegisterService.RestoreRemovedRegisterAsync(registerDb, restoredById, cancellationToken);
+            
+            return Ok(_mapper.Map<InvoiceRegisterDto>(restoredRegister));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Внутрішня помилка сервера при відновленні Реєстру з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при відновленні Реєстру з ID {id}: {ex.Message}");
         }
     }
     

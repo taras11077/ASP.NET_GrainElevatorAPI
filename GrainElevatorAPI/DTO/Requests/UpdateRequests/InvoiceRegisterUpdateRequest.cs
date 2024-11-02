@@ -5,10 +5,13 @@ namespace GrainElevatorAPI.DTO.Requests.UpdateRequests;
 public class InvoiceRegisterUpdateRequest
 {
     public string? RegisterNumber { get; set; }
+    public DateTime? ArrivalDate { get; set; }
+    public int? SupplierId { get; set; }
+    public int? ProductId { get; set; }
 
     public double? WeedImpurityBase { get; set; }
-
     public double? MoistureBase { get; set; }
-	
-    public virtual ICollection<ProductionBatch>? ProductionBatches { get; set; } = new List<ProductionBatch>();
+    
+    
+    public List<int> LaboratoryCardIds { get; set; }
 }

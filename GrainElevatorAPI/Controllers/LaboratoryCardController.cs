@@ -189,7 +189,7 @@ public class LaboratoryCardController : ControllerBase
     
     [HttpPatch("{id}/soft-remove")]
     //[Authorize(Roles = "Admin, Laboratory")]
-    public async Task<IActionResult> SoftDeleteLaboratoryCar(int id)
+    public async Task<IActionResult> SoftDeleteLaboratoryCard(int id)
     {
         try
         {

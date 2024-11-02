@@ -121,7 +121,7 @@ public class LaboratoryCardService : ILaboratoryCardService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка сервісу при пошуку Лабораторних карточок", ex);
+            throw new Exception("Помилка сервісу при пошуку Лабораторних карточок за параметрами", ex);
         }
     }
     
