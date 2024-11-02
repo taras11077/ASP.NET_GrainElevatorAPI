@@ -5,7 +5,7 @@ namespace GrainElevatorAPI.Core.Interfaces.ModelInterfaces;
 public interface ICompletionReport
 {
     int Id { get; set; }
-    int ReportNumber { get; set; }
+    string ReportNumber { get; set; }
     DateTime ReportDate { get; set; }
     double? ReportQuantitiesDrying { get; set; }
     double? ReportPhysicalWeight { get; set; }

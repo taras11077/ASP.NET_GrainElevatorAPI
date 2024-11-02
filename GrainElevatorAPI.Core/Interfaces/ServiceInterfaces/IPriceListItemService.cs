@@ -9,7 +9,7 @@ public interface IPriceListItemService
     Task<PriceListItem> GetPriceListItemByIdAsync(int id, CancellationToken cancellationToken);
     
     Task<IEnumerable<PriceListItem>> SearchPriceListItems(int? id,
-        string? operationName,
+        int? technologicalOperationId,
         decimal? operationPrice,
         int? priceListId,
         int? createdById,

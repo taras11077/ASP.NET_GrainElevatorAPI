@@ -59,12 +59,12 @@ public class CompletionReportCalculator : ICompletionReportCalculator
         {
             (CompletionReport.CompletionReportItems as List<CompletionReportOperation>)?.ForEach(op =>
             {
-                foreach (var p in pl.PriceListItems)
-                    if (op.OperationName == p.OperationName)
-                    {
-                        // op.Price = p.OperationPrice;
-                        // op.TotalCost = Math.Round(op.Amount * op.Price, 2);
-                    }
+                // foreach (var p in pl.PriceListItems)
+                //     if (op.OperationName == p.OperationName)
+                //     {
+                //         // op.Price = p.OperationPrice;
+                //         // op.TotalCost = Math.Round(op.Amount * op.Price, 2);
+                //     }
             });
         }
         catch (Exception)

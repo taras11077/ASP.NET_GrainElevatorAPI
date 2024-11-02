@@ -52,8 +52,8 @@ public class PriceListItemService: IPriceListItemService
         }
     }
 
-     public async Task<IEnumerable<PriceListItem>> SearchPriceListItems(int? id,
-        string? operationName,
+     public async Task<IEnumerable<PriceListItem>> SearchPriceListItems(int? id, 
+         int? technologicalOperationId,
         decimal? operationPrice,
         int? priceListId,
         int? createdById,
@@ -69,12 +69,12 @@ public class PriceListItemService: IPriceListItemService
 
             if (id.HasValue)
             {
-                query = query.Where(lc => lc.Id == id);
+                query = query.Where(pli => pli.Id == id);
             }
             
-            if (!string.IsNullOrEmpty(operationName))
+            if (technologicalOperationId.HasValue)
             {
-                query = query.Where(pli => pli.OperationName == operationName);
+                query = query.Where(pli => pli.TechnologicalOperationId == technologicalOperationId);
             }
 
             if (operationPrice.HasValue)
@@ -87,7 +87,7 @@ public class PriceListItemService: IPriceListItemService
                 query = query.Where(pli => pli.PriceListId == priceListId.Value);
             
             if (createdById.HasValue)
-                query = query.Where(lc => lc.CreatedById == createdById.Value);
+                query = query.Where(pli => pli.CreatedById == createdById.Value);
             
             return await query.ToListAsync(cancellationToken);
         }

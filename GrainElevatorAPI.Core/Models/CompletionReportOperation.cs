@@ -10,10 +10,9 @@ public class CompletionReportOperation : AuditableEntity, ICompletionReportOpera
 	[Range(1, int.MaxValue, ErrorMessage = "Id must be a positive number.")]
 	public int Id { get; set; }
 
-	[Required(ErrorMessage = "OperationName is required.")]
-	[MinLength(4, ErrorMessage = "OperationName must be at least 4 characters long.")]
-	[MaxLength(20, ErrorMessage = "OperationName must be at least 20 characters long.")]
-	public string OperationName  { get; set; }
+	[Required(ErrorMessage = "TechnologicalOperationId is required.")]
+	[Range(1, int.MaxValue, ErrorMessage = "TechnologicalOperationId must be a positive number.")]
+	public int TechnologicalOperationId { get; set; }
 
 	[Range(0, double.MaxValue, ErrorMessage = "Amount must be a positive number.")]
 	public double Amount { get; set; }
