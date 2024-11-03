@@ -4,7 +4,7 @@ namespace GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 
 public interface IInputInvoiceService
 {
-    Task<InputInvoice> CreateInputInvoiceAsync(string invoiceNumber, string supplierTitle, string productTitle, int createdById, CancellationToken cancellationToken);
+    Task<InputInvoice> CreateInputInvoiceAsync(string invoiceNumber, string supplierTitle, string productTitle, int  physicalWeight, int createdById, CancellationToken cancellationToken);
     Task<InputInvoice> GetInputInvoiceByIdAsync(int id, CancellationToken cancellationToken);
     
     Task<IEnumerable<InputInvoice>> GetInputInvoices(int page, int size, CancellationToken cancellationToken);

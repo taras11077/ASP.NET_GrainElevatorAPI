@@ -1,7 +1,8 @@
-﻿using GrainElevatorAPI.Core.Interfaces.ModelInterfaces;
+﻿using GrainElevatorAPI.Core.Interfaces;
+using GrainElevatorAPI.Core.Interfaces.ModelInterfaces;
 using GrainElevatorAPI.Core.Models;
 
-namespace GrainElevatorAPI.Core.Calculators.Impl;
+namespace GrainElevatorAPI.Core.Calculators;
 
 public class StandardRegisterCalculator : IRegisterCalculator
 {

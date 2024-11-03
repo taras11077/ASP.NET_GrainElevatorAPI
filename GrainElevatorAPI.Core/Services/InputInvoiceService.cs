@@ -18,7 +18,7 @@ public class InputInvoiceService : IInputInvoiceService
     }
     
     
-    public async Task<InputInvoice> CreateInputInvoiceAsync(string invoiceNumber, string supplierTitle, string productTitle, int createdById, CancellationToken cancellationToken)
+    public async Task<InputInvoice> CreateInputInvoiceAsync(string invoiceNumber, string supplierTitle, string productTitle, int  physicalWeight, int createdById, CancellationToken cancellationToken)
     {
         try
         {
@@ -50,6 +50,7 @@ public class InputInvoiceService : IInputInvoiceService
                 CreatedById = createdById,
                 SupplierId = supplier.Id,
                 ProductId = product.Id,
+                PhysicalWeight = physicalWeight,
                 Supplier = supplier,
                 Product = product
             };

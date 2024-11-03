@@ -4,7 +4,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using GrainElevator.Storage;
 using GrainElevatorAPI.Core.Calculators;
-using GrainElevatorAPI.Core.Calculators.Impl;
 using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Interfaces.ModelInterfaces;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;

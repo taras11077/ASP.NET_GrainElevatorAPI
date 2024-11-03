@@ -1,4 +1,4 @@
-﻿using GrainElevatorAPI.Core.Calculators.Impl;
+﻿using GrainElevatorAPI.Core.Calculators;
 using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Models;
 using Microsoft.EntityFrameworkCore;

@@ -71,6 +71,8 @@ public class MapperProfile : Profile
         CreateMap<PriceListItem, PriceListItemUpdateRequest>().ReverseMap();
         CreateMap<PriceListItem, PriceListItemDto>().ReverseMap();
         
+        CreateMap<TechnologicalOperation, TechnologicalOperationCreateRequest>().ReverseMap();
+        CreateMap<TechnologicalOperation, TechnologicalOperationDto>().ReverseMap();
         
     }
 }

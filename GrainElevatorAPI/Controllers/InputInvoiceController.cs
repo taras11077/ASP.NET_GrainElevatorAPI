@@ -53,6 +53,7 @@ public class InputInvoiceController : ControllerBase
                 request.InvoiceNumber,
                 request.SupplierTitle,
                 request.ProductTitle,
+                request.PhysicalWeight,
                 createdById, 
                 cancellationToken);
             

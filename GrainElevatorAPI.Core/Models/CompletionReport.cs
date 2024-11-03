@@ -1,5 +1,4 @@
 ﻿using GrainElevatorAPI.Core.Calculators;
-using GrainElevatorAPI.Core.Calculators.Impl;
 using System.ComponentModel.DataAnnotations;
 using GrainElevatorAPI.Core.Interfaces.ModelInterfaces;
 using GrainElevatorAPI.Core.Models.Base;

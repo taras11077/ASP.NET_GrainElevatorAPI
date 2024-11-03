@@ -1,6 +1,7 @@
-﻿using GrainElevatorAPI.Core.Models;
+﻿using GrainElevatorAPI.Core.Interfaces;
+using GrainElevatorAPI.Core.Models;
 
-namespace GrainElevatorAPI.Core.Calculators.Impl;
+namespace GrainElevatorAPI.Core.Calculators;
 
 public class CompletionReportCalculator : ICompletionReportCalculator
 {
@@ -25,7 +26,22 @@ public class CompletionReportCalculator : ICompletionReportCalculator
             throw new InvalidOperationException("Помилка під час обчислення вагових характеристик Акта виконаних робіт", ex);
         }
     }
-
+    
+    // створення відповідності технологічних операцій до полів звіту
+    public int? MapOperationToReportField(TechnologicalOperation operation, CompletionReport report)
+    {
+        return operation.Title switch
+        {
+            "Приймання" => report.PhysicalWeightReport,
+            "Первинне очищення" => report.PhysicalWeightReport,
+            "Сушіння" => report.QuantitiesDryingReport,
+            "Відвантаження" => report.AccWeightReport,
+            "Утилізація відходів" => report.WasteReport,
+            _ => null // якщо операція не знайдена, повертаємо null
+        };
+    }
+    
+    
     // розрахунок загальної вартості
     public void CalculateTotalCost(CompletionReport completionReport, PriceList priceList)
     {

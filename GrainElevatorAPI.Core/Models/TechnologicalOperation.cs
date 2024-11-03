@@ -18,5 +18,4 @@ public class TechnologicalOperation: AuditableEntity, ITechnologicalOperation
     
     public virtual ICollection<CompletionReportOperation> CompletionReportOperations { get; set; } = new List<CompletionReportOperation>();
     public virtual ICollection<PriceListItem> PriceListItems { get; set; } = new List<PriceListItem>();
-    
 }
