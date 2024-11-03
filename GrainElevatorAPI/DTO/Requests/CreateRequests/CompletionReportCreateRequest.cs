@@ -11,5 +11,5 @@ public class CompletionReportCreateRequest
     public string ReportNumber { get; set; }
     
     public List<int> RegisterIds { get; set; } = new List<int>();
-    
+    public List<int> OperationIds { get; set; } = new List<int>();
 }

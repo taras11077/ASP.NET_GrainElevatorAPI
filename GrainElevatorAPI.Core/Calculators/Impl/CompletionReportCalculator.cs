@@ -4,73 +4,58 @@ namespace GrainElevatorAPI.Core.Calculators.Impl;
 
 public class CompletionReportCalculator : ICompletionReportCalculator
 {
-    public CompletionReport CompletionReport { get; set; }
-
-    public CompletionReportCalculator(CompletionReport cr)
+    // розрахунок вагових характеристик
+    public void CalculateWeights(IEnumerable<InvoiceRegister> registers, CompletionReport report)
     {
-        CompletionReport = cr;
-    }
-
-    // рассчет общего Физического веса всех Реестров
-    public double CalcSumWeightReport()
-    {
-        if (CompletionReport.Registers.Count == 0)
-            return 0;
-
-        foreach (InvoiceRegister reg in CompletionReport.Registers)
-            CompletionReport.ReportPhysicalWeight += (double)reg.PhysicalWeightReg / 1000;
-
-        return CompletionReport.ReportPhysicalWeight.Value;
-    }
-
-    // расчет тонно/процентов сушки по каждой ППП всех Реестров Акта
-    public double CalcDryingQuantity()
-    {
-        if (CompletionReport.Registers.Count == 0)
-            return 0;
+        if (registers == null)
+            throw new ArgumentNullException(nameof(registers), "Список реєстрів не може бути null");
+        if (report == null)
+            throw new ArgumentNullException(nameof(report), "Акт виконаних робіт не може бути null");
 
         try
         {
-            foreach (InvoiceRegister reg in CompletionReport.Registers)
-            {
-                //    if ((reg.ProductionBatches as List<ProductionBatch>) is null)
-                //        return 0.0;
+            report.PhysicalWeightReport = registers.Sum(r => r.PhysicalWeightReg ?? 0);
+            report.QuantitiesDryingReport = (int)registers.Sum(r => r.QuantitiesDryingReg ?? 0);
+            report.ShrinkageReport = registers.Sum(r => r.ShrinkageReg ?? 0);
+            report.WasteReport = registers.Sum(r => r.WasteReg ?? 0);
+            report.AccWeightReport = registers.Sum(r => r.AccWeightReg ?? 0);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Помилка під час обчислення вагових характеристик Акта виконаних робіт", ex);
+        }
+    }
 
-                //    (reg.ProductionBatches as List<ProductionBatch>)?.ForEach(p =>
-                //    {
-                //        if (p.Shrinkage != 0)
-                CompletionReport.ReportQuantitiesDrying += reg.QuantitiesDryingReg;
+    // розрахунок загальної вартості
+    public void CalculateTotalCost(CompletionReport completionReport, PriceList priceList)
+    {
+        if (priceList == null)
+            throw new ArgumentNullException(nameof(priceList), "Прайс-лист не може бути null");
+        if (completionReport == null)
+            throw new ArgumentNullException(nameof(completionReport), "Акт виконаних робіт не може бути null");
+
+        try
+        {
+            decimal totalCost = 0;
+
+            foreach (var reportOperation in completionReport.CompletionReportOperations)
+            {
+                var matchingPriceListItem = priceList.PriceListItems
+                    .FirstOrDefault(item => item.TechnologicalOperationId == reportOperation.TechnologicalOperationId);
+
+                if (matchingPriceListItem != null)
+                {
+                    // Обчислюємо вартість для конкретної операції
+                    reportOperation.OperationCost = reportOperation.Amount * matchingPriceListItem.OperationPrice;
+                    totalCost += reportOperation.OperationCost.Value;
+                }
             }
 
-            return Math.Round(CompletionReport.ReportQuantitiesDrying.Value, 2);
-
+            completionReport.TotalCost = totalCost;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // TODO
-            throw;
-        }
-    }
-
-    //рассчет финансовой части Акта доработка по заданному Прайсу
-    public void CalcByPrice(PriceList pl)
-    {
-        try
-        {
-            (CompletionReport.CompletionReportItems as List<CompletionReportOperation>)?.ForEach(op =>
-            {
-                // foreach (var p in pl.PriceListItems)
-                //     if (op.OperationName == p.OperationName)
-                //     {
-                //         // op.Price = p.OperationPrice;
-                //         // op.TotalCost = Math.Round(op.Amount * op.Price, 2);
-                //     }
-            });
-        }
-        catch (Exception)
-        {
-            // TODO
-            throw;
+            throw new InvalidOperationException("Помилка під час обчислення вартості виконаних робіт", ex);
         }
     }
 

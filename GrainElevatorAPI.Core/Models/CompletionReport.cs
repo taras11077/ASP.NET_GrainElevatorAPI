@@ -20,24 +20,23 @@ public class CompletionReport : AuditableEntity, ICompletionReport
 	[Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "ReportDate must be between 1900 and 2024.")]
 	public DateTime ReportDate { get; set; }
 
-	[Range(0, double.MaxValue, ErrorMessage = "QuantitiesDrying must be a positive number.")]
-	public double? ReportQuantitiesDrying { get; set; }
+	
+	public int? PhysicalWeightReport { get; set; }
+	public int? QuantitiesDryingReport { get; set; }
+	public int? ShrinkageReport { get; set; }
+	public int? WasteReport { get; set; }
+	public int? AccWeightReport { get; set; }
 
-	[Range(0, double.MaxValue, ErrorMessage = "ReportPhysicalWeight must be a positive number.")]
-	public double? ReportPhysicalWeight { get; set; }
 	
 	
 	
-	[Range(0, double.MaxValue, ErrorMessage = "Price must be a positive number.")]
-	public double Price { get; set; }
-
 	[Range(0, double.MaxValue, ErrorMessage = "TotalCost must be a positive number.")]
-	public double TotalCost { get; set; }
+	public decimal TotalCost { get; set; }
 	
     public bool? IsFinalized { get; set; }
     
     public virtual ICollection<InvoiceRegister> Registers { get; set; } = new List<InvoiceRegister>();
-    public virtual ICollection<CompletionReportOperation> CompletionReportItems { get; set; } = new List<CompletionReportOperation>();
+    public virtual ICollection<CompletionReportOperation> CompletionReportOperations { get; set; } = new List<CompletionReportOperation>();
 
     
     [Range(1, int.MaxValue, ErrorMessage = "SupplierId must be a positive number.")]

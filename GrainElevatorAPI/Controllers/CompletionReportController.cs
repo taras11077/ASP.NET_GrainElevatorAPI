@@ -2,6 +2,8 @@
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.DTO.DTOs;
 using GrainElevatorAPI.DTO.Requests.CreateRequests;
+using GrainElevatorAPI.DTO.Requests.UpdateRequests;
+using GrainElevatorAPI.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GrainElevatorAPI.Controllers;
@@ -46,6 +48,7 @@ public class CompletionReportController: ControllerBase
             var createdCompletionReport = await _completionReportService.CreateCompletionReportAsync(
                 request.ReportNumber,
                 request.RegisterIds,
+                request.OperationIds,
                 createdById,
                 cancellationToken);
             
@@ -56,6 +59,32 @@ public class CompletionReportController: ControllerBase
         {
             _logger.LogError($"Внутрішня помилка сервера при створенні Акта виконаних робіт: {ex.Message}");
             return StatusCode(500, $"Внутрішня помилка сервера при створенні Акта виконаних робіт: {ex.Message}");
+        }
+    }
+    
+    
+    [HttpPut("{id}/cost-calculate")]
+    //[Authorize(Roles = "Admin, Accountant")]
+    public async Task<IActionResult>CalculateCostCompletionReport(int id, int priceListId)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
+        try
+        {
+            var cancellationToken = GetCancellationToken();
+
+            var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            var calculatedCompletionReport = await _completionReportService.CalculateReportCostAsync(id, priceListId, modifiedById, cancellationToken);
+            
+            return Ok(_mapper.Map<CompletionReportDto>(calculatedCompletionReport));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Внутрішня помилка сервера при при обчисленні вартості Акта виконаних робіт з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при обчисленні вартості Акта виконаних робіт з ID {id}: {ex.Message}");
         }
     }
     
@@ -110,8 +139,8 @@ public class CompletionReportController: ControllerBase
         [FromQuery] int? id,
         [FromQuery] string? reportNumber,
         [FromQuery] DateTime? reportDate,
-        [FromQuery] double? reportQuantitiesDrying,
-        [FromQuery] int? reportPhysicalWeight,
+        [FromQuery] int? quantitiesDryingReport,
+        [FromQuery] int? physicalWeightReport,
         [FromQuery] int? supplierId,
         [FromQuery] int? productId,
         [FromQuery] int? createdById,
@@ -126,8 +155,8 @@ public class CompletionReportController: ControllerBase
                 id, 
                 reportNumber,
                 reportDate,
-                reportQuantitiesDrying,
-                reportPhysicalWeight,
+                quantitiesDryingReport,
+                physicalWeightReport,
                 supplierId,
                 productId,
                 createdById, 
@@ -142,6 +171,39 @@ public class CompletionReportController: ControllerBase
         {
             _logger.LogError($"Внутрішня помилка сервера при отриманні Актів виконаних робіт за параметрами: {ex.Message}");
             return StatusCode(500, $"Внутрішня помилка сервера при отриманні Актів виконаних робіт за параметрами: {ex.Message}");
+        }
+    }
+    
+    
+    
+    [HttpPut("{id}")]
+    //[Authorize(Roles = "Admin, Accountant")]
+    public async Task<IActionResult> UpdateCompletionReport(int id, CompletionReportUpdateRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
+        try
+        {
+            var cancellationToken = GetCancellationToken();
+            var completionReportDb = await _completionReportService.GetCompletionReportByIdAsync(id, cancellationToken);
+            if (completionReportDb == null)
+            {
+                return NotFound($"Акта виконаних робіт з ID {id} не знайдено.");
+            }
+            
+            completionReportDb.UpdateFromRequest(request);
+            var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            var updatedCompletionReport = await _completionReportService.UpdateCompletionReportAsync(completionReportDb, modifiedById, cancellationToken);
+            
+            return Ok(_mapper.Map<CompletionReportDto>(updatedCompletionReport));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Внутрішня помилка сервера при при оновленні Акта виконаних робіт з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при оновленні Акта виконаних робіт з ID {id}: {ex.Message}");
         }
     }
     

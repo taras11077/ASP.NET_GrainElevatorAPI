@@ -1,4 +1,5 @@
-﻿using GrainElevatorAPI.Core.Interfaces;
+﻿using GrainElevatorAPI.Core.Calculators.Impl;
+using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using ICompletionReportService = GrainElevatorAPI.Core.Interfaces.ServiceInterfaces.ICompletionReportService;
@@ -13,39 +14,99 @@ public class CompletionReportService: ICompletionReportService
 
 
     public async Task<CompletionReport> CreateCompletionReportAsync(
-        string reportNumber,
-        List<int> registerIds,
-        int createdById,
+    string reportNumber,
+    List<int> registerIds,
+    List<int> operationIds,
+    int createdById,
+    CancellationToken cancellationToken)
+{
+    try
+    {
+        var registers = await _repository.GetAll<InvoiceRegister>()
+            .Where(r => registerIds.Contains(r.Id))
+            .ToListAsync(cancellationToken);
+        
+        var operations = await _repository.GetAll<TechnologicalOperation>()
+            .Where(op => operationIds.Contains(op.Id))
+            .ToListAsync(cancellationToken);
+        
+        var completionReport = new CompletionReport
+        {
+            ReportNumber = reportNumber,
+            ReportDate = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow,
+            CreatedById = createdById
+        };
+
+        // використання калькулятора для вагових характеристик
+        var сompletionReportCalculator = new CompletionReportCalculator();
+        сompletionReportCalculator.CalculateWeights(registers, completionReport);
+
+        // додавання операцій до звіту
+        foreach (var operation in operations)
+        {
+            var amount = MapOperationToReportField(operation, completionReport) ?? 0;
+
+            completionReport.CompletionReportOperations.Add(new CompletionReportOperation
+            {
+                TechnologicalOperationId = operation.Id,
+                Amount = amount,
+                CompletionReportId = completionReport.Id,
+                OperationCost = 0
+            });
+        }
+
+        return await _repository.AddAsync(completionReport, cancellationToken);
+    }
+    catch (Exception ex)
+    {
+        throw new Exception("Помилка сервісу при створенні Акта виконаних робіт", ex);
+    }
+}
+    
+    // створення відповідності технологічних операцій до полів звіту
+    private int? MapOperationToReportField(TechnologicalOperation operation, CompletionReport report)
+    {
+        return operation.Title switch
+        {
+            "Приймання" => report.PhysicalWeightReport,
+            "Первинне очищення" => report.PhysicalWeightReport,
+            "Сушіння" => report.QuantitiesDryingReport,
+            "Відвантаження" => report.AccWeightReport,
+            "Утилізація відходів" => report.WasteReport,
+            _ => null // якщо операція не знайдена, повертаємо null
+        };
+    }
+
+
+    
+    public async Task<CompletionReport> CalculateReportCostAsync(
+        int reportId, 
+        int priceListId,
+        int modifiedById,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            var registers = _repository.GetAll<InvoiceRegister>()
-                .Where(r => registerIds.Contains(r.Id))
-                .ToList();
-            
-            var completionReport = new CompletionReport
-            {
-                ReportNumber = reportNumber,
-                ReportDate = DateTime.UtcNow,
+        
+        
+        var completionReport = await _repository.GetByIdAsync<CompletionReport>(reportId, cancellationToken);
 
-                
-                
-                CreatedAt = DateTime.UtcNow,
-                CreatedById = createdById,
- 
-            };
-            
-            
-           
-            
-            return await _repository.AddAsync(completionReport, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Помилка сервісу при створенні Акта виконаних робіт", ex);
-        }
+        if (completionReport == null)
+            throw new Exception($"Акт виконаних робіт з ID {reportId} не знайдено");
+
+        var priceList = await _repository.GetByIdAsync<PriceList>(priceListId, cancellationToken);
+        if (priceList == null)
+            throw new Exception($"Прайс-лист з ID {priceListId} не знайдено");
+
+        var сompletionReportCalculator = new CompletionReportCalculator();
+        сompletionReportCalculator.CalculateTotalCost(completionReport, priceList);
+
+        await _repository.SaveChangesAsync(cancellationToken);
+
+        return completionReport;
     }
+
+    
+    
     public async Task<IEnumerable<CompletionReport>> GetCompletionReports(int page, int size, CancellationToken cancellationToken)
     {
         try
@@ -75,8 +136,8 @@ public class CompletionReportService: ICompletionReportService
      public async Task<IEnumerable<CompletionReport>> SearchCompletionReports(int? id,
          string? reportNumber,
          DateTime? reportDate,
-         double? reportQuantitiesDrying,
-         int? reportPhysicalWeight,
+         int? quantitiesDryingReport,
+         int? physicalWeightReport,
          int? supplierId,
          int? productId,
          int? createdById,
@@ -105,11 +166,11 @@ public class CompletionReportService: ICompletionReportService
                 query = query.Where(cr => cr.ReportDate.Date == reportDate.Value.Date);
             }
             
-            if (reportQuantitiesDrying.HasValue)
-                query = query.Where(cr => cr.ReportQuantitiesDrying == reportQuantitiesDrying.Value);
+            if (quantitiesDryingReport.HasValue)
+                query = query.Where(cr => cr.QuantitiesDryingReport == quantitiesDryingReport.Value);
             
-            if (reportPhysicalWeight.HasValue)
-                query = query.Where(cr => cr.ReportPhysicalWeight == reportPhysicalWeight.Value);
+            if (physicalWeightReport.HasValue)
+                query = query.Where(cr => cr.PhysicalWeightReport == physicalWeightReport.Value);
             
             if (supplierId.HasValue)
                 query = query.Where(cr => cr.SupplierId == supplierId.Value);
