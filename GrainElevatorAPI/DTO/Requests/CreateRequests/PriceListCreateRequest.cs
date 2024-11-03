@@ -7,4 +7,7 @@ public class PriceListCreateRequest
     [Required(ErrorMessage = "Id is required.")]
     [Range(1, int.MaxValue, ErrorMessage = "ProductWeight must be a positive number.")]
     public int ProductId { get; set; }
+    
+    public List<int>? PriceListItemIds { get; set; }
+    public List<int>? CompletionReportIds { get; set; }
 }

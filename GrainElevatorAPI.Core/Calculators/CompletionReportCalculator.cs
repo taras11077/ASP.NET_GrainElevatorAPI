@@ -1,4 +1,5 @@
-﻿using GrainElevatorAPI.Core.Interfaces;
+﻿using GrainElevatorAPI.Core.EnumsAndConstants;
+using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Models;
 
 namespace GrainElevatorAPI.Core.Calculators;
@@ -32,11 +33,11 @@ public class CompletionReportCalculator : ICompletionReportCalculator
     {
         return operation.Title switch
         {
-            "Приймання" => report.PhysicalWeightReport,
-            "Первинне очищення" => report.PhysicalWeightReport,
-            "Сушіння" => report.QuantitiesDryingReport,
-            "Відвантаження" => report.AccWeightReport,
-            "Утилізація відходів" => report.WasteReport,
+            TechnologicalOperationNames.Reception => report.PhysicalWeightReport,
+            TechnologicalOperationNames.PrimaryCleaning => report.PhysicalWeightReport,
+            TechnologicalOperationNames.Drying => report.QuantitiesDryingReport,
+            TechnologicalOperationNames.Shipping => report.AccWeightReport,
+            TechnologicalOperationNames.WasteDisposal => report.WasteReport,
             _ => null // якщо операція не знайдена, повертаємо null
         };
     }

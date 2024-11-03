@@ -42,11 +42,11 @@ public class PriceListController : ControllerBase
         try
         {
             var cancellationToken = GetCancellationToken();
-            var newPriceList = _mapper.Map<PriceList>(request);
+
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
 
             var createdPriceList =
-                await _priceListService.CreatePriceListAsync(newPriceList, createdById, cancellationToken);
+                await _priceListService.CreatePriceListAsync(request.ProductId, request.PriceListItemIds, createdById, cancellationToken);
             return CreatedAtAction(nameof(GetPriceList), new { id = createdPriceList.Id },
                 _mapper.Map<PriceListDto>(createdPriceList));
         }

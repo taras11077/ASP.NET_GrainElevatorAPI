@@ -11,8 +11,8 @@ public class CompletionReportService: ICompletionReportService
     private readonly IRepository _repository;
 
     public CompletionReportService(IRepository repository) => _repository = repository;
-
-
+    
+    
     public async Task<CompletionReport> CreateCompletionReportAsync(
     string reportNumber,
     List<int> registerIds,
@@ -26,26 +26,36 @@ public class CompletionReportService: ICompletionReportService
             .Where(r => registerIds.Contains(r.Id))
             .ToListAsync(cancellationToken);
         
+        if (registers == null || !registers.Any())
+        {
+            throw new Exception("Не знайдено жодного реєстру для обробки.");
+        }
+        
         var operations = await _repository.GetAll<TechnologicalOperation>()
             .Where(op => operationIds.Contains(op.Id))
             .ToListAsync(cancellationToken);
+        
+        var productId = registers.First().ProductId;
+        var supplierId = registers.First().SupplierId;
         
         var completionReport = new CompletionReport
         {
             ReportNumber = reportNumber,
             ReportDate = DateTime.UtcNow,
+            ProductId = productId,
+            SupplierId = supplierId,
             CreatedAt = DateTime.UtcNow,
             CreatedById = createdById
         };
 
-        // використання калькулятора для вагових характеристик
+        // використання калькулятора для обчислення вагових характеристик
         var сompletionReportCalculator = new CompletionReportCalculator();
         сompletionReportCalculator.CalculateWeights(registers, completionReport);
 
         // додавання операцій до звіту
         foreach (var operation in operations)
         {
-            var amount = MapOperationToReportField(operation, completionReport) ?? 0;
+            var amount = сompletionReportCalculator.MapOperationToReportField(operation, completionReport) ?? 0;
 
             completionReport.CompletionReportOperations.Add(new CompletionReportOperation
             {
@@ -64,45 +74,37 @@ public class CompletionReportService: ICompletionReportService
     }
 }
     
-    // створення відповідності технологічних операцій до полів звіту
-    private int? MapOperationToReportField(TechnologicalOperation operation, CompletionReport report)
-    {
-        return operation.Title switch
-        {
-            "Приймання" => report.PhysicalWeightReport,
-            "Первинне очищення" => report.PhysicalWeightReport,
-            "Сушіння" => report.QuantitiesDryingReport,
-            "Відвантаження" => report.AccWeightReport,
-            "Утилізація відходів" => report.WasteReport,
-            _ => null // якщо операція не знайдена, повертаємо null
-        };
-    }
-
-
-    
     public async Task<CompletionReport> CalculateReportCostAsync(
         int reportId, 
         int priceListId,
         int modifiedById,
         CancellationToken cancellationToken)
     {
+        try
+        {
+            var completionReport = await _repository.GetByIdAsync<CompletionReport>(reportId, cancellationToken);
+            if (completionReport == null)
+                throw new Exception($"Акт виконаних робіт з ID {reportId} не знайдено");
+
+            var priceList = await _repository.GetByIdAsync<PriceList>(priceListId, cancellationToken);
+            if (priceList == null)
+                throw new Exception($"Прайс-лист з ID {priceListId} не знайдено");
+
+            var сompletionReportCalculator = new CompletionReportCalculator();
+            сompletionReportCalculator.CalculateTotalCost(completionReport, priceList);
+
+            completionReport.ModifiedAt = DateTime.UtcNow;
+            completionReport.ModifiedById = modifiedById;
         
-        
-        var completionReport = await _repository.GetByIdAsync<CompletionReport>(reportId, cancellationToken);
+            await _repository.SaveChangesAsync(cancellationToken);
 
-        if (completionReport == null)
-            throw new Exception($"Акт виконаних робіт з ID {reportId} не знайдено");
-
-        var priceList = await _repository.GetByIdAsync<PriceList>(priceListId, cancellationToken);
-        if (priceList == null)
-            throw new Exception($"Прайс-лист з ID {priceListId} не знайдено");
-
-        var сompletionReportCalculator = new CompletionReportCalculator();
-        сompletionReportCalculator.CalculateTotalCost(completionReport, priceList);
-
-        await _repository.SaveChangesAsync(cancellationToken);
-
-        return completionReport;
+            return completionReport;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Помилка сервісу при обчисленні вартості акта виконаних робіт", ex);
+        }
+       
     }
 
     

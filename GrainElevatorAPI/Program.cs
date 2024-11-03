@@ -44,6 +44,7 @@ builder.Services.AddTransient<IPriceListItemService, PriceListItemService>();
 builder.Services.AddTransient<IPriceListService, PriceListService>();
 builder.Services.AddTransient<ICompletionReportOperationService, CompletionReportOperationService>();
 builder.Services.AddTransient<ICompletionReportService, CompletionReportService>();
+builder.Services.AddTransient<ITechnologicalOperationService, TechnologicalOperationService>();
 
 
 builder.Services.AddTransient<IInputInvoice, InputInvoice>();
