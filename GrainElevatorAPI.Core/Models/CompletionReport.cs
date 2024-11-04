@@ -25,9 +25,7 @@ public class CompletionReport : AuditableEntity, ICompletionReport
 	public double? ShrinkageReport { get; set; }
 	public double? WasteReport { get; set; }
 	public double? AccWeightReport { get; set; }
-
 	
-	[Range(0, double.MaxValue, ErrorMessage = "TotalCost must be a positive number.")]
 	public decimal TotalCost { get; set; }
 	
     public bool? IsFinalized { get; set; }

@@ -1,26 +1,39 @@
-﻿namespace GrainElevatorAPI.DTO.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GrainElevatorAPI.DTO.DTOs;
 
 public class LaboratoryCardDto
 {
+    [Required(ErrorMessage = "Id is required.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Id must be a positive number.")]
     public int Id { get; set; }
-	public string LabCardNumber { get; set; }
-	public double WeedImpurity { get; set; }
-	public double Moisture { get; set; }
-	public double? GrainImpurity { get; set; }
-	public string? SpecialNotes { get; set; }
+
+    [MinLength(3, ErrorMessage = "LaboratoryCard Number must be at least 3 characters long.")]
+    [MaxLength(9, ErrorMessage = "LaboratoryCard Number must be at least 9 characters long.")]
+    public string LabCardNumber { get; set; }
+
+    [Required(ErrorMessage = "WeedImpurity is required.")]
+    [Range(0.0, 100.0, ErrorMessage = "WeedImpurity must be between 0.0 and 100.0")]
+    public double WeedImpurity { get; set; }
+
+    [Required(ErrorMessage = "Moisture is required.")]
+    [Range(0.0, 100.0, ErrorMessage = "Moisture must be between 0.0 and 100.0")]
+    public double Moisture { get; set; }
+
+    [Range(0.0, 100.0, ErrorMessage = "GrainImpurity must be between 0.0 and 100.0")]
+    public double? GrainImpurity { get; set; }
+
+    [MaxLength(300, ErrorMessage = "SpecialNotes must be at least 300 characters long.")]
+    public string? SpecialNotes { get; set; }
 	
     public bool? IsProduction { get; set; }
     
-    public int InputInvoiceId { get; set; }
-    public int? ProductionBatchId { get; set; }
-
-    public DateTime CreatedAt { get; set; }
-    public DateTime? ModifiedAt { get; set; }
-    public DateTime? RemovedAt { get; set; }
-    public DateTime? RestoredAt { get; set; }
     
-    public int CreatedById { get; set; }
-    public int? ModifiedById { get; set; }
-    public int? RemovedById { get; set; }
-    public int? RestoreById { get; set; }
+    [Required(ErrorMessage = "InputInvoiceId is required.")]
+    [Range(1, int.MaxValue, ErrorMessage = "InputInvoiceId must be a positive number.")]
+    public int InputInvoiceId { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "InputInvoiceId must be a positive number.")]
+    public int? ProductionBatchId { get; set; }
+    
 }
