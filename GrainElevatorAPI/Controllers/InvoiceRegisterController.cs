@@ -2,8 +2,10 @@ using AutoMapper;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.DTO.DTOs;
 using GrainElevatorAPI.DTO.Requests.CreateRequests;
+using GrainElevatorAPI.DTO.Requests.UpdateRequests;
 using GrainElevatorAPI.DTOs;
 using GrainElevatorAPI.DTOs.Requests;
+using GrainElevatorAPI.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
@@ -63,8 +65,8 @@ public class InvoiceRegisterController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Внутрішня помилка сервера при створенні Реєстра: {ex.Message}");
-            return StatusCode(500, $"Внутрішня помилка сервера при створенні Реєстра: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера під час створення Реєстру: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера під час створення Реєстру: {ex.Message}");
         }
     }
     
@@ -108,8 +110,8 @@ public class InvoiceRegisterController : ControllerBase
         catch (Exception ex)
         {
             
-            _logger.LogError($"Внутрішня помилка сервера при отриманні Реєстра з ID {id}: {ex.Message}");
-            return StatusCode(500, $"Внутрішня помилка сервера при отриманні Реєстра з ID {id}: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера під час отримання Реєстру з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера під час отримання Реєстру з ID {id}: {ex.Message}");
         }
     }
     
@@ -165,6 +167,38 @@ public class InvoiceRegisterController : ControllerBase
     }
     
     
+    [HttpPut("{id}")]
+    //[Authorize(Roles = "Admin, Technologist")]
+    public async Task<IActionResult> UpdateInvoiceRegister(int id, InvoiceRegisterUpdateRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            var cancellationToken = GetCancellationToken();
+            
+            var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            var updatedRegister = await _invoiceRegisterService.UpdateRegisterAsync(
+                id, 
+                request.RegisterNumber, 
+                request.WeedImpurityBase, 
+                request.MoistureBase, 
+                request.LaboratoryCardIds, 
+                modifiedById, 
+                cancellationToken);
+
+            return Ok(_mapper.Map<InvoiceRegisterDto>(updatedRegister));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Внутрішня помилка сервера під час оновлення Реєстру з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера під час оновлення Реєстру з ID {id}: {ex.Message}");
+        }
+    }
+    
     [HttpPatch("{id}/soft-remove")]
     //[Authorize(Roles = "Admin, Technologist")]
     public async Task<IActionResult> SoftDeleteRegister(int id)
@@ -185,8 +219,8 @@ public class InvoiceRegisterController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Внутрішня помилка сервера при soft-видаленні Реєстру з ID {id}: {ex.Message}");
-            return StatusCode(500, $"Внутрішня помилка сервера при видаленні Реєстру з ID {id}: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера під час видалення Реєстру з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера під час видалення Реєстру з ID {id}: {ex.Message}");
         }
     }
     
@@ -211,8 +245,8 @@ public class InvoiceRegisterController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Внутрішня помилка сервера при відновленні Реєстру з ID {id}: {ex.Message}");
-            return StatusCode(500, $"Внутрішня помилка сервера при відновленні Реєстру з ID {id}: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера під час відновлення Реєстру з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера під час відновлення Реєстру з ID {id}: {ex.Message}");
         }
     }
     
@@ -235,8 +269,8 @@ public class InvoiceRegisterController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Внутрішня помилка сервера при hard-видаленні Реєстра з ID {id}: {ex.Message}");
-            return StatusCode(500, $"Внутрішня помилка сервера при hard-видаленні Реєстра з ID {id}: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера під час hard-видалення Реєстру з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера під час hard-видалення Реєстру з ID {id}: {ex.Message}");
         }
     }
 }

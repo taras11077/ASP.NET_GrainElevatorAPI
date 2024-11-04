@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using GrainElevatorAPI.Core.Models;
 
 namespace GrainElevatorAPI.DTO.Requests.UpdateRequests;
 
@@ -8,5 +9,5 @@ public class PriceListUpdateRequest
     [Range(1, int.MaxValue, ErrorMessage = "ProductWeight must be a positive number.")]
     public int? ProductId { get; set; }
     
-    public List<int> PriceListItemIds { get; set; } = new List<int>();
+    public List<int>? PriceListItemIds { get; set; } = new List<int>();
 }

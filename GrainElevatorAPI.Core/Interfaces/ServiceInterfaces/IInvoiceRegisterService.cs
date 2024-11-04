@@ -14,7 +14,14 @@ public interface IInvoiceRegisterService
         int createdById,
         CancellationToken cancellationToken);
     Task<InvoiceRegister> GetRegisterByIdAsync(int id, CancellationToken cancellationToken);
-    Task<InvoiceRegister> UpdateRegisterAsync(InvoiceRegister register, CancellationToken cancellationToken);
+    Task<InvoiceRegister> UpdateRegisterAsync(
+        int id, 
+        string? registerNumber, 
+        double? weedImpurityBase, 
+        double? moistureBase, 
+        List<int>? laboratoryCardIds, 
+        int modifiedById, 
+        CancellationToken cancellationToken);
     Task<InvoiceRegister> SoftDeleteRegisterAsync(InvoiceRegister register, int removedById, CancellationToken cancellationToken);
     Task<InvoiceRegister> RestoreRemovedRegisterAsync(InvoiceRegister register, int restoredById, CancellationToken cancellationToken);
     Task<bool> DeleteRegisterAsync(int id, CancellationToken cancellationToken);

@@ -18,5 +18,5 @@ public class InvoiceRegisterUpdateRequest
     public double? MoistureBase { get; set; }
     
     
-    public List<int> LaboratoryCardIds { get; set; }
+    public List<int>? LaboratoryCardIds { get; set; }
 }

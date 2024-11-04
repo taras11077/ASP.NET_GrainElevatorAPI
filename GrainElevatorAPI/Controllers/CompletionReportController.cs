@@ -194,7 +194,7 @@ public class CompletionReportController: ControllerBase
                 return NotFound($"Акта виконаних робіт з ID {id} не знайдено.");
             }
             
-            completionReportDb.UpdateFromRequest(request);
+            completionReportDb.UpdateFromRequest(request); // TODO
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             var updatedCompletionReport = await _completionReportService.UpdateCompletionReportAsync(completionReportDb, modifiedById, cancellationToken);
             

@@ -147,16 +147,16 @@ public class PriceListController : ControllerBase
         try
         {
             var cancellationToken = GetCancellationToken();
-            var PriceListDb = await _priceListService.GetPriceListByIdAsync(id, cancellationToken);
-            if (PriceListDb == null)
+            var priceListDb = await _priceListService.GetPriceListByIdAsync(id, cancellationToken);
+            if (priceListDb == null)
             {
                 return NotFound($"Прайс-листа з ID {id} не знайдено.");
             }
 
-            PriceListDb.UpdateFromRequest(request);
+            priceListDb.UpdateFromRequest(request); // TODO
+            
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var updatedPriceList =
-                await _priceListService.UpdatePriceListAsync(PriceListDb, modifiedById, cancellationToken);
+            var updatedPriceList = await _priceListService.UpdatePriceListAsync(priceListDb, modifiedById, cancellationToken);
 
             return Ok(_mapper.Map<PriceListDto>(updatedPriceList));
         }

@@ -59,22 +59,13 @@ public class InvoiceRegisterService : IInvoiceRegisterService
                 AccWeightReg = 0,
                 QuantitiesDryingReg = 0,   
             };
-            
-            foreach (var labCard in laboratoryCards)
-            {
-                var productionBatch = new ProductionBatch
-                {
-                    LaboratoryCardId = labCard.Id,
-                    CreatedAt = DateTime.UtcNow,
-                    CreatedById = createdById
-                };
-                register = (InvoiceRegister)_calculator.CalcProductionBatch(labCard.InputInvoice, labCard, register, productionBatch);
-            }
+
+            var calculatedRegister = MapLabCardsToProductionBatches(laboratoryCards, register, createdById);
 
             await _repository.AddAsync(register, cancellationToken);
             
             // створення або оновлення складського юніта (переміщення продукції Реєстру на Склад)
-            await _warehouseUnitService.WarehouseTransferAsync(register, createdById, cancellationToken);
+            await _warehouseUnitService.WarehouseTransferAsync(calculatedRegister, createdById, cancellationToken);
             
             // фіксація транзакції
             await _repository.CommitTransactionAsync(cancellationToken);
@@ -85,9 +76,25 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         {
             // відкат транзакції в разі помилки
             await _repository.RollbackTransactionAsync(cancellationToken);
-            throw new Exception("Помилка сервісу при створенні Реєстру", ex);
+            throw new Exception("Помилка сервісу під час створення Реєстру", ex);
         }
         
+    }
+
+    private InvoiceRegister MapLabCardsToProductionBatches(List<LaboratoryCard> laboratoryCards, InvoiceRegister register, int employeeId)
+    {
+        foreach (var labCard in laboratoryCards)
+        {
+            var productionBatch = new ProductionBatch
+            {
+                LaboratoryCardId = labCard.Id,
+                CreatedAt = DateTime.UtcNow,
+                CreatedById = employeeId
+            };
+            register = (InvoiceRegister)_calculator.CalcProductionBatch(labCard.InputInvoice, labCard, register, productionBatch);
+        }
+        
+        return register;
     }
     
     // // допоміжний метод для генерації номера реєстру
@@ -95,6 +102,38 @@ public class InvoiceRegisterService : IInvoiceRegisterService
     // {
     //     return $"№{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
     // }
+    
+    public async Task<InvoiceRegister> UpdateRegisterAsync(int id, 
+        string? registerNumber, 
+        double? weedImpurityBase, 
+        double? moistureBase, 
+        List<int>? laboratoryCardIds, 
+        int modifiedById, 
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var invoiceRegisterDb = await _repository.GetByIdAsync<InvoiceRegister>(id, cancellationToken);
+            
+            invoiceRegisterDb.RegisterNumber = registerNumber ?? invoiceRegisterDb.RegisterNumber;
+            invoiceRegisterDb.WeedImpurityBase = weedImpurityBase ?? invoiceRegisterDb.WeedImpurityBase;
+            invoiceRegisterDb.MoistureBase = moistureBase ?? invoiceRegisterDb.MoistureBase;
+            
+            if (laboratoryCardIds != null && laboratoryCardIds.Any())
+            {
+                List<LaboratoryCard> laboratoryCards = await _repository.GetAll<LaboratoryCard>()
+                    .Where(lc => laboratoryCardIds.Contains(lc.Id))
+                    .ToListAsync(cancellationToken);
+                invoiceRegisterDb = MapLabCardsToProductionBatches(laboratoryCards, invoiceRegisterDb, modifiedById);
+            }
+            
+            return await _repository.UpdateAsync(invoiceRegisterDb, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка сервісу під час оновлення Реєстру з ID  {id}", ex);
+        }
+    }
 
     public async Task<InvoiceRegister> GetRegisterByIdAsync(int id, CancellationToken cancellationToken)
     {
@@ -203,20 +242,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
     }
     
     
-    public async Task<InvoiceRegister> UpdateRegisterAsync(InvoiceRegister invoiceRegister, CancellationToken cancellationToken)
-    {
-        try
-        {
-            //TODO
-            
-            
-            return await _repository.UpdateAsync(invoiceRegister, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Помилка сервісу при оновленні Реєстру з ID  {invoiceRegister.Id}", ex);
-        }
-    }
+    
     
     public async Task<InvoiceRegister> SoftDeleteRegisterAsync(InvoiceRegister invoiceRegister, int removedById, CancellationToken cancellationToken)
     {
@@ -229,7 +255,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка сервісу при видаленні Реєстру з ID  {invoiceRegister.Id}", ex);
+            throw new Exception($"Помилка сервісу під час видалення Реєстру з ID  {invoiceRegister.Id}", ex);
         }
     }
     
@@ -248,9 +274,6 @@ public class InvoiceRegisterService : IInvoiceRegisterService
             throw new Exception($"Помилка сервісу при відновленні Реєстру з ID  {invoiceRegister.Id}", ex);
         }
     }
-
-    
-   
     
     public async Task<bool> DeleteRegisterAsync(int id, CancellationToken cancellationToken)
     {
