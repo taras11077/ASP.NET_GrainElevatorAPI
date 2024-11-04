@@ -77,7 +77,7 @@ public class WarehouseUnitService: IWarehouseUnitService
         }
         else
         {
-            conditionedProduct.Value = register.AccWeightReg;
+            conditionedProduct.Value += register.AccWeightReg;
         }
 
         // пошук категорії для відходів
@@ -95,7 +95,7 @@ public class WarehouseUnitService: IWarehouseUnitService
         }
         else
         {
-            wasteProduct.Value = register.WasteReg;
+            wasteProduct.Value += register.WasteReg;
         }
 
         await _repository.UpdateAsync(warehouseUnit, cancellationToken);

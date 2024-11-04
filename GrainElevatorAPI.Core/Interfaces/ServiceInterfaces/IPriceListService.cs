@@ -4,7 +4,7 @@ namespace GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 
 public interface IPriceListService
 {
-    Task<PriceList> CreatePriceListAsync(int productId, List<int> priceListItemIds, int createdById, CancellationToken cancellationToken);
+    Task<PriceList> CreatePriceListAsync(int productId, IEnumerable<PriceListItem> items, int createdById, CancellationToken cancellationToken);
     Task<IEnumerable<PriceList>> GetPriceLists(int page, int size, CancellationToken cancellationToken);
     Task<PriceList> GetPriceListByIdAsync(int id, CancellationToken cancellationToken);
     

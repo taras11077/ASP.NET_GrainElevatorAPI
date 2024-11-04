@@ -20,11 +20,11 @@ public class CompletionReport : AuditableEntity, ICompletionReport
 	public DateTime ReportDate { get; set; }
 
 	
-	public int? PhysicalWeightReport { get; set; }
-	public int? QuantitiesDryingReport { get; set; }
-	public int? ShrinkageReport { get; set; }
-	public int? WasteReport { get; set; }
-	public int? AccWeightReport { get; set; }
+	public double? PhysicalWeightReport { get; set; }
+	public double? QuantitiesDryingReport { get; set; }
+	public double? ShrinkageReport { get; set; }
+	public double? WasteReport { get; set; }
+	public double? AccWeightReport { get; set; }
 
 	
 	[Range(0, double.MaxValue, ErrorMessage = "TotalCost must be a positive number.")]

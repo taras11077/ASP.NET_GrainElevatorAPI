@@ -476,5 +476,11 @@ public class GrainElevatorApiContext : DbContext
             .OnDelete(DeleteBehavior.Restrict);
         
         
+        modelBuilder.Entity<CompletionReportOperation>()
+            .HasOne(cro => cro.CompletionReport)
+            .WithMany(r => r.CompletionReportOperations)
+            .HasForeignKey(cro => cro.CompletionReportId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
     }
 }

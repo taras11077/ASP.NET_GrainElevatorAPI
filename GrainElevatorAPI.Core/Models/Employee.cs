@@ -5,55 +5,62 @@ using GrainElevatorAPI.Core.Models.Base;
 
 namespace GrainElevatorAPI.Core.Models;
 
-public class Employee : IAuditable, IEmployee
+public class Employee : AuditableEntity, IEmployee
 {
+    [Required(ErrorMessage = "Id is required.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Id must be a positive number.")]
     public int Id { get; set; }
+    
+    
+    [MinLength(2, ErrorMessage = "FirstName must be at least 2 characters long.")]
+    [MaxLength(30, ErrorMessage = "FirstName must be at least 30 characters long.")]
     public string? FirstName { get; set; }
+    
+    
+    [MinLength(2, ErrorMessage = "LastName must be at least 2 characters long.")]
+    [MaxLength(30, ErrorMessage = "LastName must be at least 30 characters long.")]
     public string? LastName { get; set; }
+    
+    
+    [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
+    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "BirthDate must be between 1900 and 2024.")]
     public DateTime? BirthDate { get; set; }
+    
+    
+    [Required(ErrorMessage = "Email is required.")]
+    [EmailAddress(ErrorMessage = "Invalid email format.")]
     public string Email { get; set; }
+    
+    
+    [Phone(ErrorMessage = "Invalid phone number.")]
+    [MaxLength(15, ErrorMessage = "Phone number can't exceed 15 characters.")]
     public string? Phone { get; set; }
+    
+    
+    [RegularExpression("^(Male|Female)$", ErrorMessage = "Gender must be 'Male' or 'Female'.")]
     public string? Gender { get; set; }
+    
+    
+    [MaxLength(50, ErrorMessage = "City name can't exceed 50 characters.")]
     public string? City { get; set; }
+    
+    
+    [MaxLength(50, ErrorMessage = "Country name can't exceed 50 characters.")]
     public string? Country { get; set; }
+    
+    
+    [Required(ErrorMessage = "Password is required.")]
+    [MinLength(8, ErrorMessage = "Password must be at least 8 characters long.")]
     public string PasswordHash { get; set; }
-    public int RoleId { get; set; }
+    
+    
+    [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
+    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "LastSeenOnline must be between 1900 and 2024.")]
     public DateTime LastSeenOnline { get; set; }
     
     
-    [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
-    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "CreatedAt must be between 1900 and 2024.")]
-    public DateTime CreatedAt { get; set; }
-
-    [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
-    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "ModifiedAt must be between 1900 and 2024.")]
-    public DateTime? ModifiedAt { get; set; }
-
-    [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
-    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "RemovedAt must be between 1900 and 2024.")]
-    public DateTime? RemovedAt { get; set; }
-
-    [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
-    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "RestoredAt must be between 1900 and 2024.")]
-    public DateTime? RestoredAt { get; set; }
-
-    
-    [Range(1, int.MaxValue, ErrorMessage = "CreatedById must be a positive number.")]
-    public int? CreatedById { get; set; }
-    [Range(1, int.MaxValue, ErrorMessage = "ModifiedById must be a positive number.")]
-    public int? ModifiedById { get; set; }
-    [Range(1, int.MaxValue, ErrorMessage = "RemovedById must be a positive number.")]
-    public int? RemovedById { get; set; }
-    [Range(1, int.MaxValue, ErrorMessage = "RestoreById must be a positive number.")]
-    public int? RestoreById { get; set; }
-    
-
-    public virtual Employee CreatedBy { get; set; }
-    public virtual Employee? ModifiedBy { get; set; }
-    public virtual Employee? RemovedBy { get; set; }
-    public virtual Employee? RestoreBy { get; set; }
-    
-    
+    [Range(1, int.MaxValue, ErrorMessage = "RoleId must be a positive number.")]
+    public int RoleId { get; set; }
     
     public virtual Role Role { get; set; } 
     

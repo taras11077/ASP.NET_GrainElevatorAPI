@@ -16,11 +16,11 @@ public class CompletionReportCalculator : ICompletionReportCalculator
 
         try
         {
-            report.PhysicalWeightReport = registers.Sum(r => r.PhysicalWeightReg ?? 0);
-            report.QuantitiesDryingReport = (int)registers.Sum(r => r.QuantitiesDryingReg ?? 0);
-            report.ShrinkageReport = registers.Sum(r => r.ShrinkageReg ?? 0);
-            report.WasteReport = registers.Sum(r => r.WasteReg ?? 0);
-            report.AccWeightReport = registers.Sum(r => r.AccWeightReg ?? 0);
+            report.PhysicalWeightReport = registers.Sum(r => (r.PhysicalWeightReg ?? 0) * 0.001);
+            report.QuantitiesDryingReport = registers.Sum(r => r.QuantitiesDryingReg ?? 0);
+            report.ShrinkageReport = registers.Sum(r => (r.ShrinkageReg ?? 0)*0.001);
+            report.WasteReport = registers.Sum(r => (r.WasteReg ?? 0)*0.001);
+            report.AccWeightReport = registers.Sum(r => (r.AccWeightReg ?? 0)*0.001);
         }
         catch (Exception ex)
         {
@@ -29,7 +29,7 @@ public class CompletionReportCalculator : ICompletionReportCalculator
     }
     
     // створення відповідності технологічних операцій до полів звіту
-    public int? MapOperationToReportField(TechnologicalOperation operation, CompletionReport report)
+    public double? MapOperationToReportField(TechnologicalOperation operation, CompletionReport report)
     {
         return operation.Title switch
         {
@@ -63,7 +63,7 @@ public class CompletionReportCalculator : ICompletionReportCalculator
                 if (matchingPriceListItem != null)
                 {
                     // Обчислюємо вартість для конкретної операції
-                    reportOperation.OperationCost = reportOperation.Amount * matchingPriceListItem.OperationPrice;
+                    reportOperation.OperationCost = (decimal)reportOperation.Amount * matchingPriceListItem.OperationPrice;
                     totalCost += reportOperation.OperationCost.Value;
                 }
             }

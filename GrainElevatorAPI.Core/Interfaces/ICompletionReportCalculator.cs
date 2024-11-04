@@ -8,6 +8,6 @@ public interface ICompletionReportCalculator
 
     void CalculateTotalCost(CompletionReport report, PriceList priceList);
 
-    int? MapOperationToReportField(TechnologicalOperation operation, CompletionReport report);
+    double? MapOperationToReportField(TechnologicalOperation operation, CompletionReport report);
 }
 

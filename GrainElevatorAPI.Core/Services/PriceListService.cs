@@ -12,19 +12,16 @@ public class PriceListService: IPriceListService
     public PriceListService(IRepository repository) => _repository = repository;
 
 
-    public async Task<PriceList> CreatePriceListAsync(int productId, List<int> priceListItemIds, int createdById, CancellationToken cancellationToken)
+    public async Task<PriceList> CreatePriceListAsync(int productId, IEnumerable<PriceListItem> items, int createdById, CancellationToken cancellationToken)
     {
         try
         {
-            
-            
-            
-            
             var priceList = new PriceList()
             {
                 ProductId = productId,
                 CreatedAt = DateTime.UtcNow,
                 CreatedById = createdById,
+                PriceListItems = items.ToList()
             };
             
             

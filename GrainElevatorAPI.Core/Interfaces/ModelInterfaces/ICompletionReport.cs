@@ -7,11 +7,11 @@ public interface ICompletionReport
     int Id { get; set; }
     string ReportNumber { get; set; }
     DateTime ReportDate { get; set; }
-    int? PhysicalWeightReport { get; set; }
-    int? QuantitiesDryingReport { get; set; }
-    int? ShrinkageReport { get; set; }
-    int? WasteReport { get; set; }
-    int? AccWeightReport { get; set; }
+    double? PhysicalWeightReport { get; set; }
+    double? QuantitiesDryingReport { get; set; }
+    double? ShrinkageReport { get; set; }
+    double? WasteReport { get; set; }
+    double? AccWeightReport { get; set; }
     
     decimal TotalCost { get; set; }
     bool? IsFinalized { get; set; }
