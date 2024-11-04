@@ -8,7 +8,6 @@ public interface IInvoiceRegisterService
         string registerNumber,
         int supplierId,
         int productId,
-        DateTime arrivalDate,
         double weedImpurityBase,
         double moistureBase,
         IEnumerable<int> laboratoryCardIds,

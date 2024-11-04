@@ -24,7 +24,6 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         string registerNumber,
         int supplierId, 
         int productId, 
-        DateTime arrivalDate, 
         double weedImpurityBase, 
         double moistureBase, 
         IEnumerable<int> laboratoryCardIds, 
@@ -40,6 +39,8 @@ public class InvoiceRegisterService : IInvoiceRegisterService
             var laboratoryCards = _repository.GetAll<LaboratoryCard>()
                 .Where(r => laboratoryCardIds.Contains(r.Id))
                 .ToList();
+            
+            var arrivalDate = laboratoryCards.First().InputInvoice.ArrivalDate;
 
             var register = new InvoiceRegister
             {

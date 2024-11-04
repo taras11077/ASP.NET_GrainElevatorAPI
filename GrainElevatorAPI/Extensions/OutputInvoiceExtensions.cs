@@ -9,8 +9,6 @@ public static class OutputInvoiceExtensions
     {
         outputInvoice.InvoiceNumber = request.InvoiceNumber ?? outputInvoice.InvoiceNumber;
         outputInvoice.ShipmentDate = request.ShipmentDate ?? outputInvoice.ShipmentDate;
-        outputInvoice.SupplierId = request.SupplierId ?? outputInvoice.SupplierId;
-        outputInvoice.ProductId = request.ProductId ?? outputInvoice.ProductId;
         outputInvoice.VehicleNumber = request.VehicleNumber ?? outputInvoice.VehicleNumber;
         outputInvoice.ProductWeight = request.ProductWeight ?? outputInvoice.ProductWeight;
     }

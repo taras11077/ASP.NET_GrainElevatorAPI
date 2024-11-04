@@ -52,7 +52,6 @@ public class InvoiceRegisterController : ControllerBase
                 request.RegisterNumber,
                 request.SupplierId,
                 request.ProductId,
-                request.ArrivalDate,
                 request.WeedImpurityBase,
                 request.MoistureBase,
                 request.LaboratoryCardIds,
