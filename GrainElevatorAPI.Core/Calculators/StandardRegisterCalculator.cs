@@ -6,10 +6,12 @@ namespace GrainElevatorAPI.Core.Calculators;
 
 public class StandardRegisterCalculator : IRegisterCalculator
 {
-    public IInvoiceRegister CalcProductionBatch(IInputInvoice inputInvoice, ILaboratoryCard laboratoryCard,
+    public IInvoiceRegister CalcProductionBatch(ILaboratoryCard laboratoryCard,
         IInvoiceRegister invoiceRegister, IProductionBatch productionBatch)
     {
-        if (inputInvoice.PhysicalWeight <= 0)
+        var inputInvoice = (laboratoryCard as LaboratoryCard)?.InputInvoice;
+        
+        if (inputInvoice != null && inputInvoice.PhysicalWeight <= 0)
             throw new ArgumentException("Physical weight must be greater than zero.",
                 nameof(inputInvoice.PhysicalWeight));
 

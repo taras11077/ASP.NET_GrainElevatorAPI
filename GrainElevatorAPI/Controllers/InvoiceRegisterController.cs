@@ -50,7 +50,7 @@ public class InvoiceRegisterController : ControllerBase
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             
             // створення Реєстру (доробка продукції)
-            var createdRegister = await _invoiceRegisterService.CreateRegisterAsync(
+            var createdRegister = await _invoiceRegisterService.CreateInvoiceRegisterAsync(
                 request.RegisterNumber,
                 request.SupplierId,
                 request.ProductId,
@@ -78,7 +78,7 @@ public class InvoiceRegisterController : ControllerBase
         try
         {
             var cancellationToken = GetCancellationToken();
-            var registers = await _invoiceRegisterService.GetRegistersAsync(page, size, cancellationToken);
+            var registers = await _invoiceRegisterService.GetInvoiceRegistersAsync(page, size, cancellationToken);
 
             var registerDtos = _mapper.Map<IEnumerable<InvoiceRegisterDto>>(registers);
             return Ok(registerDtos);
@@ -99,7 +99,7 @@ public class InvoiceRegisterController : ControllerBase
         {
             var cancellationToken = GetCancellationToken();
             
-            var register = await _invoiceRegisterService.GetRegisterByIdAsync(id, cancellationToken);
+            var register = await _invoiceRegisterService.GetInvoiceRegisterByIdAsync(id, cancellationToken);
             if (register == null)
             {
                 return NotFound($"Реєстру з ID {id} не знайдено.");
@@ -138,7 +138,7 @@ public class InvoiceRegisterController : ControllerBase
         {
             var cancellationToken = GetCancellationToken();
             // передаємо параметри у сервіс для фільтрації
-            var filteredRegisters = await _invoiceRegisterService.SearchRegistersAsync(
+            var filteredRegisters = await _invoiceRegisterService.SearchInvoiceRegistersAsync(
                 id, 
                 registerNumber,
                 arrivalDate,
@@ -181,7 +181,7 @@ public class InvoiceRegisterController : ControllerBase
             var cancellationToken = GetCancellationToken();
             
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var updatedRegister = await _invoiceRegisterService.UpdateRegisterAsync(
+            var updatedRegister = await _invoiceRegisterService.UpdateInvoiceRegisterAsync(
                 id, 
                 request.RegisterNumber, 
                 request.WeedImpurityBase, 
@@ -206,14 +206,14 @@ public class InvoiceRegisterController : ControllerBase
         try
         {
             var cancellationToken = GetCancellationToken();
-            var registerDb = await _invoiceRegisterService.GetRegisterByIdAsync(id, cancellationToken);
+            var registerDb = await _invoiceRegisterService.GetInvoiceRegisterByIdAsync(id, cancellationToken);
             if (registerDb == null)
             {
                 return NotFound($"Реєстру з ID {id} не знайдено.");
             }
             
             var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var removedRegister = await _invoiceRegisterService.SoftDeleteRegisterAsync(registerDb, removedById, cancellationToken);
+            var removedRegister = await _invoiceRegisterService.SoftDeleteInvoiceRegisterAsync(registerDb, removedById, cancellationToken);
             
             return Ok(_mapper.Map<InvoiceRegisterDto>(removedRegister));
         }
@@ -232,14 +232,14 @@ public class InvoiceRegisterController : ControllerBase
         try
         {
             var cancellationToken = GetCancellationToken();
-            var registerDb = await _invoiceRegisterService.GetRegisterByIdAsync(id, cancellationToken);
+            var registerDb = await _invoiceRegisterService.GetInvoiceRegisterByIdAsync(id, cancellationToken);
             if (registerDb == null)
             {
                 return NotFound($"Реєстру з ID {id} не знайдено.");
             }
 
             var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var restoredRegister = await _invoiceRegisterService.RestoreRemovedRegisterAsync(registerDb, restoredById, cancellationToken);
+            var restoredRegister = await _invoiceRegisterService.RestoreRemovedInvoiceRegisterAsync(registerDb, restoredById, cancellationToken);
             
             return Ok(_mapper.Map<InvoiceRegisterDto>(restoredRegister));
         }
@@ -259,7 +259,7 @@ public class InvoiceRegisterController : ControllerBase
         {
             var cancellationToken = GetCancellationToken();
             
-            var success = await _invoiceRegisterService.DeleteRegisterAsync(id, cancellationToken);
+            var success = await _invoiceRegisterService.DeleteInvoiceRegisterAsync(id, cancellationToken);
             if (!success)
             {
                 return NotFound($"Реєстру з ID {id} не знайдено.");

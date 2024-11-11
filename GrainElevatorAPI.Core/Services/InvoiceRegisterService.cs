@@ -20,7 +20,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         _warehouseUnitService = warehouseUnitService;
     }
 
-    public async Task<InvoiceRegister> CreateRegisterAsync(
+    public async Task<InvoiceRegister> CreateInvoiceRegisterAsync(
         string registerNumber,
         int supplierId, 
         int productId, 
@@ -36,41 +36,23 @@ public class InvoiceRegisterService : IInvoiceRegisterService
             await _repository.BeginTransactionAsync(cancellationToken);
             
             // створення Реєстру (доробка продукції)
-            var laboratoryCards = _repository.GetAll<LaboratoryCard>()
-                .Where(r => laboratoryCardIds.Contains(r.Id))
-                .ToList();
-            
-            var arrivalDate = laboratoryCards.First().InputInvoice.ArrivalDate;
+            var newRegister = CreateRegister(registerNumber, 
+                supplierId, 
+                productId, 
+                weedImpurityBase, 
+                moistureBase, 
+                laboratoryCardIds, 
+                createdById);
 
-            var register = new InvoiceRegister
-            {
-                RegisterNumber = registerNumber,
-                ArrivalDate = arrivalDate,
-                WeedImpurityBase = weedImpurityBase,
-                MoistureBase = moistureBase,
-                SupplierId = supplierId,
-                ProductId = productId,
-                CreatedAt = DateTime.UtcNow,
-                CreatedById = createdById,
-                
-                PhysicalWeightReg = 0,
-                ShrinkageReg = 0,
-                WasteReg = 0,
-                AccWeightReg = 0,
-                QuantitiesDryingReg = 0,   
-            };
-
-            var calculatedRegister = MapLabCardsToProductionBatches(laboratoryCards, register, createdById);
-
-            await _repository.AddAsync(register, cancellationToken);
+            await _repository.AddAsync(newRegister, cancellationToken);
             
             // створення або оновлення складського юніта (переміщення продукції Реєстру на Склад)
-            await _warehouseUnitService.WarehouseTransferAsync(calculatedRegister, createdById, cancellationToken);
+            await _warehouseUnitService.WarehouseTransferAsync(newRegister, createdById, cancellationToken);
             
             // фіксація транзакції
             await _repository.CommitTransactionAsync(cancellationToken);
             
-            return register;
+            return newRegister;
         }
         catch (Exception ex)
         {
@@ -81,29 +63,65 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         
     }
 
-    private InvoiceRegister MapLabCardsToProductionBatches(List<LaboratoryCard> laboratoryCards, InvoiceRegister register, int employeeId)
+    private InvoiceRegister CreateRegister(
+        string registerNumber,
+        int supplierId,
+        int productId,
+        double weedImpurityBase,
+        double moistureBase,
+        IEnumerable<int> laboratoryCardIds,
+        int createdById)
     {
+        var laboratoryCards = _repository.GetAll<LaboratoryCard>()
+            .Where(r => laboratoryCardIds.Contains(r.Id))
+            .ToList();
+        
+        var arrivalDate = laboratoryCards.First().InputInvoice.ArrivalDate;
+        
+        var register = new InvoiceRegister
+        {
+            RegisterNumber = registerNumber,
+            ArrivalDate = arrivalDate,
+            WeedImpurityBase = weedImpurityBase,
+            MoistureBase = moistureBase,
+            SupplierId = supplierId,
+            ProductId = productId,
+            CreatedAt = DateTime.UtcNow,
+            CreatedById = createdById,
+                
+            PhysicalWeightReg = 0,
+            ShrinkageReg = 0,
+            WasteReg = 0,
+            AccWeightReg = 0,
+            QuantitiesDryingReg = 0,   
+        };
+
+        var calculatedRegister = MapLabCardsToProductionBatches(laboratoryCards, register);
+        
+        return calculatedRegister;
+    }
+
+    private InvoiceRegister MapLabCardsToProductionBatches(List<LaboratoryCard> laboratoryCards, InvoiceRegister register)
+    {
+        if(laboratoryCards == null || laboratoryCards.Count == 0)
+            return register;
+        
+        
         foreach (var labCard in laboratoryCards)
         {
             var productionBatch = new ProductionBatch
             {
                 LaboratoryCardId = labCard.Id,
-                CreatedAt = DateTime.UtcNow,
-                CreatedById = employeeId
             };
-            register = (InvoiceRegister)_calculator.CalcProductionBatch(labCard.InputInvoice, labCard, register, productionBatch);
+            register = (InvoiceRegister)_calculator.CalcProductionBatch(labCard, register, productionBatch);
         }
         
         return register;
     }
     
-    // // допоміжний метод для генерації номера реєстру
-    // private string GenerateRegisterNumber()
-    // {
-    //     return $"№{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
-    // }
     
-    public async Task<InvoiceRegister> UpdateRegisterAsync(int id, 
+    public async Task<InvoiceRegister> UpdateInvoiceRegisterAsync(
+        int id, 
         string? registerNumber, 
         double? weedImpurityBase, 
         double? moistureBase, 
@@ -114,17 +132,37 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         try
         {
             var invoiceRegisterDb = await _repository.GetByIdAsync<InvoiceRegister>(id, cancellationToken);
-            
-            invoiceRegisterDb.RegisterNumber = registerNumber ?? invoiceRegisterDb.RegisterNumber;
-            invoiceRegisterDb.WeedImpurityBase = weedImpurityBase ?? invoiceRegisterDb.WeedImpurityBase;
-            invoiceRegisterDb.MoistureBase = moistureBase ?? invoiceRegisterDb.MoistureBase;
-            
-            if (laboratoryCardIds != null && laboratoryCardIds.Any())
+
+            if ((laboratoryCardIds != null && laboratoryCardIds.Any()) || registerNumber != null || weedImpurityBase != null || moistureBase != null)
             {
-                List<LaboratoryCard> laboratoryCards = await _repository.GetAll<LaboratoryCard>()
-                    .Where(lc => laboratoryCardIds.Contains(lc.Id))
-                    .ToListAsync(cancellationToken);
-                invoiceRegisterDb = MapLabCardsToProductionBatches(laboratoryCards, invoiceRegisterDb, modifiedById);
+                invoiceRegisterDb.RegisterNumber = registerNumber ?? invoiceRegisterDb.RegisterNumber;
+                invoiceRegisterDb.WeedImpurityBase = weedImpurityBase ?? invoiceRegisterDb.WeedImpurityBase;
+                invoiceRegisterDb.MoistureBase = moistureBase ?? invoiceRegisterDb.MoistureBase;
+                invoiceRegisterDb.ModifiedById = modifiedById;
+
+
+                if (laboratoryCardIds != null && laboratoryCardIds.Any())
+                {
+                    foreach (var productionBatch in invoiceRegisterDb.ProductionBatches.ToList())
+                    {
+                        await _repository.DeleteAsync<ProductionBatch>(productionBatch.Id, cancellationToken);
+                    }
+
+                    
+                    var laboratoryCards = _repository.GetAll<LaboratoryCard>()
+                        .Where(r => laboratoryCardIds.Contains(r.Id))
+                        .ToList();
+                    
+                    invoiceRegisterDb.ArrivalDate = laboratoryCards.First().InputInvoice.ArrivalDate;
+                    invoiceRegisterDb.PhysicalWeightReg = 0;
+                    invoiceRegisterDb.ShrinkageReg = 0;
+                    invoiceRegisterDb.WasteReg = 0;
+                    invoiceRegisterDb.AccWeightReg = 0;
+                    invoiceRegisterDb.QuantitiesDryingReg = 0; 
+                    invoiceRegisterDb.ProductionBatches = new List<ProductionBatch>();
+                    
+                    invoiceRegisterDb = MapLabCardsToProductionBatches(laboratoryCards, invoiceRegisterDb);
+                }
             }
             
             return await _repository.UpdateAsync(invoiceRegisterDb, cancellationToken);
@@ -135,7 +173,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         }
     }
 
-    public async Task<InvoiceRegister> GetRegisterByIdAsync(int id, CancellationToken cancellationToken)
+    public async Task<InvoiceRegister> GetInvoiceRegisterByIdAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
@@ -147,7 +185,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         }
     }
     
-    public async Task<IEnumerable<InvoiceRegister>> GetRegistersAsync(int page, int size, CancellationToken cancellationToken)
+    public async Task<IEnumerable<InvoiceRegister>> GetInvoiceRegistersAsync(int page, int size, CancellationToken cancellationToken)
     {
         try
         {
@@ -163,7 +201,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
     }
 
     
-     public async Task<IEnumerable<InvoiceRegister>> SearchRegistersAsync(int? id,
+     public async Task<IEnumerable<InvoiceRegister>> SearchInvoiceRegistersAsync(int? id,
         string? registerNumber,
         DateTime? arrivalDate,
         int? supplierId,
@@ -244,7 +282,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
     
     
     
-    public async Task<InvoiceRegister> SoftDeleteRegisterAsync(InvoiceRegister invoiceRegister, int removedById, CancellationToken cancellationToken)
+    public async Task<InvoiceRegister> SoftDeleteInvoiceRegisterAsync(InvoiceRegister invoiceRegister, int removedById, CancellationToken cancellationToken)
     {
         try
         {
@@ -259,7 +297,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         }
     }
     
-    public async Task<InvoiceRegister> RestoreRemovedRegisterAsync(InvoiceRegister invoiceRegister, int restoredById, CancellationToken cancellationToken)
+    public async Task<InvoiceRegister> RestoreRemovedInvoiceRegisterAsync(InvoiceRegister invoiceRegister, int restoredById, CancellationToken cancellationToken)
     {
         try
         {
@@ -275,7 +313,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         }
     }
     
-    public async Task<bool> DeleteRegisterAsync(int id, CancellationToken cancellationToken)
+    public async Task<bool> DeleteInvoiceRegisterAsync(int id, CancellationToken cancellationToken)
     {
         try
         {

@@ -11,7 +11,5 @@ public static class InvoiceRegisterExtensions
         invoiceRegister.RegisterNumber = request.RegisterNumber ?? invoiceRegister.RegisterNumber;
         invoiceRegister.WeedImpurityBase = request.WeedImpurityBase ?? invoiceRegister.WeedImpurityBase;
         invoiceRegister.MoistureBase = request.MoistureBase ?? invoiceRegister.MoistureBase;
-        
-        
     }
 }

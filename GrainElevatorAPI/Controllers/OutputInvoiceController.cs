@@ -64,17 +64,17 @@ public class OutputInvoiceController: ControllerBase
         }
         catch (ArgumentException ex)
         {
-            _logger.LogWarning($"Помилка валідації при створенні Видаткової накладної: {ex.Message}");
+            _logger.LogWarning($"Помилка валідації під час створення Видаткової накладної: {ex.Message}");
             return BadRequest($"Помилка валідації: {ex.Message}");
         }
         catch (InvalidOperationException ex)
         {
-            _logger.LogWarning($"Некоректна операція при створенні Видаткової накладної: {ex.Message}");
+            _logger.LogWarning($"Некоректна операція під час створення Видаткової накладної: {ex.Message}");
             return StatusCode(409, $"Конфлікт даних: {ex.Message}");
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Внутрішня помилка сервера при створенні Видаткової накладної: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера під час створення Видаткової накладної: {ex.Message}");
             return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
         }
     }
@@ -135,8 +135,8 @@ public class OutputInvoiceController: ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Внутрішня помилка сервера при отриманні Видаткової накладної з ID {id}: {ex.Message}");
-            return StatusCode(500, $"Внутрішня помилка сервера при отриманні Видаткової накладної з ID {id}: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера під час отримання Видаткової накладної з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера під час отримання Видаткової накладної з ID {id}: {ex.Message}");
         }
     }
 
@@ -168,8 +168,8 @@ public class OutputInvoiceController: ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Внутрішня помилка сервера при отриманні Видаткової накладної за параметрами: {ex.Message}");
-            return StatusCode(500, $"Внутрішня помилка сервера при отриманні Видаткової накладної: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера під час отримання Видаткової накладної за параметрами: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера під час отримання Видаткової накладної: {ex.Message}");
         }
     }
 
@@ -202,8 +202,8 @@ public class OutputInvoiceController: ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Внутрішня помилка сервера при оновленні Видаткової накладної з ID {id}: {ex.Message}");
-            return StatusCode(500, $"Внутрішня помилка сервера при оновленні Видаткової накладної: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера під час оновлення Видаткової накладної з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера під час оновлення Видаткової накладної: {ex.Message}");
         }
     }
     
@@ -230,8 +230,8 @@ public class OutputInvoiceController: ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Внутрішня помилка сервера при soft-видаленні Видаткової накладної з ID {id}: {ex.Message}");
-            return StatusCode(500, $"Внутрішня помилка сервера при видаленні Видаткової накладної: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера під час видалення Видаткової накладної з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера під час видалення Видаткової накладної: {ex.Message}");
         }
     }
     
@@ -258,8 +258,8 @@ public class OutputInvoiceController: ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Внутрішня помилка сервера при відновленні Видаткової накладної з ID {id}: {ex.Message}");
-            return StatusCode(500, $"Внутрішня помилка сервера при відновленні Видаткової накладної з ID {id}: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера під час відновлення Видаткової накладної з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера під час відновлення Видаткової накладної з ID {id}: {ex.Message}");
         }
     }
     
@@ -280,8 +280,8 @@ public class OutputInvoiceController: ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Внутрішня помилка сервера при hard-видаленні Видаткової накладної з ID {id}: {ex.Message}");
-            return StatusCode(500, $"Внутрішня помилка сервера при hard-видаленні Видаткової накладної з ID {id}: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера під час hard-видалення Видаткової накладної з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера під час hard-видалення Видаткової накладної з ID {id}: {ex.Message}");
         }
     }
     
