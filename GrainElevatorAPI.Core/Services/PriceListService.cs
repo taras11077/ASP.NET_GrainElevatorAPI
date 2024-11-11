@@ -90,18 +90,36 @@ public class PriceListService: IPriceListService
         }
     }
     
-    public async Task<PriceList> UpdatePriceListAsync(PriceList priceList, int modifiedById, CancellationToken cancellationToken)
+    public async Task<PriceList> UpdatePriceListAsync(int id, int? productId, List<int>? priceListItemIds, int modifiedById, CancellationToken cancellationToken)
     {
         try
         {
-            priceList.ModifiedAt = DateTime.UtcNow;
-            priceList.ModifiedById = modifiedById;
+            var priceListDb = await GetPriceListByIdAsync(id, cancellationToken);
+            if (priceListDb == null)
+            {
+                throw new Exception($"Прайс-листа з ID {id} не знайдено.");
+            }
             
-            return await _repository.UpdateAsync(priceList, cancellationToken);
+            priceListDb.ProductId = productId ?? priceListDb.ProductId;
+
+            if (priceListItemIds != null && priceListItemIds.Any())
+            {
+                priceListDb.PriceListItems = new List<PriceListItem>();
+                
+                foreach (var priceListItemId in priceListItemIds)
+                {
+                    priceListDb.PriceListItems.Add( await _repository.GetByIdAsync<PriceListItem>(priceListItemId, cancellationToken));
+                }
+            }
+            
+            priceListDb.ModifiedAt = DateTime.UtcNow;
+            priceListDb.ModifiedById = modifiedById;
+            
+            return await _repository.UpdateAsync(priceListDb, cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка сервісу при оновленні Прайс-листа з ID  {priceList.Id}", ex);
+            throw new Exception($"Помилка сервісу при оновленні Прайс-листа з ID  {id}", ex);
         }
     }
 

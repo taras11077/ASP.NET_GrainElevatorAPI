@@ -159,8 +159,7 @@ public class CompletionReportOperationController : ControllerBase
 
             completionReportOperationDb.UpdateFromRequest(request);
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var updatedCompletionReportOperation =
-                await _completionReportOperationService.UpdateCompletionReportOperationAsync(completionReportOperationDb, modifiedById, cancellationToken);
+            var updatedCompletionReportOperation = await _completionReportOperationService.UpdateCompletionReportOperationAsync(completionReportOperationDb, modifiedById, cancellationToken);
 
             return Ok(_mapper.Map<CompletionReportOperationDto>(updatedCompletionReportOperation));
         }

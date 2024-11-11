@@ -15,7 +15,7 @@ public interface IPriceListService
         int size,
         CancellationToken cancellationToken);
     
-    Task<PriceList> UpdatePriceListAsync(PriceList priceList, int modifiedById, CancellationToken cancellationToken);
+    Task<PriceList> UpdatePriceListAsync(int id, int? productId, List<int>? priceListItemIds, int modifiedById, CancellationToken cancellationToken);
     Task<PriceList> SoftDeletePriceListAsync(PriceList priceList, int removedById, CancellationToken cancellationToken);
     Task<PriceList> RestoreRemovedPriceListAsync(PriceList priceList, int restoredById, CancellationToken cancellationToken);
     Task<bool> DeletePriceListAsync(int id, CancellationToken cancellationToken);
