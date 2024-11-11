@@ -15,7 +15,7 @@ public class WarehouseUnitService: IWarehouseUnitService
         _repository = repository;
     }
     
-    public async Task<WarehouseUnit> WarehouseTransferAsync(InvoiceRegister register, int createdById, CancellationToken cancellationToken)
+    public async Task<WarehouseUnit> WarehouseTransferAsync(InvoiceRegister register, int employeeId, CancellationToken cancellationToken)
     {
         try
         {
@@ -35,7 +35,7 @@ public class WarehouseUnitService: IWarehouseUnitService
                     SupplierId = register.SupplierId,
                     ProductId = register.ProductId,
                     CreatedAt = DateTime.UtcNow,
-                    CreatedById = createdById,
+                    CreatedById = employeeId,
                     ProductCategories = new List<WarehouseProductCategory>
                     {
                         new WarehouseProductCategory() {Title = "Кондиційна продукція",  Value = register.AccWeightReg },
@@ -48,7 +48,7 @@ public class WarehouseUnitService: IWarehouseUnitService
             else
             {
                 // оновлення існуючого WarehouseUnit новими даними з Register
-                await UpdateWarehouseUnitWithRegisterData(warehouseUnit, register, cancellationToken);
+                await AddingRegisterDataToWarehouseUnit(warehouseUnit, register, employeeId, cancellationToken);
             }
 
             return warehouseUnit;
@@ -60,24 +60,30 @@ public class WarehouseUnitService: IWarehouseUnitService
     }
 
     
-    private async Task UpdateWarehouseUnitWithRegisterData(WarehouseUnit warehouseUnit, InvoiceRegister register, CancellationToken cancellationToken)
+    private async Task AddingRegisterDataToWarehouseUnit(WarehouseUnit warehouseUnit, InvoiceRegister register, int employeeId, CancellationToken cancellationToken)
     {
         // пошук категорії для кондиційної продукції
         var conditionedProduct = warehouseUnit.ProductCategories
             .FirstOrDefault(pc => pc.Title == "Кондиційна продукція");
+        
         if (conditionedProduct == null)
         {
             conditionedProduct = new WarehouseProductCategory() 
             { 
                 Title = "Кондиційна продукція",
                 Value = register.AccWeightReg, 
-                WarehouseUnitId = warehouseUnit.Id 
+                WarehouseUnitId = warehouseUnit.Id, 
+                CreatedById = employeeId,
             };
             warehouseUnit.ProductCategories.Add(conditionedProduct);
+            warehouseUnit.ModifiedById = employeeId;
         }
         else
         {
             conditionedProduct.Value += register.AccWeightReg;
+            
+            conditionedProduct.ModifiedById = employeeId;
+            warehouseUnit.ModifiedById = employeeId;
         }
 
         // пошук категорії для відходів
@@ -89,17 +95,47 @@ public class WarehouseUnitService: IWarehouseUnitService
             { 
                 Title = "Відходи",
                 Value = register.WasteReg, 
-                WarehouseUnitId = warehouseUnit.Id 
+                WarehouseUnitId = warehouseUnit.Id,
+                CreatedById = employeeId,
             };
             warehouseUnit.ProductCategories.Add(wasteProduct);
         }
         else
         {
             wasteProduct.Value += register.WasteReg;
+            
+            wasteProduct.ModifiedById = employeeId;
+            warehouseUnit.ModifiedById = employeeId;
         }
 
         await _repository.UpdateAsync(warehouseUnit, cancellationToken);
     }
+    
+    
+    public async Task DeletingRegisterDataFromWarehouseUnit(InvoiceRegister register, int modifiedById, CancellationToken cancellationToken)
+    {
+        // перевірка наявності WarehouseUnit із заданими SupplierId і ProductId
+        var warehouseUnit = await _repository.GetAll<WarehouseUnit>()
+            .FirstOrDefaultAsync(w => w.SupplierId == register.SupplierId && w.ProductId == register.ProductId);
+        
+        // пошук категорії для кондиційної продукції
+        var conditionedProduct = warehouseUnit.ProductCategories
+            .FirstOrDefault(pc => pc.Title == "Кондиційна продукція");
+  
+        conditionedProduct.Value -= register.AccWeightReg;
+        
+
+        // пошук категорії для відходів
+        var wasteProduct = warehouseUnit.ProductCategories
+            .FirstOrDefault(pc => pc.Title == "Відходи");
+
+        wasteProduct.Value -= register.WasteReg;
+
+        warehouseUnit.ModifiedById = modifiedById;
+        
+        await _repository.UpdateAsync(warehouseUnit, cancellationToken);
+    }
+    
 
     
     public async Task<IEnumerable<WarehouseUnit>> GetPagedWarehouseUnits(int page, int size, CancellationToken cancellationToken)

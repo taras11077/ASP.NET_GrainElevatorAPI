@@ -135,6 +135,10 @@ public class InvoiceRegisterService : IInvoiceRegisterService
             
             // початок транзакції
             await _repository.BeginTransactionAsync(cancellationToken);
+            
+            // видалення даних реєстру зі складського юніта
+            await _warehouseUnitService.DeletingRegisterDataFromWarehouseUnit(invoiceRegisterDb, modifiedById, cancellationToken);
+            
 
             if ((laboratoryCardIds != null && laboratoryCardIds.Any()) || registerNumber != null || weedImpurityBase != null || moistureBase != null)
             {
@@ -167,6 +171,9 @@ public class InvoiceRegisterService : IInvoiceRegisterService
                     invoiceRegisterDb = MapLabCardsToProductionBatches(laboratoryCards, invoiceRegisterDb);
                 }
             }
+            
+            // оновлення складського юніта (переміщення продукції оновленого Реєстру на Склад)
+            await _warehouseUnitService.WarehouseTransferAsync(invoiceRegisterDb, modifiedById, cancellationToken);
             
             await _repository.UpdateAsync(invoiceRegisterDb, cancellationToken);
             
