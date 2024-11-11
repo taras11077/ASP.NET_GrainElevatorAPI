@@ -132,6 +132,9 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         try
         {
             var invoiceRegisterDb = await _repository.GetByIdAsync<InvoiceRegister>(id, cancellationToken);
+            
+            // початок транзакції
+            await _repository.BeginTransactionAsync(cancellationToken);
 
             if ((laboratoryCardIds != null && laboratoryCardIds.Any()) || registerNumber != null || weedImpurityBase != null || moistureBase != null)
             {
@@ -165,10 +168,17 @@ public class InvoiceRegisterService : IInvoiceRegisterService
                 }
             }
             
-            return await _repository.UpdateAsync(invoiceRegisterDb, cancellationToken);
+            await _repository.UpdateAsync(invoiceRegisterDb, cancellationToken);
+            
+            // фіксація транзакції
+            await _repository.CommitTransactionAsync(cancellationToken);
+
+            return invoiceRegisterDb;
         }
         catch (Exception ex)
         {
+            // відкат транзакції в разі помилки
+            await _repository.RollbackTransactionAsync(cancellationToken);
             throw new Exception($"Помилка сервісу під час оновлення Реєстру з ID  {id}", ex);
         }
     }
