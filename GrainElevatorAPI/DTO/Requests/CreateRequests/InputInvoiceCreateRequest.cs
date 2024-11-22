@@ -9,6 +9,8 @@ public class InputInvoiceCreateRequest
     [MaxLength(9, ErrorMessage = "InvoiceNumber must be at least 9 characters long.")]
     public string InvoiceNumber { get; set; }
     
+    public DateTime ArrivalDate { get; set; }
+    
     [Required(ErrorMessage = "SupplierTitle is required.")]
     [MinLength(2, ErrorMessage = "SupplierTitle must be at least 2 characters long.")]
     [MaxLength(30, ErrorMessage = "SupplierTitle must be at least 30 characters long.")]

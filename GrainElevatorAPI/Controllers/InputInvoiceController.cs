@@ -51,10 +51,12 @@ public class InputInvoiceController : ControllerBase
             
             var createdInputInvoice = await _inputInvoiceService.CreateInputInvoiceAsync(
                 request.InvoiceNumber,
+                request.ArrivalDate,
                 request.SupplierTitle,
                 request.ProductTitle,
                 request.PhysicalWeight,
-                createdById, 
+                request.VehicleNumber,
+                createdById = 1, // TODO
                 cancellationToken);
             
             _logger.LogInformation($"Створено прибуткову накладну з ID = {createdInputInvoice.Id}.");
@@ -120,9 +122,9 @@ public class InputInvoiceController : ControllerBase
         [FromQuery] DateTime? arrivalDate = null,
         [FromQuery] string? vehicleNumber = null,
         [FromQuery] int? physicalWeight = null,
-        [FromQuery] int? supplierId = null,
-        [FromQuery] int? productId = null,
-        [FromQuery] int? createdById = null,
+        [FromQuery] string? supplierTitle = null,
+        [FromQuery] string? productTitle = null,
+        [FromQuery] string? createdBy = null,
         [FromQuery] DateTime? removedAt = null,
         [FromQuery] int page = 1,
         [FromQuery] int size = 10)
@@ -131,11 +133,12 @@ public class InputInvoiceController : ControllerBase
         {
             var cancellationToken = GetCancellationToken();
             // передаємо параметри у сервіс для фільтрації
-            var filteredInvoices = await _inputInvoiceService.SearchInputInvoices(
-                id, invoiceNumber, arrivalDate, vehicleNumber, physicalWeight, supplierId, productId, createdById, removedAt, page, size, cancellationToken);
+            var (filteredInvoices, totalCount) = await _inputInvoiceService.SearchInputInvoices(
+                id, invoiceNumber, arrivalDate, vehicleNumber, physicalWeight, supplierTitle, productTitle, createdBy, removedAt, page, size, cancellationToken);
 
             
             var inputInvoiceDtos = _mapper.Map<IEnumerable<InputInvoiceDto>>(filteredInvoices);
+            Response.Headers.Append("X-Total-Count", totalCount.ToString());
             return Ok(inputInvoiceDtos);
         }
         catch (Exception ex)
@@ -166,6 +169,7 @@ public class InputInvoiceController : ControllerBase
             
             inputInvoiceDb.UpdateFromRequest(request);
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            modifiedById = 1; // TODO
             var updatedInputInvoice = await _inputInvoiceService.UpdateInputInvoiceAsync(inputInvoiceDb, modifiedById, cancellationToken);
 
             
@@ -193,6 +197,7 @@ public class InputInvoiceController : ControllerBase
             }
 
             var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            removedById = 1; // TODO
             var removedInputInvoice = await _inputInvoiceService.SoftDeleteInputInvoiceAsync(inputInvoiceDb, removedById, cancellationToken);
             
             return Ok(_mapper.Map<InputInvoiceDto>(removedInputInvoice));

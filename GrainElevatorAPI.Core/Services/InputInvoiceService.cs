@@ -18,7 +18,15 @@ public class InputInvoiceService : IInputInvoiceService
     }
     
     
-    public async Task<InputInvoice> CreateInputInvoiceAsync(string invoiceNumber, string supplierTitle, string productTitle, int  physicalWeight, int createdById, CancellationToken cancellationToken)
+    public async Task<InputInvoice> CreateInputInvoiceAsync(
+        string invoiceNumber,
+        DateTime arrivalDate,
+        string supplierTitle, 
+        string productTitle, 
+        int physicalWeight,
+        string vehicleNumber,
+        int createdById, 
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -46,11 +54,13 @@ public class InputInvoiceService : IInputInvoiceService
             var inputInvoice = new InputInvoice
             {
                 InvoiceNumber = invoiceNumber,
+                ArrivalDate = arrivalDate,
                 CreatedAt = DateTime.UtcNow,
                 CreatedById = createdById,
                 SupplierId = supplier.Id,
                 ProductId = product.Id,
                 PhysicalWeight = physicalWeight,
+                VehicleNumber = vehicleNumber,
                 Supplier = supplier,
                 Product = product
             };
@@ -76,6 +86,9 @@ public class InputInvoiceService : IInputInvoiceService
         try
         {
             return await _repository.GetAll<InputInvoice>()
+                .Include(ii => ii.Supplier)
+                .Include(ii => ii.Product)
+                .Include(ii => ii.CreatedBy)
                 .Skip((page - 1) * size)
                 .Take(size)
                 .ToListAsync(cancellationToken);
@@ -98,61 +111,132 @@ public class InputInvoiceService : IInputInvoiceService
     }
     
     
-    public async Task<IEnumerable<InputInvoice>> SearchInputInvoices(
-        int? id,
-        string? invoiceNumber,
-        DateTime? arrivalDate,
-        string? vehicleNumber,
-        int? physicalWeight,
-        int? supplierId,
-        int? productId,
-        int? createdById,
-        DateTime? removedAt,
-        int page,
-        int size, 
-        CancellationToken cancellationToken)
+    // public async Task<IEnumerable<InputInvoice>> SearchInputInvoices(
+    //     int? id,
+    //     string? invoiceNumber,
+    //     DateTime? arrivalDate,
+    //     string? vehicleNumber,
+    //     int? physicalWeight,
+    //     int? supplierId,
+    //     int? productId,
+    //     int? createdById,
+    //     DateTime? removedAt,
+    //     int page,
+    //     int size, 
+    //     CancellationToken cancellationToken)
+    // {
+    //     try
+    //     {
+    //         var query = _repository.GetAll<InputInvoice>();
+    //         
+    //         if (id.HasValue)
+    //             query = query.Where(ii => ii.Id == id.Value);
+    //
+    //         if (!string.IsNullOrEmpty(invoiceNumber))
+    //             query = query.Where(ii => ii.InvoiceNumber == invoiceNumber);
+    //
+    //         if (arrivalDate.HasValue)
+    //             query = query.Where(ii => ii.ArrivalDate.Date == arrivalDate.Value.Date);
+    //
+    //         if (!string.IsNullOrEmpty(vehicleNumber))
+    //             query = query.Where(ii => ii.VehicleNumber == vehicleNumber);
+    //         
+    //         if (physicalWeight.HasValue)
+    //             query = query.Where(ii => ii.PhysicalWeight == physicalWeight.Value);
+    //
+    //         if (supplierId.HasValue)
+    //             query = query.Where(ii => ii.SupplierId == supplierId.Value);
+    //
+    //         if (productId.HasValue)
+    //             query = query.Where(ii => ii.ProductId == productId.Value);
+    //
+    //         if (createdById.HasValue)
+    //             query = query.Where(ii => ii.CreatedById == createdById.Value);
+    //
+    //         if (removedAt.HasValue)
+    //             query = query.Where(ii => ii.RemovedAt == removedAt.Value);
+    //         
+    //         return await query
+    //             .Skip((page - 1) * size)
+    //             .Take(size)
+    //             .ToListAsync(cancellationToken);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         throw new Exception("Помилка сервісу при пошуку Вхідних накладних", ex);
+    //     }
+    // }
+    
+    public async Task<(IEnumerable<InputInvoice>, int)> SearchInputInvoices(
+    int? id = null,
+    string? invoiceNumber = null,
+    DateTime? arrivalDate = null,
+    string? vehicleNumber = null,
+    int? physicalWeight = null,
+    string? supplierTitle = null,
+    string? productTitle = null,
+    string? createdByName = null,
+    DateTime? removedAt = null,
+    int page = 1,
+    int size = 10,
+    CancellationToken cancellationToken = default)
+{
+    try
     {
-        try
-        {
-            var query = _repository.GetAll<InputInvoice>();
-            
-            if (id.HasValue)
-                query = query.Where(ii => ii.Id == id.Value);
+        var query = _repository.GetAll<InputInvoice>()
+            .Include(ii => ii.Supplier) 
+            .Include(ii => ii.Product)  
+            .Include(ii => ii.CreatedBy)
+            .AsQueryable();
 
-            if (!string.IsNullOrEmpty(invoiceNumber))
-                query = query.Where(ii => ii.InvoiceNumber == invoiceNumber);
+        // Умови фільтрації
+        query = query.Where(ii => ii.RemovedAt == null);
+        
+        if (id.HasValue)
+            query = query.Where(ii => ii.Id == id.Value);
 
-            if (arrivalDate.HasValue)
-                query = query.Where(ii => ii.ArrivalDate.Date == arrivalDate.Value.Date);
+        if (!string.IsNullOrEmpty(invoiceNumber))
+            query = query.Where(ii => ii.InvoiceNumber.Contains(invoiceNumber));
 
-            if (!string.IsNullOrEmpty(vehicleNumber))
-                query = query.Where(ii => ii.VehicleNumber == vehicleNumber);
-            
-            if (physicalWeight.HasValue)
-                query = query.Where(ii => ii.PhysicalWeight == physicalWeight.Value);
+        if (arrivalDate.HasValue)
+            query = query.Where(ii => ii.ArrivalDate.Date == arrivalDate.Value.Date);
 
-            if (supplierId.HasValue)
-                query = query.Where(ii => ii.SupplierId == supplierId.Value);
+        if (!string.IsNullOrEmpty(vehicleNumber))
+            query = query.Where(ii => ii.VehicleNumber.Contains(vehicleNumber));
 
-            if (productId.HasValue)
-                query = query.Where(ii => ii.ProductId == productId.Value);
+        if (physicalWeight.HasValue)
+            query = query.Where(ii => ii.PhysicalWeight == physicalWeight.Value);
 
-            if (createdById.HasValue)
-                query = query.Where(ii => ii.CreatedById == createdById.Value);
+        if (!string.IsNullOrEmpty(supplierTitle))
+            query = query.Where(ii => ii.Supplier.Title.Contains(supplierTitle));
 
-            if (removedAt.HasValue)
-                query = query.Where(ii => ii.RemovedAt == removedAt.Value);
-            
-            return await query
-                .Skip((page - 1) * size)
-                .Take(size)
-                .ToListAsync(cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Помилка сервісу при пошуку Вхідних накладних", ex);
-        }
+        if (!string.IsNullOrEmpty(productTitle))
+            query = query.Where(ii => ii.Product.Title.Contains(productTitle));
+
+        if (!string.IsNullOrEmpty(createdByName))
+            query = query.Where(ii => ii.CreatedBy.LastName.Contains(createdByName));
+
+        if (removedAt.HasValue)
+            query = query.Where(ii => ii.RemovedAt.HasValue && ii.RemovedAt.Value.Date == removedAt.Value.Date);
+
+        // Пагінація
+        int totalCount = await query.CountAsync(cancellationToken);
+
+        var filteredInvoices = await query
+            .Skip((page - 1) * size)
+            .Take(size)
+            .ToListAsync(cancellationToken);
+
+        return (filteredInvoices, totalCount);
     }
+    catch (Exception ex)
+    {
+        throw new Exception("Помилка сервісу при пошуку Вхідних накладних", ex);
+    }
+}
+
+    
+    
     public async Task<InputInvoice> UpdateInputInvoiceAsync(InputInvoice inputInvoice, int modifiedById, CancellationToken cancellationToken)
     {
         try

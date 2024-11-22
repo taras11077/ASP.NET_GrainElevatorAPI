@@ -31,7 +31,11 @@ public class MapperProfile : Profile
         
         CreateMap<InputInvoice, InputInvoiceCreateRequest>().ReverseMap();
         CreateMap<InputInvoice, InputInvoiceUpdateRequest>().ReverseMap();
-        CreateMap<InputInvoice, InputInvoiceDto>().ReverseMap();
+        CreateMap<InputInvoice, InputInvoiceDto>()
+            .ForMember(dest => dest.SupplierTitle, opt => opt.MapFrom(src => src.Supplier.Title))
+            .ForMember(dest => dest.ProductTitle, opt => opt.MapFrom(src => src.Product.Title))
+            .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy.LastName))
+            .ReverseMap();
         
         CreateMap<LaboratoryCard, LaboratoryCardCreateRequest>().ReverseMap();
         CreateMap<LaboratoryCard, LaboratoryCardUpdateRequest>().ReverseMap();
