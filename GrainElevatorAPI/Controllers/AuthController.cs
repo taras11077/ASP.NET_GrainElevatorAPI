@@ -118,4 +118,18 @@ public class AuthController : Controller
         }
     }
     
+    // логування сесії
+    [HttpGet("session-check")]
+    public IActionResult CheckSession()
+    {
+        var employeeId = HttpContext.Session.GetInt32("EmployeeId");
+
+        if (employeeId == null)
+        {
+            return Unauthorized("Сесія не знайдена");
+        }
+
+        return Ok($"EmployeeId: {employeeId}");
+    }
+    
 }

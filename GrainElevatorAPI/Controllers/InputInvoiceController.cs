@@ -48,6 +48,7 @@ public class InputInvoiceController : ControllerBase
             var cancellationToken = GetCancellationToken();
             
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            createdById = 1; // TODO
             
             var createdInputInvoice = await _inputInvoiceService.CreateInputInvoiceAsync(
                 request.InvoiceNumber,
@@ -56,7 +57,7 @@ public class InputInvoiceController : ControllerBase
                 request.ProductTitle,
                 request.PhysicalWeight,
                 request.VehicleNumber,
-                createdById = 1, // TODO
+                createdById, 
                 cancellationToken);
             
             _logger.LogInformation($"Створено прибуткову накладну з ID = {createdInputInvoice.Id}.");
@@ -124,7 +125,7 @@ public class InputInvoiceController : ControllerBase
         [FromQuery] int? physicalWeight = null,
         [FromQuery] string? supplierTitle = null,
         [FromQuery] string? productTitle = null,
-        [FromQuery] string? createdBy = null,
+        [FromQuery] string? createdByName = null,
         [FromQuery] DateTime? removedAt = null,
         [FromQuery] int page = 1,
         [FromQuery] int size = 10)
@@ -134,7 +135,7 @@ public class InputInvoiceController : ControllerBase
             var cancellationToken = GetCancellationToken();
             // передаємо параметри у сервіс для фільтрації
             var (filteredInvoices, totalCount) = await _inputInvoiceService.SearchInputInvoices(
-                id, invoiceNumber, arrivalDate, vehicleNumber, physicalWeight, supplierTitle, productTitle, createdBy, removedAt, page, size, cancellationToken);
+                id, invoiceNumber, arrivalDate, vehicleNumber, physicalWeight, supplierTitle, productTitle, createdByName, removedAt, page, size, cancellationToken);
 
             
             var inputInvoiceDtos = _mapper.Map<IEnumerable<InputInvoiceDto>>(filteredInvoices);
@@ -169,7 +170,8 @@ public class InputInvoiceController : ControllerBase
             
             inputInvoiceDb.UpdateFromRequest(request);
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            modifiedById = 1; // TODO
+            _logger.LogInformation($"Retrieved EmployeeId {modifiedById} from session.");
+            //modifiedById = 1; // TODO
             var updatedInputInvoice = await _inputInvoiceService.UpdateInputInvoiceAsync(inputInvoiceDb, modifiedById, cancellationToken);
 
             

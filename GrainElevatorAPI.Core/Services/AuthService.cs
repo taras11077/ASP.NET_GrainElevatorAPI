@@ -3,16 +3,19 @@ using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
 using GrainElevatorAPI.Core.Security;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace GrainElevatorAPI.Core.Services;
 
 public class AuthService : IAuthService
 {
     private readonly IRepository _repository;
+    private readonly ILogger<InputInvoiceService> _logger;
 
-    public AuthService(IRepository repository)
+    public AuthService(IRepository repository, ILogger<InputInvoiceService> logger)
     {
         _repository = repository;
+        _logger = logger;
     }
     
     // реєстрація співробітника   

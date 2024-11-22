@@ -66,10 +66,25 @@ builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSession(options =>
 {
+    options.Cookie.Name = ".GrainElevator.Session";
     options.IdleTimeout = TimeSpan.FromSeconds(builder.Configuration.GetValue<int>("SessionTimeout"));
-    options.Cookie.HttpOnly = true;
+    options.Cookie.HttpOnly = true; // Заборонити доступ до cookie з JS
+    options.Cookie.SameSite = SameSiteMode.None; // Дозволити міждоменні запити
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Вимагати HTTPS
     options.Cookie.IsEssential = true;
 });
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000") // URL фронтенда
+            .AllowCredentials() // дозволити cookie
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -82,15 +97,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false,
         };
     });
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowReactApp",
-        builder => builder.WithOrigins("http://localhost:3000") // URL React додатку
-            .AllowAnyMethod()
-            .AllowAnyHeader());
-});
-
 
 
 Log.Logger = new LoggerConfiguration()
@@ -130,11 +136,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseSession(); 
 app.UseCors("AllowReactApp");
 
 app.UseHttpsRedirection();
-
-app.UseSession(); 
 
 app.UseAuthentication();
 
