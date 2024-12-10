@@ -48,7 +48,6 @@ public class InputInvoiceController : ControllerBase
             var cancellationToken = GetCancellationToken();
             
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            createdById = 1; // TODO
             
             var createdInputInvoice = await _inputInvoiceService.CreateInputInvoiceAsync(
                 request.InvoiceNumber,
@@ -171,7 +170,6 @@ public class InputInvoiceController : ControllerBase
             inputInvoiceDb.UpdateFromRequest(request);
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             _logger.LogInformation($"Retrieved EmployeeId {modifiedById} from session.");
-            //modifiedById = 1; // TODO
             var updatedInputInvoice = await _inputInvoiceService.UpdateInputInvoiceAsync(inputInvoiceDb, modifiedById, cancellationToken);
 
             

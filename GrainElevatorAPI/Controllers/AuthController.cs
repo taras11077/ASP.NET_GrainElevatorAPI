@@ -36,7 +36,7 @@ public class AuthController : Controller
         return await HandleRequestAsync(request, async () =>
         {
             var cancellationToken = GetCancellationToken();
-            var employeeDb = await _authService.Register(request.Email, request.Password, request.RoleId, cancellationToken);
+            var employeeDb = await _authService.Register(request.FirstName, request.LastName,request.Email, request.Password, request.RoleId, cancellationToken);
             
             var role = await _roleService.GetRoleByIdAsync(employeeDb.RoleId, cancellationToken);
             if (role == null)
@@ -81,7 +81,19 @@ public class AuthController : Controller
             
             HttpContext.Session.SetInt32("EmployeeId", employee.Id);
 
-            return Created("token", jwt);
+            //return Created("token", jwt);
+            
+            return Created("token", new 
+            {
+                Token = jwt,
+                User = new 
+                {
+                    Id = employee.Id,
+                    Name = $"{employee.FirstName} {employee.LastName}",
+                    Role = role.Title
+                }
+            });
+
         });
     }
     

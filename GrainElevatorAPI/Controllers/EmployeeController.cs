@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using AutoMapper;
 using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
@@ -35,6 +36,36 @@ public class EmployeeController : ControllerBase
     {
         return HttpContext.RequestAborted;
     }
+    
+    
+    [Authorize]
+    [HttpGet("profile")]
+    public IActionResult GetEmployee()
+    {
+        try
+        {
+            var cancellationToken = GetCancellationToken();
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized($"Співробітника з ID {userId} не авторізований.");
+            }
+
+            var employee  = _employeeService.GetEmployeeByIdAsync(int.Parse(userId), cancellationToken);
+            if (employee == null)
+            {
+                return NotFound($"Співробітника з ID {userId} не знайдено.");
+            }
+            
+            var employeeDto = _mapper.Map<IEnumerable<EmployeeDto>>(employee);
+            return Ok(employeeDto);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+        }
+    }
+
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetEmployees(int page = 1, int size = 10)

@@ -69,8 +69,15 @@ builder.Services.AddSession(options =>
     options.Cookie.Name = ".GrainElevator.Session";
     options.IdleTimeout = TimeSpan.FromSeconds(builder.Configuration.GetValue<int>("SessionTimeout"));
     options.Cookie.HttpOnly = true; // Заборонити доступ до cookie з JS
-    options.Cookie.SameSite = SameSiteMode.None; // Дозволити міждоменні запити
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Вимагати HTTPS
+    
+    
+    
+    // options.Cookie.SameSite = SameSiteMode.None; // Дозволити міждоменні запити
+    // options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Вимагати HTTPS
+    
+    options.Cookie.SameSite = SameSiteMode.Lax; // Для локальной разработки
+    options.Cookie.SecurePolicy = CookieSecurePolicy.None; // Для локальной разработки
+    
     options.Cookie.IsEssential = true;
 });
 
@@ -78,7 +85,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:3000") // URL фронтенда
+        policy.WithOrigins("https://localhost:3000") // URL фронтенда
             .AllowCredentials() // дозволити cookie
             .AllowAnyHeader()
             .AllowAnyMethod();
@@ -163,6 +170,8 @@ async Task EnsureAdminCreated(IServiceProvider services)
     // отримання даних адміністратора з конфігурації
     var adminEmail = configuration["AdminSettings:AdminEmail"];
     var adminPassword = configuration["AdminSettings:AdminPassword"];
+    var adminFirstName = configuration["AdminSettings:AdminFirstName"];
+    var adminLastName = configuration["AdminSettings:AdminLastName"];
 
     // перевірка, чи існує роль Admin
     var adminRole = await roleService.GetRoleByTitleAsync("Admin", cancellationToken);
@@ -187,7 +196,7 @@ async Task EnsureAdminCreated(IServiceProvider services)
     // реєстрація адміністратора 
     try
     {
-        var adminEmployee = await authService.Register(adminEmail, adminPassword, adminRole.Id, cancellationToken);
+        var adminEmployee = await authService.Register(adminFirstName, adminLastName, adminEmail, adminPassword, adminRole.Id, cancellationToken);
         logger.LogInformation($"Адміністратор {adminEmployee.Email} успішно створений.");
     }
     catch (Exception ex)

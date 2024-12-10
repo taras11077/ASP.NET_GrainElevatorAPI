@@ -19,7 +19,7 @@ public class AuthService : IAuthService
     }
     
     // реєстрація співробітника   
-    public async Task<Employee> Register(string email, string password, int roleId, CancellationToken cancellationToken)
+    public async Task<Employee> Register(string firstName, string lastName, string email, string password, int roleId, CancellationToken cancellationToken)
     {
         // валідація вводу
         if (email == null || string.IsNullOrEmpty(email.Trim()) || email.Length < 4 ||
@@ -38,6 +38,8 @@ public class AuthService : IAuthService
         // створення нового співробітника
         var newEmployee = new Employee
         {
+            FirstName = firstName,
+            LastName = lastName,
             Email = email,
             PasswordHash = hashedPassword,
             RoleId = roleId,
@@ -52,6 +54,7 @@ public class AuthService : IAuthService
     public async Task<Employee> Login(string email, string password, CancellationToken cancellationToken)
     {
         // валідація вводу
+        
         if (email == null || string.IsNullOrEmpty(email.Trim()) || 
             password == null || string.IsNullOrEmpty(password.Trim()))
             throw new ArgumentNullException();

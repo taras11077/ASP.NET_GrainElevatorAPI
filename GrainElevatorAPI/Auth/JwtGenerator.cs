@@ -14,6 +14,7 @@ public static class JwtGenerator
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, employee.Id.ToString()),
+            new Claim(ClaimTypes.Name, employee.FirstName + " " + employee.LastName),
             new Claim(ClaimTypes.Role, roleTitle)
         };
 
