@@ -110,63 +110,6 @@ public class InputInvoiceService : IInputInvoiceService
         }
     }
     
-    
-    // public async Task<IEnumerable<InputInvoice>> SearchInputInvoices(
-    //     int? id,
-    //     string? invoiceNumber,
-    //     DateTime? arrivalDate,
-    //     string? vehicleNumber,
-    //     int? physicalWeight,
-    //     int? supplierId,
-    //     int? productId,
-    //     int? createdById,
-    //     DateTime? removedAt,
-    //     int page,
-    //     int size, 
-    //     CancellationToken cancellationToken)
-    // {
-    //     try
-    //     {
-    //         var query = _repository.GetAll<InputInvoice>();
-    //         
-    //         if (id.HasValue)
-    //             query = query.Where(ii => ii.Id == id.Value);
-    //
-    //         if (!string.IsNullOrEmpty(invoiceNumber))
-    //             query = query.Where(ii => ii.InvoiceNumber == invoiceNumber);
-    //
-    //         if (arrivalDate.HasValue)
-    //             query = query.Where(ii => ii.ArrivalDate.Date == arrivalDate.Value.Date);
-    //
-    //         if (!string.IsNullOrEmpty(vehicleNumber))
-    //             query = query.Where(ii => ii.VehicleNumber == vehicleNumber);
-    //         
-    //         if (physicalWeight.HasValue)
-    //             query = query.Where(ii => ii.PhysicalWeight == physicalWeight.Value);
-    //
-    //         if (supplierId.HasValue)
-    //             query = query.Where(ii => ii.SupplierId == supplierId.Value);
-    //
-    //         if (productId.HasValue)
-    //             query = query.Where(ii => ii.ProductId == productId.Value);
-    //
-    //         if (createdById.HasValue)
-    //             query = query.Where(ii => ii.CreatedById == createdById.Value);
-    //
-    //         if (removedAt.HasValue)
-    //             query = query.Where(ii => ii.RemovedAt == removedAt.Value);
-    //         
-    //         return await query
-    //             .Skip((page - 1) * size)
-    //             .Take(size)
-    //             .ToListAsync(cancellationToken);
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         throw new Exception("Помилка сервісу при пошуку Вхідних накладних", ex);
-    //     }
-    // }
-    
     public async Task<(IEnumerable<InputInvoice>, int)> SearchInputInvoices(
     int? id = null,
     string? invoiceNumber = null,

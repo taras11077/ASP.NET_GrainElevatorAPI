@@ -21,14 +21,16 @@ namespace GrainElevatorAPI.Controllers;
 public class EmployeeController : ControllerBase
 {
     private readonly IEmployeeService _employeeService;
+    private readonly IRoleService _roleService;
     private readonly IMapper _mapper;
     private readonly ILogger<EmployeeController> _logger;
 
-    public EmployeeController(IEmployeeService employeeService, IMapper mapper, ILogger<EmployeeController> logger)
+    public EmployeeController(IEmployeeService employeeService, IMapper mapper, ILogger<EmployeeController> logger, IRoleService roleService)
     {
         _employeeService = employeeService;
         _mapper = mapper;
         _logger = logger;
+        _roleService = roleService;
     }
 
     
@@ -39,26 +41,41 @@ public class EmployeeController : ControllerBase
     
     
     [Authorize]
-    [HttpGet("profile")]
-    public IActionResult GetEmployee()
+    [HttpGet("user-info")]
+    public async Task<ActionResult> GetEmployeeInfo()
     {
         try
         {
             var cancellationToken = GetCancellationToken();
+            
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null)
             {
                 return Unauthorized($"Співробітника з ID {userId} не авторізований.");
             }
-
-            var employee  = _employeeService.GetEmployeeByIdAsync(int.Parse(userId), cancellationToken);
+            
+            var employee  = await _employeeService.GetEmployeeByIdAsync(int.Parse(userId), cancellationToken);
             if (employee == null)
             {
                 return NotFound($"Співробітника з ID {userId} не знайдено.");
             }
             
-            var employeeDto = _mapper.Map<IEnumerable<EmployeeDto>>(employee);
-            return Ok(employeeDto);
+            var role = await _roleService.GetRoleByIdAsync(employee.RoleId, cancellationToken);
+            if (role == null)
+            {
+                return BadRequest("Роль не знайдено.");
+            }
+            
+            return Ok(new 
+            {
+                UserInfo = new 
+                {
+                    Id = employee.Id,
+                    Name = $"{employee.FirstName} {employee.LastName}",
+                    Role = role.Title
+                }
+            });
+
         }
         catch (Exception ex)
         {
