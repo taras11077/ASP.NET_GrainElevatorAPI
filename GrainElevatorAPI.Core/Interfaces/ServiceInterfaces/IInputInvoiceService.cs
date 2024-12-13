@@ -15,7 +15,7 @@ public interface IInputInvoiceService
         CancellationToken cancellationToken);
     Task<InputInvoice> GetInputInvoiceByIdAsync(int id, CancellationToken cancellationToken);
     
-    Task<IEnumerable<InputInvoice>> GetInputInvoices(int page, int size, CancellationToken cancellationToken);
+    Task<(IEnumerable<InputInvoice>, int)> GetInputInvoices(int page, int size, CancellationToken cancellationToken);
 
     Task<(IEnumerable<InputInvoice>, int)> SearchInputInvoices(int? id,
         string? invoiceNumber,

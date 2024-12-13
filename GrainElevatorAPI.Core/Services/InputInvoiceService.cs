@@ -77,25 +77,31 @@ public class InputInvoiceService : IInputInvoiceService
         {
             // відкат транзакції в разі помилки
             await _repository.RollbackTransactionAsync(cancellationToken);
-            throw new Exception("Помилка сервісу при додаванні Вхідної накладної", ex);
+            throw new Exception("Помилка сервісу при додаванні Прибуткової накладної", ex);
         }
     }
 
-    public async Task<IEnumerable<InputInvoice>> GetInputInvoices(int page, int size, CancellationToken cancellationToken)
+    public async Task<(IEnumerable<InputInvoice>, int)> GetInputInvoices(int page, int size, CancellationToken cancellationToken)
     {
         try
         {
-            return await _repository.GetAll<InputInvoice>()
+            var query = _repository.GetAll<InputInvoice>()
                 .Include(ii => ii.Supplier)
                 .Include(ii => ii.Product)
-                .Include(ii => ii.CreatedBy)
+                .Include(ii => ii.CreatedBy);
+            
+            int totalCount = await query.CountAsync(cancellationToken);
+            
+            var invoices = await query
                 .Skip((page - 1) * size)
                 .Take(size)
                 .ToListAsync(cancellationToken);
+            
+            return (invoices, totalCount);
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка сервісу при отриманні списку Вхідних Накладних", ex);
+            throw new Exception("Помилка сервісу при отриманні списку Прибуткових накладних", ex);
         }
     }
     public async Task<InputInvoice> GetInputInvoiceByIdAsync(int id, CancellationToken cancellationToken)
@@ -106,7 +112,7 @@ public class InputInvoiceService : IInputInvoiceService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка сервісу при отриманні Вхідної накладної з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Прибуткової накладної з ID {id}", ex);
         }
     }
     
@@ -174,7 +180,7 @@ public class InputInvoiceService : IInputInvoiceService
     }
     catch (Exception ex)
     {
-        throw new Exception("Помилка сервісу при пошуку Вхідних накладних", ex);
+        throw new Exception("Помилка сервісу при пошуку Прибуткових накладних", ex);
     }
 }
 
@@ -191,7 +197,7 @@ public class InputInvoiceService : IInputInvoiceService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка сервісу при оновленні Вхідної накладної з ID  {inputInvoice.Id}", ex);
+            throw new Exception($"Помилка сервісу при оновленні Прибуткової накладної з ID  {inputInvoice.Id}", ex);
         }
     }
     
@@ -206,7 +212,7 @@ public class InputInvoiceService : IInputInvoiceService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка сервісу при видаленні Вхідної накладної з ID  {inputInvoice.Id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Прибуткової накладної з ID  {inputInvoice.Id}", ex);
         }
     }
     
@@ -222,7 +228,7 @@ public class InputInvoiceService : IInputInvoiceService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка сервісу при відновленні Вхідної накладної з ID  {inputInvoice.Id}", ex);
+            throw new Exception($"Помилка сервісу при відновленні Прибуткової накладної з ID  {inputInvoice.Id}", ex);
         }
     }
     
@@ -240,7 +246,7 @@ public class InputInvoiceService : IInputInvoiceService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка сервісу при видаленні Вхідної накладної з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Прибуткової накладної з ID {id}", ex);
         }
     }
     

@@ -87,8 +87,9 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("https://localhost:3000") // URL фронтенда
             .AllowCredentials() // дозволити cookie
+            .AllowAnyMethod()
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .WithExposedHeaders("x-total-count");;
     });
 });
 

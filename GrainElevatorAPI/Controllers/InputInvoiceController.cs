@@ -79,9 +79,11 @@ public class InputInvoiceController : ControllerBase
         try
         {
             var cancellationToken = GetCancellationToken();
-            var inputInvoices = await _inputInvoiceService.GetInputInvoices(page, size, cancellationToken);
+            var (inputInvoices, totalCount) = await _inputInvoiceService.GetInputInvoices(page, size, cancellationToken);
             
             var inputInvoiceDtos = _mapper.Map<IEnumerable<InputInvoiceDto>>(inputInvoices);
+            Response.Headers.Append("X-Total-Count", totalCount.ToString());
+            
             return Ok(inputInvoiceDtos);
         }
         catch (Exception ex)
