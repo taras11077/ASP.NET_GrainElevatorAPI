@@ -129,14 +129,27 @@ public class InputInvoiceController : ControllerBase
         [FromQuery] string? createdByName = null,
         [FromQuery] DateTime? removedAt = null,
         [FromQuery] int page = 1,
-        [FromQuery] int size = 10)
+        [FromQuery] int size = 10,
+        [FromQuery] string? sortField = null, [FromQuery] string? sortOrder = null)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
-            // передаємо параметри у сервіс для фільтрації
+
             var (filteredInvoices, totalCount) = await _inputInvoiceService.SearchInputInvoices(
-                id, invoiceNumber, arrivalDate, vehicleNumber, physicalWeight, supplierTitle, productTitle, createdByName, removedAt, page, size, cancellationToken);
+                id, 
+                invoiceNumber,
+                arrivalDate, 
+                vehicleNumber, 
+                physicalWeight, 
+                supplierTitle, 
+                productTitle, 
+                createdByName, 
+                removedAt, 
+                page, 
+                size, 
+                sortField, sortOrder,
+                cancellationToken);
 
             
             var inputInvoiceDtos = _mapper.Map<IEnumerable<InputInvoiceDto>>(filteredInvoices);

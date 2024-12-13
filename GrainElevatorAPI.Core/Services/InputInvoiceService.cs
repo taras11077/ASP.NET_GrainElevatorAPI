@@ -128,6 +128,7 @@ public class InputInvoiceService : IInputInvoiceService
     DateTime? removedAt = null,
     int page = 1,
     int size = 10,
+    string? sortField = null, string? sortOrder = null,
     CancellationToken cancellationToken = default)
 {
     try
@@ -168,6 +169,14 @@ public class InputInvoiceService : IInputInvoiceService
         if (removedAt.HasValue)
             query = query.Where(ii => ii.RemovedAt.HasValue && ii.RemovedAt.Value.Date == removedAt.Value.Date);
 
+        
+        // Сортування по даті
+        if (sortField == "arrivalDate")
+        {
+            query = sortOrder == "asc" ? query.OrderBy(i => i.ArrivalDate) : query.OrderByDescending(i => i.ArrivalDate);
+        }
+        
+        
         // Пагінація
         int totalCount = await query.CountAsync(cancellationToken);
 

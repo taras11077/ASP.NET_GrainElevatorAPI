@@ -17,7 +17,8 @@ public interface IInputInvoiceService
     
     Task<(IEnumerable<InputInvoice>, int)> GetInputInvoices(int page, int size, CancellationToken cancellationToken);
 
-    Task<(IEnumerable<InputInvoice>, int)> SearchInputInvoices(int? id,
+    Task<(IEnumerable<InputInvoice>, int)> SearchInputInvoices(
+        int? id,
         string? invoiceNumber,
         DateTime? arrivalDate,
         string? vehicleNumber,
@@ -27,7 +28,8 @@ public interface IInputInvoiceService
         string? createdByName,
         DateTime? removedAt,
         int page,
-        int size, 
+        int size,
+        string? sortField, string? sortOrder,
         CancellationToken cancellationToken);
     Task<InputInvoice> UpdateInputInvoiceAsync(InputInvoice inputInvoice, int modifiedById, CancellationToken cancellationToken);
     
