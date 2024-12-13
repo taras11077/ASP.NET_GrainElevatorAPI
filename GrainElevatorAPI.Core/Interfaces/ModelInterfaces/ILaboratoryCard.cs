@@ -9,6 +9,8 @@ public interface ILaboratoryCard
 	double? GrainImpurity { get; set; }
 	string? SpecialNotes { get; set; }
     bool? IsProduction { get; set; }
+
+    bool? IsFinalized { get; set; }
     
     int InputInvoiceId { get; set; }
     int? ProductionBatchId { get; set; }

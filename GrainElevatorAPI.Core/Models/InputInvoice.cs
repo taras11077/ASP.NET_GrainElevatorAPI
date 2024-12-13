@@ -27,7 +27,7 @@ public class InputInvoice : AuditableEntity, IInputInvoice
     [Range(1, int.MaxValue, ErrorMessage = "PhysicalWeight must be a positive number.")]
     public int PhysicalWeight { get; set; }
     
-    
+    public bool? IsFinalized { get; set; }
     
     [Range(1, int.MaxValue, ErrorMessage = "LaboratoryCardId must be a positive number.")]
     public int? LaboratoryCardId { get; set; }

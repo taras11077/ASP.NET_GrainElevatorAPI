@@ -7,6 +7,8 @@ public interface IPriceList
     int Id { get; set; }
     int ProductId { get; set; }
     
+    bool? IsFinalized { get; set; }
+    
     ICollection<CompletionReport> CompletionReports { get; set; }
     ICollection<PriceListItem> PriceListItems { get; set; }
 }

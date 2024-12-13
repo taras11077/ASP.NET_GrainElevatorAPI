@@ -14,6 +14,8 @@ public class PriceList : AuditableEntity, IPriceList
 	[Range(1, int.MaxValue, ErrorMessage = "ProductWeight must be a positive number.")]
 	public int ProductId { get; set; }
 	
+	public bool? IsFinalized { get; set; }
+	
 	public virtual Product Product { get; set; }
 	
     public virtual ICollection<CompletionReport> CompletionReports { get; set; } = new List<CompletionReport>();

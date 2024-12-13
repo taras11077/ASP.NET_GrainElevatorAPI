@@ -30,4 +30,5 @@ public class InputInvoiceCreateRequest
     [Range(1, int.MaxValue, ErrorMessage = "PhysicalWeight must be a positive number.")]
     public int PhysicalWeight { get; set; }
 
+    private bool? IsFinalized { get; set; } = false;
 }

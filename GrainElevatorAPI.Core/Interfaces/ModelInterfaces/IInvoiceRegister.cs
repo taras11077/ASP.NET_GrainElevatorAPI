@@ -18,6 +18,8 @@ public interface IInvoiceRegister
 	int? AccWeightReg { get; set; }
 	double? QuantitiesDryingReg { get; set; }
 	
+	bool? IsFinalized { get; set; }
+	
 	int SupplierId { get; set; }
 	int ProductId { get; set; }
 	int? CompletionReportId { get; set; }

@@ -165,7 +165,7 @@ public class InputInvoiceController : ControllerBase
 
     
     [HttpPut("{id}")]
-    //[Authorize(Roles = "admin, laboratory")]
+    [Authorize(Roles = "admin, laboratory")]
     public async Task<ActionResult<InputInvoiceDto>> UpdateInputInvoice(int id, InputInvoiceUpdateRequest request)
     {
         if (!ModelState.IsValid)
@@ -183,17 +183,31 @@ public class InputInvoiceController : ControllerBase
             }
             
             inputInvoiceDb.UpdateFromRequest(request);
+            
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if(modifiedById == 0)
+                throw new UnauthorizedAccessException("Користувач не авторизований."); 
+            
             _logger.LogInformation($"Retrieved EmployeeId {modifiedById} from session.");
             var updatedInputInvoice = await _inputInvoiceService.UpdateInputInvoiceAsync(inputInvoiceDb, modifiedById, cancellationToken);
 
             
             return Ok(_mapper.Map<InputInvoiceDto>(updatedInputInvoice));
         }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logger.LogError(ex.Message);
+            return Unauthorized(new { message = ex.Message });// 401 Unauthorized
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogError(ex.Message );
+            return BadRequest(new { message = ex.Message }); // 400 Bad Request
+        }
         catch (Exception ex)
         {
             _logger.LogError($"Внутрішня помилка сервера при оновленні Прибуткової накладної з ID {id}: {ex.Message}");
-            return StatusCode(500, $"Внутрішня помилка сервера при оновленні Прибуткової накладної: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при оновленні Прибуткової накладної: {ex.Message}");// 500 Internal Server Error
         }
     }
     

@@ -13,4 +13,6 @@ public interface IInputInvoice
     int? LaboratoryCardId { get; set; }
     int SupplierId { get; set; }
     int ProductId { get; set; }
+    
+    bool? IsFinalized { get; set; }
 }

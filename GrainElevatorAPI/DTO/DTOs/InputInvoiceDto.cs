@@ -38,4 +38,6 @@ public class InputInvoiceDto
     [MaxLength(20, ErrorMessage = "Title must be at least 20 characters long.")]
     public string ProductTitle { get; set; }
     public string CreatedByName { get; set; }
+    
+    public bool? IsFinalized { get; set; }
 }

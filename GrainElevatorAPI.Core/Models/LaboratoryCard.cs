@@ -30,7 +30,7 @@ public class LaboratoryCard : AuditableEntity, ILaboratoryCard
 	
     public bool? IsProduction { get; set; }
     
-    
+    public bool? IsFinalized { get; set; }
     
     [Required(ErrorMessage = "InputInvoiceId is required.")]
     [Range(1, int.MaxValue, ErrorMessage = "InputInvoiceId must be a positive number.")]

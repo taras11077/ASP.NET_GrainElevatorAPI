@@ -283,6 +283,9 @@ namespace GrainElevator.Storage.Migrations
                         .HasMaxLength(9)
                         .HasColumnType("nvarchar(9)");
 
+                    b.Property<bool?>("IsFinalized")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("LaboratoryCardId")
                         .HasColumnType("int");
 
@@ -356,6 +359,9 @@ namespace GrainElevator.Storage.Migrations
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
+
+                    b.Property<bool?>("IsFinalized")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
@@ -442,6 +448,9 @@ namespace GrainElevator.Storage.Migrations
 
                     b.Property<int>("InputInvoiceId")
                         .HasColumnType("int");
+
+                    b.Property<bool?>("IsFinalized")
+                        .HasColumnType("bit");
 
                     b.Property<bool?>("IsProduction")
                         .HasColumnType("bit");
@@ -591,6 +600,9 @@ namespace GrainElevator.Storage.Migrations
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
+
+                    b.Property<bool?>("IsFinalized")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");

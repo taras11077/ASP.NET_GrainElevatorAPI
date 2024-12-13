@@ -14,15 +14,34 @@ public class LaboratoryCardService : ILaboratoryCardService
 
     public async Task<LaboratoryCard> CreateLaboratoryCardAsync(LaboratoryCard laboratoryCard, int createdById, CancellationToken cancellationToken)
     {
+        // початок транзакції
+        await _repository.BeginTransactionAsync(cancellationToken);
+        
         try
         {
             laboratoryCard.CreatedAt = DateTime.UtcNow;
             laboratoryCard.CreatedById = createdById;
             
-            return await _repository.AddAsync(laboratoryCard, cancellationToken);
+            var invoice = await _repository.GetByIdAsync<InputInvoice>(laboratoryCard.InputInvoiceId, cancellationToken);
+            if (invoice == null)
+            {
+                throw new InvalidOperationException($"Вхідна накладна з ID {laboratoryCard.InputInvoiceId} не знайдена.");
+            }
+            
+            invoice.IsFinalized = true;
+            await _repository.UpdateAsync<InputInvoice>(invoice, cancellationToken);
+            
+            var createdLaboratoryCard = await _repository.AddAsync<LaboratoryCard>(laboratoryCard, cancellationToken);
+            
+            // фіксація транзакції
+            await _repository.CommitTransactionAsync(cancellationToken);
+
+            return createdLaboratoryCard;
         }
         catch (Exception ex)
         {
+            // відкат транзакції в разі помилки
+            await _repository.RollbackTransactionAsync(cancellationToken);
             throw new Exception("Помилка сервісу при створенні Лабораторної карточки", ex);
         }
     }
