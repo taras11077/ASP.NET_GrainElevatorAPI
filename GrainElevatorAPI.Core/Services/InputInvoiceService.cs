@@ -139,7 +139,7 @@ public class InputInvoiceService : IInputInvoiceService
             .Include(ii => ii.CreatedBy)
             .AsQueryable();
 
-        // Умови фільтрації
+        // Фільтрація
         query = query.Where(ii => ii.RemovedAt == null);
         
         if (id.HasValue)
@@ -169,14 +169,37 @@ public class InputInvoiceService : IInputInvoiceService
         if (removedAt.HasValue)
             query = query.Where(ii => ii.RemovedAt.HasValue && ii.RemovedAt.Value.Date == removedAt.Value.Date);
 
-        
-        // Сортування по даті
-        if (sortField == "arrivalDate")
+        // Сортування
+        if (!string.IsNullOrEmpty(sortField))
         {
-            query = sortOrder == "asc" ? query.OrderBy(i => i.ArrivalDate) : query.OrderByDescending(i => i.ArrivalDate);
+            query = sortField switch
+            {
+                "invoiceNumber" => sortOrder == "asc" 
+                    ? query.OrderBy(ii => ii.InvoiceNumber) 
+                    : query.OrderByDescending(ii => ii.InvoiceNumber),
+                "arrivalDate" => sortOrder == "asc" 
+                    ? query.OrderBy(ii => ii.ArrivalDate) 
+                    : query.OrderByDescending(ii => ii.ArrivalDate),
+                "physicalWeight" => sortOrder == "asc" 
+                    ? query.OrderBy(ii => ii.PhysicalWeight) 
+                    : query.OrderByDescending(ii => ii.PhysicalWeight),
+                "vehicleNumber" => sortOrder == "asc" 
+                    ? query.OrderBy(ii => ii.VehicleNumber) 
+                    : query.OrderByDescending(ii => ii.VehicleNumber),
+                "productTitle" => sortOrder == "asc" 
+                    ? query.OrderBy(ii => ii.Product.Title) 
+                    : query.OrderByDescending(ii => ii.Product.Title),
+                "supplierTitle" => sortOrder == "asc" 
+                    ? query.OrderBy(ii => ii.Supplier.Title) 
+                    : query.OrderByDescending(ii => ii.Supplier.Title),
+                "createdByName" => sortOrder == "asc" 
+                    ? query.OrderBy(ii => ii.CreatedBy.LastName) 
+                    : query.OrderByDescending(ii => ii.CreatedBy.LastName),
+                _ => query // без сортування якщо поле не вказано
+            };
         }
         
-        
+
         // Пагінація
         int totalCount = await query.CountAsync(cancellationToken);
 
