@@ -41,7 +41,13 @@ public class MapperProfile : Profile
         
         CreateMap<LaboratoryCard, LaboratoryCardCreateRequest>().ReverseMap();
         CreateMap<LaboratoryCard, LaboratoryCardUpdateRequest>().ReverseMap();
-        CreateMap<LaboratoryCard, LaboratoryCardDto>().ReverseMap();
+        CreateMap<LaboratoryCard, LaboratoryCardDto>()
+            .ForMember(dest => dest.InvoiceNumber, opt => opt.MapFrom(src => src.InputInvoice.InvoiceNumber))
+            .ForMember(dest => dest.ArrivalDate, opt => opt.MapFrom(src => src.InputInvoice.ArrivalDate))
+            .ForMember(dest => dest.PhysicalWeight, opt => opt.MapFrom(src => src.InputInvoice.PhysicalWeight))
+            .ForMember(dest => dest.SupplierTitle, opt => opt.MapFrom(src => src.InputInvoice.Supplier.Title))
+            .ForMember(dest => dest.ProductTitle, opt => opt.MapFrom(src => src.InputInvoice.Product.Title))
+            .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy.LastName));
         
         CreateMap<ProductionBatch, ProductionBatchDto>().ReverseMap();
         

@@ -35,7 +35,7 @@ public class InputInvoiceController : ControllerBase
     
     
     [HttpPost]
-    //[Authorize(Roles = "Admin, laboratory")]
+    [Authorize(Roles = "Admin,Laboratory")]
     public async Task<ActionResult<InputInvoiceDto>> CreateInputInvoice(InputInvoiceCreateRequest request)
     {
         if (!ModelState.IsValid)
@@ -73,7 +73,7 @@ public class InputInvoiceController : ControllerBase
 
 
     [HttpGet]
-    //[Authorize(Roles = "admin, laboratory")]
+    [Authorize(Roles = "Admin,Laboratory")]
     public async Task<ActionResult<IEnumerable<InputInvoiceDto>>> GetInputInvoices([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
@@ -95,7 +95,7 @@ public class InputInvoiceController : ControllerBase
 
 
     [HttpGet("{id}")]
-    //[Authorize(Roles = "admin, laboratory")]
+    [Authorize(Roles = "Admin,Laboratory")]
     public async Task<ActionResult<InputInvoiceDto>> GetInputInvoice(int id)
     {
         try
@@ -117,7 +117,7 @@ public class InputInvoiceController : ControllerBase
     }
 
     [HttpGet("search")]
-    //[Authorize(Roles = "admin, laboratory")]
+    [Authorize(Roles = "Admin,Laboratory")]
     public async Task<ActionResult<IEnumerable<InputInvoiceDto>>> SearchInputInvoices(
         [FromQuery] int? id = null,
         [FromQuery] string? invoiceNumber = null,
@@ -130,7 +130,8 @@ public class InputInvoiceController : ControllerBase
         [FromQuery] DateTime? removedAt = null,
         [FromQuery] int page = 1,
         [FromQuery] int size = 10,
-        [FromQuery] string? sortField = null, [FromQuery] string? sortOrder = null)
+        [FromQuery] string? sortField = null,
+        [FromQuery] string? sortOrder = null)
     {
         try
         {
@@ -165,7 +166,7 @@ public class InputInvoiceController : ControllerBase
 
     
     [HttpPut("{id}")]
-    [Authorize(Roles = "admin, laboratory")]
+    [Authorize(Roles = "Admin,Laboratory")]
     public async Task<ActionResult<InputInvoiceDto>> UpdateInputInvoice(int id, InputInvoiceUpdateRequest request)
     {
         if (!ModelState.IsValid)
@@ -213,7 +214,7 @@ public class InputInvoiceController : ControllerBase
     
     
     [HttpPatch("{id}/soft-remove")]
-    //[Authorize(Roles = "admin, laboratory")]
+    [Authorize(Roles = "Admin,Laboratory")]
     public async Task<ActionResult<InputInvoiceDto>> SoftDeleteInputInvoice(int id)
     {
         try
@@ -240,7 +241,7 @@ public class InputInvoiceController : ControllerBase
     
 
     [HttpPatch("{id}/restore")]
-    //[Authorize(Roles = "admin, laboratory")]
+    [Authorize(Roles = "Admin,Laboratory")]
     public async Task<ActionResult<InputInvoiceDto>> RestoreRemovedInputInvoice(int id)
     {
         try
@@ -265,7 +266,7 @@ public class InputInvoiceController : ControllerBase
     }
     
     [HttpDelete("{id}/hard-remove")]
-    //[Authorize(Roles = "admin")]
+    [Authorize(Roles = "Admin,Laboratory")]
     public async Task<IActionResult> DeleteInputInvoice(int id)
     {
         try

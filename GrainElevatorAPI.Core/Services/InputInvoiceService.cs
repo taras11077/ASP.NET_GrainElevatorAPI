@@ -128,7 +128,8 @@ public class InputInvoiceService : IInputInvoiceService
     DateTime? removedAt = null,
     int page = 1,
     int size = 10,
-    string? sortField = null, string? sortOrder = null,
+    string? sortField = null,
+    string? sortOrder = null,
     CancellationToken cancellationToken = default)
 {
     try

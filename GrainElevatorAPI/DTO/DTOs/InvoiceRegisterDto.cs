@@ -50,4 +50,6 @@ public class InvoiceRegisterDto
 	public int? CompletionReportId { get; set; }
 	
 	public List<ProductionBatchDto> ProductionBatches { get; set; }
+	
+	public bool? IsFinalized { get; set; }
 }

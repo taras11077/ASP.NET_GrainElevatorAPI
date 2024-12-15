@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -10,6 +11,7 @@ using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
 using GrainElevatorAPI.Core.Security;
 using GrainElevatorAPI.Core.Services;
+using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
@@ -23,7 +25,34 @@ builder.Services.AddDbContext<GrainElevatorApiContext>(opt =>
         .UseLazyLoadingProxies());
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Введіть токен у форматі 'Bearer {токен}'",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -70,8 +99,6 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromSeconds(builder.Configuration.GetValue<int>("SessionTimeout"));
     options.Cookie.HttpOnly = true; // Заборонити доступ до cookie з JS
     
-    
-    
     // options.Cookie.SameSite = SameSiteMode.None; // Дозволити міждоменні запити
     // options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Вимагати HTTPS
     
@@ -103,7 +130,26 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("TokenKey")!)),
             ValidateIssuer = false,
             ValidateAudience = false,
+            RoleClaimType = ClaimTypes.Role,
         };
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = context =>
+            {
+                Console.WriteLine("Token validated successfully");
+                foreach (var claim in context.Principal?.Claims ?? Enumerable.Empty<Claim>())
+                {
+                    Console.WriteLine($"Claim: {claim.Type} - {claim.Value}");
+                }
+                return Task.CompletedTask;
+            },
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                return Task.CompletedTask;
+            }
+        };
+
     });
 
 

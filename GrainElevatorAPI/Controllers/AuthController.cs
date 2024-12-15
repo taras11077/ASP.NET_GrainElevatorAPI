@@ -3,6 +3,7 @@ using GrainElevatorAPI.Auth;
 using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.DTOs.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GrainElevatorAPI.Controllers;
@@ -27,6 +28,15 @@ public class AuthController : Controller
     private CancellationToken GetCancellationToken()
     {
         return HttpContext.RequestAborted;
+    }
+    
+    
+    [HttpGet("test-claims")]
+    [Authorize]
+    public IActionResult TestClaims()
+    {
+        var claims = User.Claims.Select(c => $"{c.Type}: {c.Value}");
+        return Ok(claims);
     }
     
 // реєстрація користувача

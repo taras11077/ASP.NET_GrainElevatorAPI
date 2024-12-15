@@ -14,4 +14,6 @@ public class PriceListDto
     
     public ICollection<CompletionReportDto> CompletionReports { get; set; } = new List<CompletionReportDto>();
     public ICollection<PriceListItemDto> PriceListItems { get; set; } = new List<PriceListItemDto>();
+    
+    public bool? IsFinalized { get; set; }
 }

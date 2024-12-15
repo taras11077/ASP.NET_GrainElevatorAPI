@@ -27,13 +27,33 @@ public class LaboratoryCardDto
     public string? SpecialNotes { get; set; }
 	
     public bool? IsProduction { get; set; }
-    
-    
-    [Required(ErrorMessage = "InputInvoiceId is required.")]
-    [Range(1, int.MaxValue, ErrorMessage = "InputInvoiceId must be a positive number.")]
-    public int InputInvoiceId { get; set; }
 
     [Range(1, int.MaxValue, ErrorMessage = "InputInvoiceId must be a positive number.")]
     public int? ProductionBatchId { get; set; }
     
+    public string CreatedByName { get; set; }
+    
+    public bool? IsFinalized { get; set; }
+    
+    
+    [MinLength(3, ErrorMessage = "InvoiceNumber must be at least 3 characters long.")]
+    [MaxLength(9, ErrorMessage = "InvoiceNumber must be at least 9 characters long.")]
+    public string InvoiceNumber { get; set; }
+    
+    [Required(ErrorMessage = "ArrivalDate is required.")]
+    [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
+    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "ArrivalDate must be between 1900 and 2024.")]
+    public DateTime ArrivalDate { get; set; }
+    
+    [Required(ErrorMessage = "PhysicalWeight is required.")]
+    [Range(1, int.MaxValue, ErrorMessage = "PhysicalWeight must be a positive number.")]
+    public int PhysicalWeight { get; set; }
+    
+    [MinLength(2, ErrorMessage = "Title must be at least 2 characters long.")]
+    [MaxLength(20, ErrorMessage = "Title must be at least 20 characters long.")]
+    public string SupplierTitle { get; set; }
+    
+    [MinLength(2, ErrorMessage = "Title must be at least 2 characters long.")]
+    [MaxLength(20, ErrorMessage = "Title must be at least 20 characters long.")]
+    public string ProductTitle { get; set; }
 }

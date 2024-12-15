@@ -11,7 +11,8 @@ public interface ILaboratoryCardService
     Task<LaboratoryCard> RestoreRemovedLaboratoryCardAsync(LaboratoryCard laboratoryCard, int restoredById, CancellationToken cancellationToken);
     Task<bool> DeleteLaboratoryCardAsync(int id, CancellationToken cancellationToken);
     Task<IEnumerable<LaboratoryCard>> GetLaboratoryCards(int page, int size, CancellationToken cancellationToken);
-    Task<IEnumerable<LaboratoryCard>> SearchLaboratoryCards(int? id,
+    Task<(IEnumerable<LaboratoryCard>, int)> SearchLaboratoryCards(
+        int? id,
         string? labCardNumber,
         double? weedImpurity,
         double? moisture,
@@ -19,11 +20,13 @@ public interface ILaboratoryCardService
         DateTime? arrivalDate,
         string? vehicleNumber,
         int? physicalWeight,
-        int? supplierId,
-        int? productId,
-        int? createdById,
+        string? supplierTitle,
+        string? productTitle,
+        string? createdByName,
         DateTime? removedAt,
         int page,
         int size,
+        string? sortField,
+        string? sortOrder,
         CancellationToken cancellationToken);
 }
