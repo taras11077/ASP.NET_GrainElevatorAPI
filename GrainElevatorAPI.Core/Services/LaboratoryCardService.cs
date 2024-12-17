@@ -29,6 +29,7 @@ public class LaboratoryCardService : ILaboratoryCardService
             if (createdLaboratoryCard is LaboratoryCard)
             {
                 invoice.IsFinalized = true;
+                invoice.LaboratoryCardId = createdLaboratoryCard.Id;
                 await _repository.UpdateAsync<InputInvoice>(invoice, cancellationToken);
             }
 
@@ -222,6 +223,7 @@ public class LaboratoryCardService : ILaboratoryCardService
             if (deletedLaboratoryCard is LaboratoryCard)
             {
                 invoice.IsFinalized = false;
+                invoice.LaboratoryCardId = null;
                 await _repository.UpdateAsync<InputInvoice>(invoice, cancellationToken);
             }
 

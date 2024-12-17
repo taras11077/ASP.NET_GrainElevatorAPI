@@ -9,9 +9,8 @@ public class LaboratoryCardCreateRequest
     public int InputInvoiceId { get; set; }
     
     
-    [Required(ErrorMessage = "InvoiceNumber is required.")]
+    [Required(ErrorMessage = "LabCardNumber is required.")]
     [MinLength(3, ErrorMessage = "LaboratoryCard Number must be at least 3 characters long.")]
-    [MaxLength(9, ErrorMessage = "LaboratoryCard Number must be at least 9 characters long.")]
     public string LabCardNumber { get; set; }
     
     [Required(ErrorMessage = "WeedImpurity is required.")]
