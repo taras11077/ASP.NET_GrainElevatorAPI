@@ -38,13 +38,10 @@ public class InvoiceRegisterDto
 
 	[Range(1, double.MaxValue, ErrorMessage = "QuantitiesDryingReg must be a positive number.")]
 	public double? QuantitiesDryingReg { get; set; }
-	
-	
-	[Range(1, int.MaxValue, ErrorMessage = "SupplierId must be a positive number.")]
-	public int SupplierId { get; set; }
 
-	[Range(1, int.MaxValue, ErrorMessage = "ProductId must be a positive number.")]
-	public int ProductId { get; set; }
+	public string SupplierTitle { get; set; }
+	public string ProductTitle { get; set; }
+	public string CreatedByName { get; set; }
 
 	[Range(1, int.MaxValue, ErrorMessage = "CompletionReportId must be a positive number.")]
 	public int? CompletionReportId { get; set; }

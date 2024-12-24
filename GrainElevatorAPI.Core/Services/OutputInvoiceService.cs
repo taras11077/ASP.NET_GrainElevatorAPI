@@ -135,59 +135,101 @@ public class OutputInvoiceService : IOutputInvoiceService
     }
     
     
-    public async Task<IEnumerable<OutputInvoice>> SearchOutputInvoices(
-        int? id,
-        string? invoiceNumber,
-        DateTime? shipmentDate,
-        string? vehicleNumber,
-        int? supplierId,
-        int? productId,
-        string productCategory,
-        int? productWeight,
-        int? createdById,
-        DateTime? removedAt,
-        int page,
-        int size, 
-        CancellationToken cancellationToken)
+    public async Task<(IEnumerable<OutputInvoice>, int)> SearchOutputInvoices(
+        string? invoiceNumber = null,
+        DateTime? shipmentDate = null,
+        string? vehicleNumber = null,
+        string? supplierTitle = null,
+        string? productTitle = null,
+        string? productCategory = null,
+        int? productWeight = null,
+        string? createdByName = null,
+        DateTime? removedAt = null,
+        int page = 1,
+        int size = 10,
+        string? sortField = null,
+        string? sortOrder = null,
+        CancellationToken cancellationToken = default)
     {
         try
         {
-            var query = _repository.GetAll<OutputInvoice>();
-            
-            if (id.HasValue)
-                query = query.Where(ii => ii.Id == id.Value);
+            var query = _repository.GetAll<OutputInvoice>()
+                .Include(oi => oi.Supplier) 
+                .Include(oi => oi.Product)  
+                .Include(oi => oi.CreatedBy)
+                .Where(oi => oi.RemovedAt == null);
 
+            // Фільтрація
             if (!string.IsNullOrEmpty(invoiceNumber))
-                query = query.Where(ii => ii.InvoiceNumber == invoiceNumber);
+                query = query.Where(oi => oi.InvoiceNumber == invoiceNumber);
 
             if (shipmentDate.HasValue)
-                query = query.Where(ii => ii.ShipmentDate.Date == shipmentDate.Value.Date);
+                query = query.Where(oi => oi.ShipmentDate.Date == shipmentDate.Value.Date);
 
             if (!string.IsNullOrEmpty(vehicleNumber))
-                query = query.Where(ii => ii.VehicleNumber == vehicleNumber);
+                query = query.Where(oi => oi.VehicleNumber == vehicleNumber);
             
-            if (supplierId.HasValue)
-                query = query.Where(ii => ii.SupplierId == supplierId.Value);
+            if (!string.IsNullOrEmpty(supplierTitle))
+                query = query.Where(oi => oi.Supplier.Title.Contains(supplierTitle));
 
-            if (productId.HasValue)
-                query = query.Where(ii => ii.ProductId == productId.Value);
+            if (!string.IsNullOrEmpty(productTitle))
+                query = query.Where(oi => oi.Product.Title.Contains(productTitle));
             
             if (!string.IsNullOrEmpty(productCategory))
-                query = query.Where(ii => ii.ProductCategory == productCategory);
+                query = query.Where(oi => oi.ProductCategory == productCategory);
             
             if (productWeight.HasValue)
-                query = query.Where(ii => ii.ProductWeight == productWeight.Value);
+                query = query.Where(oi => oi.ProductWeight == productWeight.Value);
 
-            if (createdById.HasValue)
-                query = query.Where(ii => ii.CreatedById == createdById.Value);
+            if (!string.IsNullOrEmpty(createdByName))
+                query = query.Where(oi => oi.CreatedBy.LastName.Contains(createdByName));
 
             if (removedAt.HasValue)
-                query = query.Where(ii => ii.RemovedAt == removedAt.Value);
+                query = query.Where(oi => oi.RemovedAt == removedAt.Value);
             
-            return await query
+            // Сортування
+            if (!string.IsNullOrEmpty(sortField))
+            {
+                query = sortField switch
+                {
+                    "invoiceNumber" => sortOrder == "asc" 
+                        ? query.OrderBy(oi => oi.InvoiceNumber) 
+                        : query.OrderByDescending(oi => oi.InvoiceNumber),
+                    "shipmentDate" => sortOrder == "asc" 
+                        ? query.OrderBy(oi => oi.ShipmentDate) 
+                        : query.OrderByDescending(ii => ii.ShipmentDate),
+                    "vehicleNumber" => sortOrder == "asc" 
+                        ? query.OrderBy(ii => ii.VehicleNumber) 
+                        : query.OrderByDescending(ii => ii.VehicleNumber),
+                    "productTitle" => sortOrder == "asc" 
+                        ? query.OrderBy(ii => ii.Product.Title) 
+                        : query.OrderByDescending(ii => ii.Product.Title),
+                    "supplierTitle" => sortOrder == "asc" 
+                        ? query.OrderBy(ii => ii.Supplier.Title) 
+                        : query.OrderByDescending(ii => ii.Supplier.Title),
+                    "productCategory" => sortOrder == "asc" 
+                        ? query.OrderBy(ii => ii.ProductCategory) 
+                        : query.OrderByDescending(ii => ii.ProductCategory),
+                    "productWeight" => sortOrder == "asc" 
+                        ? query.OrderBy(ii => ii.ProductWeight) 
+                        : query.OrderByDescending(ii => ii.ProductWeight),
+                    "createdByName" => sortOrder == "asc" 
+                        ? query.OrderBy(ii => ii.CreatedBy.LastName) 
+                        : query.OrderByDescending(ii => ii.CreatedBy.LastName),
+                    _ => query // без сортування якщо поле не вказано
+                };
+            }
+        
+
+            // Пагінація
+            int totalCount = await query.CountAsync(cancellationToken);
+
+            var filteredInvoices = await query
                 .Skip((page - 1) * size)
                 .Take(size)
                 .ToListAsync(cancellationToken);
+
+            return (filteredInvoices, totalCount);
         }
         catch (Exception ex)
         {

@@ -17,6 +17,4 @@ public class InvoiceRegisterUpdateRequest
     [Range(0.0, 100.0, ErrorMessage = "MoistureBase value must be between 0.0 and 100.0")]
     public double? MoistureBase { get; set; }
     
-    
-    public List<int>? LaboratoryCardIds { get; set; }
 }

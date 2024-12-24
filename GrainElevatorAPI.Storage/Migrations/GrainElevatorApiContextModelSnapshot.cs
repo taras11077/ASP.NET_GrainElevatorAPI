@@ -108,7 +108,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("CompletionReports");
+                    b.ToTable("CompletionReports", (string)null);
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.CompletionReportOperation", b =>
@@ -169,7 +169,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("TechnologicalOperationId");
 
-                    b.ToTable("CompletionReportOperations");
+                    b.ToTable("CompletionReportOperations", (string)null);
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.Employee", b =>
@@ -258,7 +258,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.InputInvoice", b =>
@@ -285,9 +285,6 @@ namespace GrainElevator.Storage.Migrations
 
                     b.Property<bool?>("IsFinalized")
                         .HasColumnType("bit");
-
-                    b.Property<int?>("LaboratoryCardId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
@@ -334,7 +331,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("InputInvoices");
+                    b.ToTable("InputInvoices", (string)null);
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.InvoiceRegister", b =>
@@ -426,7 +423,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("Registers");
+                    b.ToTable("Registers", (string)null);
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.LaboratoryCard", b =>
@@ -495,8 +492,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("InputInvoiceId")
-                        .IsUnique();
+                    b.HasIndex("InputInvoiceId");
 
                     b.HasIndex("ModifiedById");
 
@@ -504,7 +500,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("RestoreById");
 
-                    b.ToTable("LaboratoryCards");
+                    b.ToTable("LaboratoryCards", (string)null);
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.OutputInvoice", b =>
@@ -584,7 +580,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("WarehouseUnitId");
 
-                    b.ToTable("OutputInvoices");
+                    b.ToTable("OutputInvoices", (string)null);
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.PriceList", b =>
@@ -637,7 +633,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("RestoreById");
 
-                    b.ToTable("PriceLists");
+                    b.ToTable("PriceLists", (string)null);
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.PriceListItem", b =>
@@ -695,7 +691,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("TechnologicalOperationId");
 
-                    b.ToTable("PriceListItems");
+                    b.ToTable("PriceListItems", (string)null);
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.Product", b =>
@@ -745,7 +741,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("RestoreById");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.ProductionBatch", b =>
@@ -813,7 +809,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("RestoreById");
 
-                    b.ToTable("ProductionBatches");
+                    b.ToTable("ProductionBatches", (string)null);
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.Role", b =>
@@ -863,7 +859,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("RestoreById");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.Supplier", b =>
@@ -913,7 +909,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("RestoreById");
 
-                    b.ToTable("Suppliers");
+                    b.ToTable("Suppliers", (string)null);
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.TechnologicalOperation", b =>
@@ -963,7 +959,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("RestoreById");
 
-                    b.ToTable("TechnologicalOperations");
+                    b.ToTable("TechnologicalOperations", (string)null);
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.WarehouseProductCategory", b =>
@@ -1021,7 +1017,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("WarehouseUnitId");
 
-                    b.ToTable("WarehouseProductCategories");
+                    b.ToTable("WarehouseProductCategories", (string)null);
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.WarehouseUnit", b =>
@@ -1076,7 +1072,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("WarehouseUnits");
+                    b.ToTable("WarehouseUnits", (string)null);
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.CompletionReport", b =>
@@ -1323,8 +1319,8 @@ namespace GrainElevator.Storage.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("GrainElevatorAPI.Core.Models.InputInvoice", "InputInvoice")
-                        .WithOne("LaboratoryCard")
-                        .HasForeignKey("GrainElevatorAPI.Core.Models.LaboratoryCard", "InputInvoiceId")
+                        .WithMany()
+                        .HasForeignKey("InputInvoiceId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -1782,11 +1778,6 @@ namespace GrainElevator.Storage.Migrations
                     b.Navigation("WarehouseProductCategories");
 
                     b.Navigation("WarehouseUnits");
-                });
-
-            modelBuilder.Entity("GrainElevatorAPI.Core.Models.InputInvoice", b =>
-                {
-                    b.Navigation("LaboratoryCard");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.InvoiceRegister", b =>

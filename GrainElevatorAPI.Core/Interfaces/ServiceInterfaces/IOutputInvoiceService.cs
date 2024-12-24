@@ -16,18 +16,19 @@ public interface IOutputInvoiceService
     
     Task<IEnumerable<OutputInvoice>> GetOutputInvoices(int page, int size, CancellationToken cancellationToken);
 
-    Task<IEnumerable<OutputInvoice>> SearchOutputInvoices(int? id,
+    Task<(IEnumerable<OutputInvoice>, int)> SearchOutputInvoices(
         string? invoiceNumber,
         DateTime? shipmentDate,
         string? vehicleNumber,
-        int? supplierId,
-        int? productId,
+        string? supplierTitle,
+        string? productTitle,
         string productCategory,
         int? productWeight,
-        int? createdById,
+        string? createdByName,
         DateTime? removedAt,
         int page,
         int size, 
+        string? sortField, string? sortOrder,
         CancellationToken cancellationToken);
     
     Task<OutputInvoice> UpdateOutputInvoiceAsync(OutputInvoice outputInvoice, int modifiedById, CancellationToken cancellationToken);

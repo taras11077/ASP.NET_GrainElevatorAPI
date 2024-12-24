@@ -48,6 +48,10 @@ public class InputInvoiceController : ControllerBase
             var cancellationToken = GetCancellationToken();
             
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (createdById <= 0)
+            {
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            }
             
             var createdInputInvoice = await _inputInvoiceService.CreateInputInvoiceAsync(
                 request.InvoiceNumber,
@@ -186,8 +190,10 @@ public class InputInvoiceController : ControllerBase
             inputInvoiceDb.UpdateFromRequest(request);
             
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            if(modifiedById == 0)
-                throw new UnauthorizedAccessException("Користувач не авторизований."); 
+            if (modifiedById == 0)
+            {
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            }
             
             _logger.LogInformation($"Retrieved EmployeeId {modifiedById} from session.");
             var updatedInputInvoice = await _inputInvoiceService.UpdateInputInvoiceAsync(inputInvoiceDb, modifiedById, cancellationToken);
@@ -227,7 +233,11 @@ public class InputInvoiceController : ControllerBase
             }
 
             var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            removedById = 1; // TODO
+            if (removedById == 0)
+            {
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            }
+
             var removedInputInvoice = await _inputInvoiceService.SoftDeleteInputInvoiceAsync(inputInvoiceDb, removedById, cancellationToken);
             
             return Ok(_mapper.Map<InputInvoiceDto>(removedInputInvoice));
@@ -254,6 +264,11 @@ public class InputInvoiceController : ControllerBase
             }
             
             var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (restoredById == 0)
+            {
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            }
+            
             var restoredInputInvoice = await _inputInvoiceService.RestoreRemovedInputInvoiceAsync(inputInvoiceDb, restoredById, cancellationToken);
 
             return Ok(_mapper.Map<InputInvoiceDto>(restoredInputInvoice));

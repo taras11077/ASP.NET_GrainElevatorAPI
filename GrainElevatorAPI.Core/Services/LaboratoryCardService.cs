@@ -29,7 +29,6 @@ public class LaboratoryCardService : ILaboratoryCardService
             if (createdLaboratoryCard is LaboratoryCard)
             {
                 invoice.IsFinalized = true;
-                invoice.LaboratoryCardId = createdLaboratoryCard.Id;
                 await _repository.UpdateAsync<InputInvoice>(invoice, cancellationToken);
             }
 
@@ -67,7 +66,6 @@ public class LaboratoryCardService : ILaboratoryCardService
     }
 
      public async Task<(IEnumerable<LaboratoryCard>, int)> SearchLaboratoryCards(
-         int? id = null,
         string? labCardNumber = null,
         double? weedImpurity = null,
         double? moisture = null,
@@ -88,17 +86,13 @@ public class LaboratoryCardService : ILaboratoryCardService
         try
         {
             var query = _repository.GetAll<LaboratoryCard>()
-                .Include(ii => ii.CreatedBy)
+                .Include(lc => lc.CreatedBy)
                 .Include(lc => lc.InputInvoice) 
-                .ThenInclude(ii => ii.Product) 
+                .ThenInclude(lc => lc.Product) 
                 .Include(lc => lc.InputInvoice.Supplier) 
-                .AsQueryable();
+                .Where(lc => lc.RemovedAt == null);
 
             // Фільтрація
-            if (id.HasValue)
-            {
-                query = query.Where(lc => lc.Id == id);
-            }
             
             if (!string.IsNullOrEmpty(labCardNumber))
             {
@@ -150,6 +144,9 @@ public class LaboratoryCardService : ILaboratoryCardService
                     "arrivalDate" => sortOrder == "asc"
                         ? query.OrderBy(lc => lc.InputInvoice.ArrivalDate)
                         : query.OrderByDescending(lc => lc.InputInvoice.ArrivalDate),
+                    "invoiceNumber" => sortOrder == "asc"
+                        ? query.OrderBy(lc => lc.InputInvoice.InvoiceNumber)
+                        : query.OrderByDescending(lc => lc.InputInvoice.PhysicalWeight),
                     "physicalWeight" => sortOrder == "asc"
                         ? query.OrderBy(lc => lc.InputInvoice.PhysicalWeight)
                         : query.OrderByDescending(lc => lc.InputInvoice.PhysicalWeight),
@@ -223,7 +220,6 @@ public class LaboratoryCardService : ILaboratoryCardService
             if (deletedLaboratoryCard is LaboratoryCard)
             {
                 invoice.IsFinalized = false;
-                invoice.LaboratoryCardId = null;
                 await _repository.UpdateAsync<InputInvoice>(invoice, cancellationToken);
             }
 

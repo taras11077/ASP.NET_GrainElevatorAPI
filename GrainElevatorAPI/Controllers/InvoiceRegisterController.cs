@@ -6,6 +6,7 @@ using GrainElevatorAPI.DTO.Requests.UpdateRequests;
 using GrainElevatorAPI.DTOs;
 using GrainElevatorAPI.DTOs.Requests;
 using GrainElevatorAPI.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
@@ -35,7 +36,7 @@ public class InvoiceRegisterController : ControllerBase
     
     
     [HttpPost]
-    //[Authorize(Roles = "Admin, Technologist")]
+    [Authorize(Roles = "Admin,Technologist")]
     public async Task<ActionResult<InvoiceRegisterDto>> CreateRegister([FromBody] InvoiceRegisterCreateRequest request)
     {
         if (!ModelState.IsValid)
@@ -48,15 +49,19 @@ public class InvoiceRegisterController : ControllerBase
             var cancellationToken = GetCancellationToken();
             
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (createdById <= 0)
+            {
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            }
             
             // створення Реєстру (доробка продукції)
             var createdRegister = await _invoiceRegisterService.CreateInvoiceRegisterAsync(
                 request.RegisterNumber,
-                request.SupplierId,
-                request.ProductId,
+                request.ArrivalDate,
+                request.SupplierTitle,
+                request.ProductTitle,
                 request.WeedImpurityBase,
                 request.MoistureBase,
-                request.LaboratoryCardIds,
                 createdById,
                 cancellationToken);
             
@@ -72,7 +77,7 @@ public class InvoiceRegisterController : ControllerBase
     
     
     [HttpGet]
-    //[Authorize(Roles = "Admin, Technologist")]
+    [Authorize(Roles = "Admin,Technologist")]
     public async Task<ActionResult<IEnumerable<InvoiceRegisterDto>>> GetRegisters([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
@@ -92,7 +97,7 @@ public class InvoiceRegisterController : ControllerBase
     
     
     [HttpGet("{id}")]
-    //[Authorize(Roles = "Admin, Technologist")]
+    [Authorize(Roles = "Admin,Technologist")]
     public async Task<ActionResult<InvoiceRegisterDto>> GetRegisterById(int id)
     {
         try
@@ -116,47 +121,50 @@ public class InvoiceRegisterController : ControllerBase
     }
     
     [HttpGet("search")]
-    //[Authorize(Roles = "Admin, Technologist")]
+    [Authorize(Roles = "Admin,Technologist")]
     public async Task<ActionResult<IEnumerable<InvoiceRegisterDto>>> SearchRegisters(
-        [FromQuery] int? id,
         [FromQuery] string? registerNumber,
         [FromQuery] DateTime? arrivalDate,
-        [FromQuery] int? supplierId,
-        [FromQuery] int? productId,
         [FromQuery] int? physicalWeightReg,
         [FromQuery] int? shrinkageReg,
         [FromQuery] int? wasteReg,
         [FromQuery] int? accWeightReg,
         [FromQuery] double? weedImpurityBase,
         [FromQuery] double? moistureBase,
-        [FromQuery] int? createdById,
+        [FromQuery] string? supplierTitle,
+        [FromQuery] string? productTitle,
+        [FromQuery] string? createdByName,
         [FromQuery] DateTime? removedAt,
         [FromQuery] int page = 1,
-        [FromQuery] int size = 10)
+        [FromQuery] int size = 10,
+        [FromQuery] string? sortField = null,
+        [FromQuery] string? sortOrder = null)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
-            // передаємо параметри у сервіс для фільтрації
-            var filteredRegisters = await _invoiceRegisterService.SearchInvoiceRegistersAsync(
-                id, 
+
+            var (filteredRegisters, totalCount) = await _invoiceRegisterService.SearchInvoiceRegistersAsync(
                 registerNumber,
                 arrivalDate,
-                supplierId,
-                productId,
                 physicalWeightReg,
                 shrinkageReg,
                 wasteReg,
                 accWeightReg,
                 weedImpurityBase,
                 moistureBase,
-                createdById, 
+                supplierTitle,
+                productTitle,
+                createdByName,
                 removedAt, 
                 page, 
                 size,
+                sortField, sortOrder,
                 cancellationToken);
 
             var registerDtos = _mapper.Map<IEnumerable<InvoiceRegisterDto>>(filteredRegisters);
+            Response.Headers.Append("X-Total-Count", totalCount.ToString());
+            
             return Ok(registerDtos);
         }
         catch (Exception ex)
@@ -168,7 +176,7 @@ public class InvoiceRegisterController : ControllerBase
     
     
     [HttpPut("{id}")]
-    //[Authorize(Roles = "Admin, Technologist")]
+    [Authorize(Roles = "Admin,Technologist")]
     public async Task<IActionResult> UpdateInvoiceRegister(int id, InvoiceRegisterUpdateRequest request)
     {
         if (!ModelState.IsValid)
@@ -181,12 +189,16 @@ public class InvoiceRegisterController : ControllerBase
             var cancellationToken = GetCancellationToken();
             
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (modifiedById == 0)
+            {
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            }
+            
             var updatedRegister = await _invoiceRegisterService.UpdateInvoiceRegisterAsync(
                 id, 
                 request.RegisterNumber, 
                 request.WeedImpurityBase, 
                 request.MoistureBase, 
-                request.LaboratoryCardIds, 
                 modifiedById, 
                 cancellationToken);
 
@@ -200,7 +212,7 @@ public class InvoiceRegisterController : ControllerBase
     }
     
     [HttpPatch("{id}/soft-remove")]
-    //[Authorize(Roles = "Admin, Technologist")]
+    [Authorize(Roles = "Admin,Technologist")]
     public async Task<IActionResult> SoftDeleteRegister(int id)
     {
         try
@@ -213,6 +225,12 @@ public class InvoiceRegisterController : ControllerBase
             }
             
             var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (removedById <= 0)
+            {
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            }
+            
+            
             var removedRegister = await _invoiceRegisterService.SoftDeleteInvoiceRegisterAsync(registerDb, removedById, cancellationToken);
             
             return Ok(_mapper.Map<InvoiceRegisterDto>(removedRegister));
@@ -226,7 +244,7 @@ public class InvoiceRegisterController : ControllerBase
     
 
     [HttpPatch("{id}/restore")]
-    //[Authorize(Roles = "Admin, Technologist")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> RestoreRemovedRegister(int id)
     {
         try
@@ -239,6 +257,11 @@ public class InvoiceRegisterController : ControllerBase
             }
 
             var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (restoredById == 0)
+            {
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            }
+            
             var restoredRegister = await _invoiceRegisterService.RestoreRemovedInvoiceRegisterAsync(registerDb, restoredById, cancellationToken);
             
             return Ok(_mapper.Map<InvoiceRegisterDto>(restoredRegister));
@@ -252,7 +275,7 @@ public class InvoiceRegisterController : ControllerBase
     
     
     [HttpDelete("{id}/hard-remove")]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteRegister(int id)
     {
         try

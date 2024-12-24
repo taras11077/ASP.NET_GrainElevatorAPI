@@ -46,6 +46,10 @@ public class OutputInvoiceController: ControllerBase
             var cancellationToken = GetCancellationToken();
             
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (createdById <= 0)
+            {
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            }
             
             var createdOutputInvoice = await _outputInvoiceService.CreateOutputInvoiceAsync(
                 request.InvoiceNumber,
@@ -143,27 +147,40 @@ public class OutputInvoiceController: ControllerBase
     [HttpGet("search")]
     //[Authorize(Roles = "admin, laboratory")]
     public async Task<ActionResult> SearchOutputInvoices(
-        [FromQuery] int? id = null,
         [FromQuery] string? invoiceNumber = null,
         [FromQuery] DateTime? shipmentDate = null,
         [FromQuery] string? vehicleNumber = null,
-        [FromQuery] int? supplierId = null,
-        [FromQuery] int? productId = null,
+        [FromQuery] string? supplierTitle = null,
+        [FromQuery] string? productTitle = null,
         [FromQuery] string? productCategory = null,
         [FromQuery] int? productWeight = null,
-        [FromQuery] int? createdById = null,
+        [FromQuery] string? createdByName = null,
         [FromQuery] DateTime? removedAt = null,
         [FromQuery] int page = 1,
-        [FromQuery] int size = 10)
+        [FromQuery] int size = 10,
+        [FromQuery] string? sortField = null,
+        [FromQuery] string? sortOrder = null)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
-            // передаємо параметри у сервіс для фільтрації
-            var filteredInvoices = await _outputInvoiceService.SearchOutputInvoices(
-                id, invoiceNumber, shipmentDate, vehicleNumber,  supplierId, productId, productCategory,  productWeight, createdById, removedAt, page, size, cancellationToken);
+
+            var (filteredInvoices, totalCount) = await _outputInvoiceService.SearchOutputInvoices(
+                invoiceNumber, 
+                shipmentDate, 
+                vehicleNumber,  
+                supplierTitle, 
+                productTitle, 
+                productCategory,  
+                productWeight, 
+                createdByName, 
+                removedAt, 
+                page, size, 
+                sortField, sortOrder,
+                cancellationToken);
 
             var outputInvoiceDtos = _mapper.Map<IEnumerable<OutputInvoiceDto>>(filteredInvoices);
+            Response.Headers.Append("X-Total-Count", totalCount.ToString());
             return Ok(outputInvoiceDtos);
         }
         catch (Exception ex)
@@ -193,7 +210,13 @@ public class OutputInvoiceController: ControllerBase
             }
             
             OutputInvoiceDb.UpdateFromRequest(request);
+            
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (modifiedById == 0)
+            {
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            }
+            
             var updatedOutputInvoice = await _outputInvoiceService.UpdateOutputInvoiceAsync(OutputInvoiceDb, modifiedById, cancellationToken);
 
             var updatedOutputInvoiceDto = _mapper.Map<OutputInvoiceDto>(updatedOutputInvoice);
@@ -222,6 +245,11 @@ public class OutputInvoiceController: ControllerBase
             }
 
             var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (removedById == 0)
+            {
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            }
+            
             var removedOutputInvoice = await _outputInvoiceService.SoftDeleteOutputInvoiceAsync(OutputInvoiceDb, removedById, cancellationToken);
 
             var removedOutputInvoiceDto = _mapper.Map<OutputInvoiceDto>(removedOutputInvoice);
@@ -250,6 +278,11 @@ public class OutputInvoiceController: ControllerBase
             }
             
             var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (restoredById == 0)
+            {
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            }
+            
             var restoredOutputInvoice = await _outputInvoiceService.RestoreRemovedOutputInvoiceAsync(OutputInvoiceDb, restoredById, cancellationToken);
 
             var restoredOutputInvoiceDto = _mapper.Map<OutputInvoiceDto>(restoredOutputInvoice);

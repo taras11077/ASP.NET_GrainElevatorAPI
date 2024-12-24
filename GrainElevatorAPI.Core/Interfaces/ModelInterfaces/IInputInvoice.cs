@@ -10,7 +10,6 @@ public interface IInputInvoice
 	string? VehicleNumber { get; set; } 
 	int PhysicalWeight { get; set; }
 
-    int? LaboratoryCardId { get; set; }
     int SupplierId { get; set; }
     int ProductId { get; set; }
     

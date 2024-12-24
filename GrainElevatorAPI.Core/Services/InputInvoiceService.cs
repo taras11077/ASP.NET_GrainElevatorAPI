@@ -104,6 +104,7 @@ public class InputInvoiceService : IInputInvoiceService
             throw new Exception("Помилка сервісу при отриманні списку Прибуткових накладних", ex);
         }
     }
+
     public async Task<InputInvoice> GetInputInvoiceByIdAsync(int id, CancellationToken cancellationToken)
     {
         try
@@ -117,7 +118,7 @@ public class InputInvoiceService : IInputInvoiceService
     }
     
     public async Task<(IEnumerable<InputInvoice>, int)> SearchInputInvoices(
-    int? id = null,
+    int? id, 
     string? invoiceNumber = null,
     DateTime? arrivalDate = null,
     string? vehicleNumber = null,
@@ -138,13 +139,9 @@ public class InputInvoiceService : IInputInvoiceService
             .Include(ii => ii.Supplier) 
             .Include(ii => ii.Product)  
             .Include(ii => ii.CreatedBy)
-            .AsQueryable();
+            .Where(ii => ii.RemovedAt == null);
 
         // Фільтрація
-        query = query.Where(ii => ii.RemovedAt == null);
-        
-        if (id.HasValue)
-            query = query.Where(ii => ii.Id == id.Value);
 
         if (!string.IsNullOrEmpty(invoiceNumber))
             query = query.Where(ii => ii.InvoiceNumber.Contains(invoiceNumber));

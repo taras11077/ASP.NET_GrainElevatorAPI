@@ -22,11 +22,11 @@ public class InvoiceRegisterService : IInvoiceRegisterService
 
     public async Task<InvoiceRegister> CreateInvoiceRegisterAsync(
         string registerNumber,
-        int supplierId, 
-        int productId, 
+        DateTime arrivalDate,
+        string supplierTitle, 
+        string productTitle, 
         double weedImpurityBase, 
         double moistureBase, 
-        IEnumerable<int> laboratoryCardIds, 
         int createdById, 
         CancellationToken cancellationToken)
     {
@@ -36,13 +36,15 @@ public class InvoiceRegisterService : IInvoiceRegisterService
             await _repository.BeginTransactionAsync(cancellationToken);
             
             // створення Реєстру (доробка продукції)
-            var newRegister = CreateRegister(registerNumber, 
-                supplierId, 
-                productId, 
+            var newRegister = await CreateRegisterAsync(
+                registerNumber,
+                arrivalDate,
+                supplierTitle, 
+                productTitle, 
                 weedImpurityBase, 
                 moistureBase, 
-                laboratoryCardIds, 
-                createdById);
+                createdById,
+                cancellationToken);
 
             await _repository.AddAsync(newRegister, cancellationToken);
             
@@ -63,20 +65,55 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         
     }
 
-    private InvoiceRegister CreateRegister(
+    private async Task<InvoiceRegister> CreateRegisterAsync(
         string registerNumber,
-        int supplierId,
-        int productId,
+        DateTime arrivalDate,
+        string supplierTitle, 
+        string productTitle, 
         double weedImpurityBase,
         double moistureBase,
-        IEnumerable<int> laboratoryCardIds,
-        int createdById)
+        int createdById,
+        CancellationToken cancellationToken)
+    
     {
-        var laboratoryCards = _repository.GetAll<LaboratoryCard>()
-            .Where(r => laboratoryCardIds.Contains(r.Id))
-            .ToList();
+        // Отримання SupplierId
+        var supplier = _repository.GetAll<Supplier>().FirstOrDefault(s => s.Title == supplierTitle);
+        if (supplier == null)
+            throw new InvalidOperationException($"Supplier with title '{supplierTitle}' not found.");
         
-        var arrivalDate = laboratoryCards.First().InputInvoice.ArrivalDate;
+        var supplierId = supplier.Id;
+
+        // Отримання ProductId
+        var product = _repository.GetAll<Product>().FirstOrDefault(p => p.Title == productTitle);
+        if (product == null)
+            throw new InvalidOperationException($"Product with title '{productTitle}' not found.");
+        
+        var productId = product.Id;
+
+        // Запит до LaboratoryCard
+        var query = _repository.GetAll<LaboratoryCard>()
+            .Include(lc => lc.InputInvoice)
+            .ThenInclude(ii => ii.Product)
+            .Include(lc => lc.InputInvoice.Supplier)
+            .Where(lc => lc.InputInvoice.ArrivalDate.Date == arrivalDate.Date)
+            .Where(lc => lc.RemovedAt == null)
+            .Where(lc => lc.IsProduction == true)
+            .Where(lc => lc.IsFinalized == false);
+        
+        if (!string.IsNullOrEmpty(supplierTitle))
+            query = query.Where(lc => lc.InputInvoice.Supplier.Title == supplierTitle);
+
+        if (!string.IsNullOrEmpty(productTitle))
+            query = query.Where(lc => lc.InputInvoice.Product.Title == productTitle);
+
+        var laboratoryCards = await query.ToListAsync(cancellationToken);
+        
+        // Встановлення IsFinalized = true для кожної лабораторної карточки
+        foreach (var card in laboratoryCards)
+        {
+            card.IsFinalized = true;
+            await _repository.UpdateAsync(card, cancellationToken);
+        }
         
         var register = new InvoiceRegister
         {
@@ -125,13 +162,35 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         string? registerNumber, 
         double? weedImpurityBase, 
         double? moistureBase, 
-        List<int>? laboratoryCardIds, 
         int modifiedById, 
         CancellationToken cancellationToken)
     {
         try
         {
-            var invoiceRegisterDb = await _repository.GetByIdAsync<InvoiceRegister>(id, cancellationToken);
+            var invoiceRegisterDb = await _repository.GetByIdAsync<InvoiceRegister>(id, cancellationToken)
+                                    ?? throw new InvalidOperationException($"InvoiceRegister with ID {id} not found.");
+            
+            // Отримання ID лабораторних карточок
+            var laboratoryCardIds = invoiceRegisterDb.ProductionBatches?
+                .Select(pb => pb.LaboratoryCardId)
+                .Distinct()
+                .ToList();
+
+            if (laboratoryCardIds == null || !laboratoryCardIds.Any())
+            {
+                throw new InvalidOperationException($"No LaboratoryCards found for Register ID {invoiceRegisterDb.Id}.");
+            }
+
+            // Завантаження лабораторних карточок
+            var laboratoryCards = await _repository.GetAll<LaboratoryCard>()
+                .Where(lc => laboratoryCardIds.Contains(lc.Id))
+                .ToListAsync(cancellationToken);
+
+            if (!laboratoryCards.Any())
+            {
+                throw new InvalidOperationException($"No LaboratoryCards found for Register ID {invoiceRegisterDb.Id}.");
+            }
+            
             
             // початок транзакції
             await _repository.BeginTransactionAsync(cancellationToken);
@@ -139,42 +198,36 @@ public class InvoiceRegisterService : IInvoiceRegisterService
             // видалення даних реєстру зі складського юніта
             await _warehouseUnitService.DeletingRegisterDataFromWarehouseUnit(invoiceRegisterDb, modifiedById, cancellationToken);
             
-
-            if ((laboratoryCardIds != null && laboratoryCardIds.Any()) || registerNumber != null || weedImpurityBase != null || moistureBase != null)
+            // видалення виробничих партій Реєстру
+            foreach (var productionBatch in invoiceRegisterDb.ProductionBatches.ToList())
+            {
+                await _repository.DeleteAsync<ProductionBatch>(productionBatch.Id, cancellationToken);
+            }
+            
+            // Оновлення даних Реєстру
+            if (registerNumber != null || weedImpurityBase != null || moistureBase != null)
             {
                 invoiceRegisterDb.RegisterNumber = registerNumber ?? invoiceRegisterDb.RegisterNumber;
                 invoiceRegisterDb.WeedImpurityBase = weedImpurityBase ?? invoiceRegisterDb.WeedImpurityBase;
                 invoiceRegisterDb.MoistureBase = moistureBase ?? invoiceRegisterDb.MoistureBase;
                 invoiceRegisterDb.ModifiedById = modifiedById;
-
-
-                if (laboratoryCardIds != null && laboratoryCardIds.Any())
-                {
-                    foreach (var productionBatch in invoiceRegisterDb.ProductionBatches.ToList())
-                    {
-                        await _repository.DeleteAsync<ProductionBatch>(productionBatch.Id, cancellationToken);
-                    }
-
-                    
-                    var laboratoryCards = _repository.GetAll<LaboratoryCard>()
-                        .Where(r => laboratoryCardIds.Contains(r.Id))
-                        .ToList();
-                    
-                    invoiceRegisterDb.ArrivalDate = laboratoryCards.First().InputInvoice.ArrivalDate;
-                    invoiceRegisterDb.PhysicalWeightReg = 0;
-                    invoiceRegisterDb.ShrinkageReg = 0;
-                    invoiceRegisterDb.WasteReg = 0;
-                    invoiceRegisterDb.AccWeightReg = 0;
-                    invoiceRegisterDb.QuantitiesDryingReg = 0; 
-                    invoiceRegisterDb.ProductionBatches = new List<ProductionBatch>();
-                    
-                    invoiceRegisterDb = MapLabCardsToProductionBatches(laboratoryCards, invoiceRegisterDb);
-                }
+                
+                // Скидання обчислюваних полів
+                invoiceRegisterDb.PhysicalWeightReg = 0;
+                invoiceRegisterDb.ShrinkageReg = 0;
+                invoiceRegisterDb.WasteReg = 0;
+                invoiceRegisterDb.AccWeightReg = 0;
+                invoiceRegisterDb.QuantitiesDryingReg = 0; 
+                
+                // Очищення та повторне створення партій
+                invoiceRegisterDb.ProductionBatches = new List<ProductionBatch>();
+                invoiceRegisterDb = MapLabCardsToProductionBatches(laboratoryCards, invoiceRegisterDb);
             }
             
             // оновлення складського юніта (переміщення продукції оновленого Реєстру на Склад)
             await _warehouseUnitService.WarehouseTransferAsync(invoiceRegisterDb, modifiedById, cancellationToken);
             
+            // Оновлення реєстру в БД
             await _repository.UpdateAsync(invoiceRegisterDb, cancellationToken);
             
             // фіксація транзакції
@@ -201,7 +254,8 @@ public class InvoiceRegisterService : IInvoiceRegisterService
             throw new Exception($"Помилка сервісу при отриманні Реєстру з ID {id}", ex);
         }
     }
-    
+
+
     public async Task<IEnumerable<InvoiceRegister>> GetInvoiceRegistersAsync(int page, int size, CancellationToken cancellationToken)
     {
         try
@@ -218,94 +272,224 @@ public class InvoiceRegisterService : IInvoiceRegisterService
     }
 
     
-     public async Task<IEnumerable<InvoiceRegister>> SearchInvoiceRegistersAsync(int? id,
-        string? registerNumber,
-        DateTime? arrivalDate,
-        int? supplierId,
-        int? productId,
-        int? physicalWeightReg,
-        int? shrinkageReg,
-        int? wasteReg,
-        int? accWeightReg,
-        double? weedImpurityBase,
-        double? moistureBase,
-        int? createdById,
-        DateTime? removedAt,
-        int page,
-        int size,
-        CancellationToken cancellationToken)
+    public async Task<(IEnumerable<InvoiceRegister>, int)> SearchInvoiceRegistersAsync(
+        string? registerNumber = null,
+        DateTime? arrivalDate = null,
+        int? physicalWeightReg = null,
+        int? shrinkageReg = null,
+        int? wasteReg = null,
+        int? accWeightReg = null,
+        double? weedImpurityBase = null,
+        double? moistureBase = null,
+        string? supplierTitle = null,
+        string? productTitle = null,
+        string? createdByName = null,
+        DateTime? removedAt = null,
+        int page = 1,
+        int size = 10,
+        string? sortField = null,
+        string? sortOrder = null,
+        CancellationToken cancellationToken = default)
     {
         try
-        
         {
             var query = _repository.GetAll<InvoiceRegister>()
+                .Where(ii => ii.RemovedAt == null);
+
+            // Виклик методу фільтрації
+            query = ApplyFilters(query, registerNumber, arrivalDate, physicalWeightReg, 
+                shrinkageReg, wasteReg, accWeightReg, weedImpurityBase, 
+                moistureBase, supplierTitle, productTitle, createdByName, removedAt);
+
+            // Виклик методу сортування
+            query = ApplySorting(query, sortField, sortOrder);
+
+            // Пагінація
+            int totalCount = await query.CountAsync(cancellationToken);
+
+            var filteredRegisters = await query
                 .Skip((page - 1) * size)
-                .Take(size);
+                .Take(size)
+                .ToListAsync(cancellationToken);
 
-            if (id.HasValue)
-            {
-                query = query.Where(r => r.Id == id);
-            }
-            
-            if (!string.IsNullOrEmpty(registerNumber))
-            {
-                query = query.Where(r => r.RegisterNumber == registerNumber);
-            }
-
-            if (arrivalDate.HasValue)
-            {
-                query = query.Where(r => r.ArrivalDate.Date == arrivalDate.Value.Date);
-            }
-            
-            if (supplierId.HasValue)
-                query = query.Where(r => r.SupplierId == supplierId.Value);
-
-            if (productId.HasValue)
-                query = query.Where(r => r.ProductId == productId.Value);
-            
-            
-            if (weedImpurityBase.HasValue)
-                query = query.Where(r => r.WeedImpurityBase == weedImpurityBase.Value);
-
-            if (moistureBase.HasValue)
-                query = query.Where(r => r.MoistureBase == moistureBase.Value);
-           
-            if (physicalWeightReg.HasValue)
-                query = query.Where(r => r.PhysicalWeightReg == physicalWeightReg.Value);
-            
-            if (accWeightReg.HasValue)
-                query = query.Where(r => r.AccWeightReg == accWeightReg.Value);
-            
-            if (shrinkageReg.HasValue)
-                query = query.Where(r => r.ShrinkageReg == shrinkageReg.Value);
-            
-            if (wasteReg.HasValue)
-                query = query.Where(r => r.WasteReg == wasteReg.Value);
-            
-            if (createdById.HasValue)
-                query = query.Where(r => r.CreatedById == createdById.Value);
-
-            if (removedAt.HasValue)
-                query = query.Where(r => r.RemovedAt == removedAt.Value);
-            
-            return await query.ToListAsync(cancellationToken);
+            return (filteredRegisters, totalCount);
         }
         catch (Exception ex)
         {
             throw new Exception("Помилка сервісу при пошуку Реєстру за параметрами", ex);
         }
     }
+
     
     
+    private IQueryable<InvoiceRegister> ApplyFilters(
+        IQueryable<InvoiceRegister> query,
+        string? registerNumber,
+        DateTime? arrivalDate,
+        int? physicalWeightReg,
+        int? shrinkageReg,
+        int? wasteReg,
+        int? accWeightReg,
+        double? weedImpurityBase,
+        double? moistureBase,
+        string? supplierTitle,
+        string? productTitle,
+        string? createdByName,
+        DateTime? removedAt)
+    {
+        if (!string.IsNullOrEmpty(registerNumber))
+        {
+            query = query.Where(r => r.RegisterNumber == registerNumber);
+        }
+
+        if (arrivalDate.HasValue)
+        {
+            query = query.Where(r => r.ArrivalDate.Date == arrivalDate.Value.Date);
+        }
+
+        if (!string.IsNullOrEmpty(supplierTitle))
+        {
+            query = query.Where(r => r.Supplier.Title == supplierTitle);
+        }
+
+        if (!string.IsNullOrEmpty(productTitle))
+        {
+            query = query.Where(r => r.Product.Title == productTitle);
+        }
+
+        if (weedImpurityBase.HasValue)
+        {
+            query = query.Where(r => r.WeedImpurityBase == weedImpurityBase.Value);
+        }
+
+        if (moistureBase.HasValue)
+        {
+            query = query.Where(r => r.MoistureBase == moistureBase.Value);
+        }
+
+        if (physicalWeightReg.HasValue)
+        {
+            query = query.Where(r => r.PhysicalWeightReg == physicalWeightReg.Value);
+        }
+
+        if (accWeightReg.HasValue)
+        {
+            query = query.Where(r => r.AccWeightReg == accWeightReg.Value);
+        }
+
+        if (shrinkageReg.HasValue)
+        {
+            query = query.Where(r => r.ShrinkageReg == shrinkageReg.Value);
+        }
+
+        if (wasteReg.HasValue)
+        {
+            query = query.Where(r => r.WasteReg == wasteReg.Value);
+        }
+
+        if (!string.IsNullOrEmpty(createdByName))
+        {
+            query = query.Where(r => r.CreatedBy.LastName == createdByName);
+        }
+
+        if (removedAt.HasValue)
+        {
+            query = query.Where(r => r.RemovedAt == removedAt.Value);
+        }
+
+        return query;
+    }
+
     
-    
+    private IQueryable<InvoiceRegister> ApplySorting(
+        IQueryable<InvoiceRegister> query,
+        string? sortField,
+        string? sortOrder)
+    {
+        if (string.IsNullOrEmpty(sortField)) return query; // Без сортування
+
+        return sortField switch
+        {
+            "registerNumber" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.RegisterNumber)
+                : query.OrderByDescending(reg => reg.RegisterNumber),
+            "arrivalDate" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.ArrivalDate)
+                : query.OrderByDescending(reg => reg.ArrivalDate),
+            "productTitle" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.Product.Title)
+                : query.OrderByDescending(reg => reg.Product.Title),
+            "supplierTitle" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.Supplier.Title)
+                : query.OrderByDescending(reg => reg.Supplier.Title),
+            "physicalWeightReg" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.PhysicalWeightReg)
+                : query.OrderByDescending(reg => reg.PhysicalWeightReg),
+            "shrinkageReg" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.ShrinkageReg)
+                : query.OrderByDescending(reg => reg.ShrinkageReg),
+            "wasteReg" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.WasteReg)
+                : query.OrderByDescending(reg => reg.WasteReg),
+            "accWeightReg" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.AccWeightReg)
+                : query.OrderByDescending(reg => reg.AccWeightReg),
+            "createdByName" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.CreatedBy.LastName)
+                : query.OrderByDescending(reg => reg.CreatedBy.LastName),
+            _ => query // Якщо поле не визначене
+        };
+    }
+
+     
     public async Task<InvoiceRegister> SoftDeleteInvoiceRegisterAsync(InvoiceRegister invoiceRegister, int removedById, CancellationToken cancellationToken)
     {
         try
         {
+            // Позначення реєстру як видаленого
             invoiceRegister.RemovedAt = DateTime.UtcNow;
             invoiceRegister.RemovedById = removedById;
+
+            // Отримання ID лабораторних карточок
+            var laboratoryCardIds = invoiceRegister.ProductionBatches?
+                .Select(pb => pb.LaboratoryCardId)
+                .Distinct()
+                .ToList();
+
+            if (laboratoryCardIds == null || !laboratoryCardIds.Any())
+            {
+                throw new InvalidOperationException($"No LaboratoryCards found for Register ID {invoiceRegister.Id}.");
+            }
+
+            // Завантаження лабораторних карточок
+            var laboratoryCards = await _repository.GetAll<LaboratoryCard>()
+                .Where(lc => laboratoryCardIds.Contains(lc.Id))
+                .ToListAsync(cancellationToken);
+
+            if (!laboratoryCards.Any())
+            {
+                throw new InvalidOperationException($"No LaboratoryCards found for Register ID {invoiceRegister.Id}.");
+            }
+
+            // Оновлення властивості IsFinalized
+            foreach (var card in laboratoryCards)
+            {
+                card.IsFinalized = false;
+            }
             
+            // Збереження змін у лабораторних карточках
+            await _repository.SaveChangesAsync(cancellationToken);
+            
+            // видалення виробничих партій Реєстру
+            foreach (var productionBatch in invoiceRegister.ProductionBatches.ToList())
+            {
+                await _repository.DeleteAsync<ProductionBatch>(productionBatch.Id, cancellationToken);
+            }
+            
+            // видалення даних реєстру зі складського юніта
+            await _warehouseUnitService.DeletingRegisterDataFromWarehouseUnit(invoiceRegister, removedById, cancellationToken);
+
+            // Збереження змін у реєстрі
             return await _repository.UpdateAsync(invoiceRegister, cancellationToken);
         }
         catch (Exception ex)

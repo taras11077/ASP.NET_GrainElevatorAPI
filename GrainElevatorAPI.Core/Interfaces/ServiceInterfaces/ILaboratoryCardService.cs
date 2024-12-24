@@ -12,7 +12,6 @@ public interface ILaboratoryCardService
     Task<bool> DeleteLaboratoryCardAsync(int id, CancellationToken cancellationToken);
     Task<IEnumerable<LaboratoryCard>> GetLaboratoryCards(int page, int size, CancellationToken cancellationToken);
     Task<(IEnumerable<LaboratoryCard>, int)> SearchLaboratoryCards(
-        int? id,
         string? labCardNumber,
         double? weedImpurity,
         double? moisture,

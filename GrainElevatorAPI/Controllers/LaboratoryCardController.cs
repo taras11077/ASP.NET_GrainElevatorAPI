@@ -111,7 +111,6 @@ public class LaboratoryCardController : ControllerBase
     [HttpGet("search")]
     [Authorize(Roles = "Admin,Laboratory")]
     public async Task<ActionResult<IEnumerable<LaboratoryCardDto>>> SearchLaboratoryCards(
-        [FromQuery] int? id = null,
         [FromQuery] string? labCardNumber = null,
         [FromQuery] double? weedImpurity = null,
         [FromQuery] double? moisture = null,
@@ -134,7 +133,6 @@ public class LaboratoryCardController : ControllerBase
         {
             var cancellationToken = GetCancellationToken();
             var (filteredLabCards, totalCount) = await _laboratoryCardService.SearchLaboratoryCards(
-                id, 
                 labCardNumber, 
                 weedImpurity, 
                 moisture, 

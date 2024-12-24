@@ -53,7 +53,11 @@ public class MapperProfile : Profile
         
         CreateMap<InvoiceRegister, InvoiceRegisterCreateRequest>().ReverseMap();
         CreateMap<InvoiceRegister, InvoiceRegisterUpdateRequest>().ReverseMap();
-        CreateMap<InvoiceRegister, InvoiceRegisterDto>().ReverseMap();
+        CreateMap<InvoiceRegister, InvoiceRegisterDto>()
+            .ForMember(dest => dest.SupplierTitle, opt => opt.MapFrom(src => src.Supplier.Title))
+            .ForMember(dest => dest.ProductTitle, opt => opt.MapFrom(src => src.Product.Title))
+            .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy.LastName))
+            .ReverseMap();
         
         CreateMap<WarehouseProductCategory, WarehouseProductCategoryCreateRequest>().ReverseMap();
         CreateMap<WarehouseProductCategory, WarehouseProductCategoryUpdateRequest>().ReverseMap();
