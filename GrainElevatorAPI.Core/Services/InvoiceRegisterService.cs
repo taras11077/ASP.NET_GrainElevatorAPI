@@ -4,6 +4,7 @@ using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace GrainElevatorAPI.Core.Services;
 
@@ -12,12 +13,14 @@ public class InvoiceRegisterService : IInvoiceRegisterService
     private readonly IRepository _repository;
     private readonly IWarehouseUnitService _warehouseUnitService;
     private readonly IRegisterCalculator _calculator;
+    private readonly ILogger<InvoiceRegisterService> _logger;
     
-    public InvoiceRegisterService(IRepository repository, IRegisterCalculator calculator, IWarehouseUnitService warehouseUnitService)
+    public InvoiceRegisterService(IRepository repository, IRegisterCalculator calculator, IWarehouseUnitService warehouseUnitService, ILogger<InvoiceRegisterService> logger)
     {
         _repository = repository;
         _calculator = calculator;
         _warehouseUnitService = warehouseUnitService;
+        _logger = logger;
     }
 
     public async Task<InvoiceRegister> CreateInvoiceRegisterAsync(
@@ -56,8 +59,14 @@ public class InvoiceRegisterService : IInvoiceRegisterService
             
             return newRegister;
         }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning($"Бізнес-помилка: {ex.Message}");
+            throw;
+        }
         catch (Exception ex)
         {
+            _logger.LogError($"Помилка створення Реєстру: {ex.Message}");
             // відкат транзакції в разі помилки
             await _repository.RollbackTransactionAsync(cancellationToken);
             throw new Exception("Помилка сервісу під час створення Реєстру", ex);
@@ -79,14 +88,14 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         // Отримання SupplierId
         var supplier = _repository.GetAll<Supplier>().FirstOrDefault(s => s.Title == supplierTitle);
         if (supplier == null)
-            throw new InvalidOperationException($"Supplier with title '{supplierTitle}' not found.");
+            throw new InvalidOperationException($"Постачальника з назвою '{{supplierTitle}}' не знайдено.");
         
         var supplierId = supplier.Id;
 
         // Отримання ProductId
         var product = _repository.GetAll<Product>().FirstOrDefault(p => p.Title == productTitle);
         if (product == null)
-            throw new InvalidOperationException($"Product with title '{productTitle}' not found.");
+            throw new InvalidOperationException($"Товар з назвою '{{productTitle}}' не знайдено.");
         
         var productId = product.Id;
 
@@ -97,16 +106,21 @@ public class InvoiceRegisterService : IInvoiceRegisterService
             .Include(lc => lc.InputInvoice.Supplier)
             .Where(lc => lc.InputInvoice.ArrivalDate.Date == arrivalDate.Date)
             .Where(lc => lc.RemovedAt == null)
-            .Where(lc => lc.IsProduction == true)
-            .Where(lc => lc.IsFinalized == false);
+            .Where(lc => lc.IsProduction == true);
+            //.Where(lc => lc.IsFinalized == !true);
         
         if (!string.IsNullOrEmpty(supplierTitle))
             query = query.Where(lc => lc.InputInvoice.Supplier.Title == supplierTitle);
-
+        
         if (!string.IsNullOrEmpty(productTitle))
             query = query.Where(lc => lc.InputInvoice.Product.Title == productTitle);
 
         var laboratoryCards = await query.ToListAsync(cancellationToken);
+
+        if (laboratoryCards.Count == 0)
+        {
+            throw new InvalidOperationException($"Не знайдено жодної Лабораторної картки, яка б відповідала заданим Даті, Постачальнику і Товару..");
+        }
         
         // Встановлення IsFinalized = true для кожної лабораторної карточки
         foreach (var card in laboratoryCards)

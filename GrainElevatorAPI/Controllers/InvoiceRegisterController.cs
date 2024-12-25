@@ -68,10 +68,20 @@ public class InvoiceRegisterController : ControllerBase
             return CreatedAtAction(nameof(GetRegisters), new { id = createdRegister.Id },
                 _mapper.Map<InvoiceRegisterDto>(createdRegister));
         }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning($"Помилка створення Реєстру: {ex.Message}");
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logger.LogWarning($"Помилка авторизації: {ex.Message}");
+            return Unauthorized(new { message = ex.Message });
+        }
         catch (Exception ex)
         {
-            _logger.LogError($"Внутрішня помилка сервера під час створення Реєстру: {ex.Message}");
-            return StatusCode(500, $"Внутрішня помилка сервера під час створення Реєстру: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера: {ex.Message}");
+            return StatusCode(500, new { message = "Внутрішня помилка сервера. Спробуйте пізніше.", detail = ex.Message });
         }
     }
     

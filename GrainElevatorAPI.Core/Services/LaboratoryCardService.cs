@@ -94,80 +94,22 @@ public class LaboratoryCardService : ILaboratoryCardService
 
             // Фільтрація
             
-            if (!string.IsNullOrEmpty(labCardNumber))
-            {
-                query = query.Where(lc => lc.LabCardNumber == labCardNumber);
-            }
-
-            if (arrivalDate.HasValue)
-            {
-                query = query.Where(lc => lc.InputInvoice.ArrivalDate.Date == arrivalDate.Value.Date);
-            }
-            
-            if (!string.IsNullOrEmpty(vehicleNumber))
-                query = query.Where(lc => lc.InputInvoice.VehicleNumber == vehicleNumber);
-            
-            if (physicalWeight.HasValue)
-                query = query.Where(lc => lc.InputInvoice.PhysicalWeight == physicalWeight.Value);
-            
-            if (!string.IsNullOrEmpty(supplierTitle))
-                query = query.Where(lc => lc.InputInvoice.Supplier.Title == supplierTitle);
-
-            if (!string.IsNullOrEmpty(productTitle))
-                query = query.Where(lc => lc.InputInvoice.Product.Title == productTitle);
-            
-
-            if (weedImpurity.HasValue)
-                query = query.Where(lc => lc.WeedImpurity == weedImpurity.Value);
-
-            if (moisture.HasValue)
-                query = query.Where(lc => lc.Moisture == moisture.Value);
-            
-            if (isProduction.HasValue)
-                query = query.Where(lc => lc.IsProduction == isProduction.Value);
-            
-            if (!string.IsNullOrEmpty(createdByName))
-                query = query.Where(lc => lc.CreatedBy.LastName == createdByName);
-
-            if (removedAt.HasValue)
-                query = query.Where(lc => lc.RemovedAt == removedAt.Value);
+            query = ApplyFilters(query, 
+                labCardNumber, 
+                arrivalDate, 
+                vehicleNumber, 
+                physicalWeight, 
+                supplierTitle, 
+                productTitle,
+                weedImpurity,
+                moisture,
+                isProduction,
+                createdByName, 
+                removedAt);
             
             
             // Сортування
-            if (!string.IsNullOrEmpty(sortField))
-            {
-                query = sortField switch
-                {
-                    "labCardNumber" => sortOrder == "asc"
-                        ? query.OrderBy(lc => lc.LabCardNumber)
-                        : query.OrderByDescending(lc => lc.LabCardNumber),
-                    "arrivalDate" => sortOrder == "asc"
-                        ? query.OrderBy(lc => lc.InputInvoice.ArrivalDate)
-                        : query.OrderByDescending(lc => lc.InputInvoice.ArrivalDate),
-                    "invoiceNumber" => sortOrder == "asc"
-                        ? query.OrderBy(lc => lc.InputInvoice.InvoiceNumber)
-                        : query.OrderByDescending(lc => lc.InputInvoice.PhysicalWeight),
-                    "physicalWeight" => sortOrder == "asc"
-                        ? query.OrderBy(lc => lc.InputInvoice.PhysicalWeight)
-                        : query.OrderByDescending(lc => lc.InputInvoice.PhysicalWeight),
-                    "productTitle" => sortOrder == "asc"
-                        ? query.OrderBy(lc => lc.InputInvoice.Product.Title)
-                        : query.OrderByDescending(lc => lc.InputInvoice.Product.Title),
-                    "supplierTitle" => sortOrder == "asc"
-                        ? query.OrderBy(lc => lc.InputInvoice.Supplier.Title)
-                        : query.OrderByDescending(lc => lc.InputInvoice.Supplier.Title),
-                    "weedImpurity" => sortOrder == "asc"
-                        ? query.OrderBy(lc => lc.WeedImpurity)
-                        : query.OrderByDescending(lc => lc.WeedImpurity),
-                    "moisture" => sortOrder == "asc"
-                        ? query.OrderBy(lc => lc.Moisture)
-                        : query.OrderByDescending(lc => lc.Moisture),
-                    "createdByName" => sortOrder == "asc"
-                        ? query.OrderBy(lc => lc.CreatedBy.LastName)
-                        : query.OrderByDescending(lc => lc.CreatedBy.LastName),
-                    _ => query // Без сортування, якщо поле не вказано
-                };
-            }
+            query = ApplySorting(query, sortField, sortOrder);
         
 
             // Пагінація
@@ -185,6 +127,103 @@ public class LaboratoryCardService : ILaboratoryCardService
         {
             throw new Exception("Помилка сервісу при пошуку Лабораторних карточок за параметрами", ex);
         }
+    }
+     
+     
+      private IQueryable<LaboratoryCard> ApplyFilters(
+        IQueryable<LaboratoryCard> query,
+        string? labCardNumber,
+        DateTime? arrivalDate,
+        string? vehicleNumber,
+        int? physicalWeight,
+        string? supplierTitle,
+        string? productTitle,
+        double? weedImpurity,
+        double? moisture,
+        bool? isProduction,
+        string? createdByName,
+        DateTime? removedAt)
+    {
+        if (!string.IsNullOrEmpty(labCardNumber))
+        {
+            query = query.Where(lc => lc.LabCardNumber == labCardNumber);
+        }
+
+        if (arrivalDate.HasValue)
+        {
+            query = query.Where(lc => lc.InputInvoice.ArrivalDate.Date == arrivalDate.Value.Date);
+        }
+            
+        if (!string.IsNullOrEmpty(vehicleNumber))
+            query = query.Where(lc => lc.InputInvoice.VehicleNumber == vehicleNumber);
+            
+        if (physicalWeight.HasValue)
+            query = query.Where(lc => lc.InputInvoice.PhysicalWeight == physicalWeight.Value);
+            
+        if (!string.IsNullOrEmpty(supplierTitle))
+            query = query.Where(lc => lc.InputInvoice.Supplier.Title == supplierTitle);
+
+        if (!string.IsNullOrEmpty(productTitle))
+            query = query.Where(lc => lc.InputInvoice.Product.Title == productTitle);
+            
+
+        if (weedImpurity.HasValue)
+            query = query.Where(lc => lc.WeedImpurity == weedImpurity.Value);
+
+        if (moisture.HasValue)
+            query = query.Where(lc => lc.Moisture == moisture.Value);
+            
+        if (isProduction.HasValue)
+            query = query.Where(lc => lc.IsProduction == isProduction.Value);
+            
+        if (!string.IsNullOrEmpty(createdByName))
+            query = query.Where(lc => lc.CreatedBy.LastName == createdByName);
+
+        if (removedAt.HasValue)
+            query = query.Where(lc => lc.RemovedAt == removedAt.Value);
+        
+        return query;
+    }
+
+    
+    private IQueryable<LaboratoryCard> ApplySorting(
+        IQueryable<LaboratoryCard> query,
+        string? sortField,
+        string? sortOrder)
+    {
+        if (string.IsNullOrEmpty(sortField)) return query; // Без сортування
+
+        return sortField switch
+        {
+            "labCardNumber" => sortOrder == "asc"
+                ? query.OrderBy(lc => lc.LabCardNumber)
+                : query.OrderByDescending(lc => lc.LabCardNumber),
+            "arrivalDate" => sortOrder == "asc"
+                ? query.OrderBy(lc => lc.InputInvoice.ArrivalDate)
+                : query.OrderByDescending(lc => lc.InputInvoice.ArrivalDate),
+            "invoiceNumber" => sortOrder == "asc"
+                ? query.OrderBy(lc => lc.InputInvoice.InvoiceNumber)
+                : query.OrderByDescending(lc => lc.InputInvoice.PhysicalWeight),
+            "physicalWeight" => sortOrder == "asc"
+                ? query.OrderBy(lc => lc.InputInvoice.PhysicalWeight)
+                : query.OrderByDescending(lc => lc.InputInvoice.PhysicalWeight),
+            "productTitle" => sortOrder == "asc"
+                ? query.OrderBy(lc => lc.InputInvoice.Product.Title)
+                : query.OrderByDescending(lc => lc.InputInvoice.Product.Title),
+            "supplierTitle" => sortOrder == "asc"
+                ? query.OrderBy(lc => lc.InputInvoice.Supplier.Title)
+                : query.OrderByDescending(lc => lc.InputInvoice.Supplier.Title),
+            "weedImpurity" => sortOrder == "asc"
+                ? query.OrderBy(lc => lc.WeedImpurity)
+                : query.OrderByDescending(lc => lc.WeedImpurity),
+            "moisture" => sortOrder == "asc"
+                ? query.OrderBy(lc => lc.Moisture)
+                : query.OrderByDescending(lc => lc.Moisture),
+            "createdByName" => sortOrder == "asc"
+                ? query.OrderBy(lc => lc.CreatedBy.LastName)
+                : query.OrderByDescending(lc => lc.CreatedBy.LastName),
+            _ => query // Без сортування, якщо поле не вказано
+        };
     }
     
     public async Task<LaboratoryCard> UpdateLaboratoryCardAsync(LaboratoryCard laboratoryCard, int modifiedById, CancellationToken cancellationToken)

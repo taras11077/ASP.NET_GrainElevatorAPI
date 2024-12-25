@@ -132,17 +132,58 @@ public class InputInvoiceService : IInputInvoiceService
     string? sortField = null,
     string? sortOrder = null,
     CancellationToken cancellationToken = default)
-{
-    try
     {
-        var query = _repository.GetAll<InputInvoice>()
-            .Include(ii => ii.Supplier) 
-            .Include(ii => ii.Product)  
-            .Include(ii => ii.CreatedBy)
-            .Where(ii => ii.RemovedAt == null);
+        try
+        {
+            var query = _repository.GetAll<InputInvoice>()
+                .Include(ii => ii.Supplier) 
+                .Include(ii => ii.Product)  
+                .Include(ii => ii.CreatedBy)
+                .Where(ii => ii.RemovedAt == null);
 
-        // Фільтрація
+            // Фільтрація
+            query = ApplyFilters(query, 
+                invoiceNumber, 
+                arrivalDate, 
+                vehicleNumber, 
+                physicalWeight, 
+                supplierTitle, 
+                productTitle, 
+                createdByName, 
+                removedAt);
 
+            // Сортування
+            query = ApplySorting(query, sortField, sortOrder);
+            
+
+            // Пагінація
+            int totalCount = await query.CountAsync(cancellationToken);
+
+            var filteredInvoices = await query
+                .Skip((page - 1) * size)
+                .Take(size)
+                .ToListAsync(cancellationToken);
+
+            return (filteredInvoices, totalCount);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Помилка сервісу при пошуку Прибуткових накладних", ex);
+        }
+    }
+    
+    
+     private IQueryable<InputInvoice> ApplyFilters(
+        IQueryable<InputInvoice> query,
+        string? invoiceNumber,
+        DateTime? arrivalDate,
+        string? vehicleNumber,
+        int? physicalWeight,
+        string? supplierTitle,
+        string? productTitle,
+        string? createdByName,
+        DateTime? removedAt)
+    {
         if (!string.IsNullOrEmpty(invoiceNumber))
             query = query.Where(ii => ii.InvoiceNumber.Contains(invoiceNumber));
 
@@ -166,55 +207,44 @@ public class InputInvoiceService : IInputInvoiceService
 
         if (removedAt.HasValue)
             query = query.Where(ii => ii.RemovedAt.HasValue && ii.RemovedAt.Value.Date == removedAt.Value.Date);
-
-        // Сортування
-        if (!string.IsNullOrEmpty(sortField))
-        {
-            query = sortField switch
-            {
-                "invoiceNumber" => sortOrder == "asc" 
-                    ? query.OrderBy(ii => ii.InvoiceNumber) 
-                    : query.OrderByDescending(ii => ii.InvoiceNumber),
-                "arrivalDate" => sortOrder == "asc" 
-                    ? query.OrderBy(ii => ii.ArrivalDate) 
-                    : query.OrderByDescending(ii => ii.ArrivalDate),
-                "physicalWeight" => sortOrder == "asc" 
-                    ? query.OrderBy(ii => ii.PhysicalWeight) 
-                    : query.OrderByDescending(ii => ii.PhysicalWeight),
-                "vehicleNumber" => sortOrder == "asc" 
-                    ? query.OrderBy(ii => ii.VehicleNumber) 
-                    : query.OrderByDescending(ii => ii.VehicleNumber),
-                "productTitle" => sortOrder == "asc" 
-                    ? query.OrderBy(ii => ii.Product.Title) 
-                    : query.OrderByDescending(ii => ii.Product.Title),
-                "supplierTitle" => sortOrder == "asc" 
-                    ? query.OrderBy(ii => ii.Supplier.Title) 
-                    : query.OrderByDescending(ii => ii.Supplier.Title),
-                "createdByName" => sortOrder == "asc" 
-                    ? query.OrderBy(ii => ii.CreatedBy.LastName) 
-                    : query.OrderByDescending(ii => ii.CreatedBy.LastName),
-                _ => query // без сортування якщо поле не вказано
-            };
-        }
         
-
-        // Пагінація
-        int totalCount = await query.CountAsync(cancellationToken);
-
-        var filteredInvoices = await query
-            .Skip((page - 1) * size)
-            .Take(size)
-            .ToListAsync(cancellationToken);
-
-        return (filteredInvoices, totalCount);
+        return query;
     }
-    catch (Exception ex)
-    {
-        throw new Exception("Помилка сервісу при пошуку Прибуткових накладних", ex);
-    }
-}
 
     
+    private IQueryable<InputInvoice> ApplySorting(
+        IQueryable<InputInvoice> query,
+        string? sortField,
+        string? sortOrder)
+    {
+        if (string.IsNullOrEmpty(sortField)) return query; // Без сортування
+
+        return sortField switch
+        {
+            "invoiceNumber" => sortOrder == "asc" 
+                ? query.OrderBy(ii => ii.InvoiceNumber) 
+                : query.OrderByDescending(ii => ii.InvoiceNumber),
+            "arrivalDate" => sortOrder == "asc" 
+                ? query.OrderBy(ii => ii.ArrivalDate) 
+                : query.OrderByDescending(ii => ii.ArrivalDate),
+            "physicalWeight" => sortOrder == "asc" 
+                ? query.OrderBy(ii => ii.PhysicalWeight) 
+                : query.OrderByDescending(ii => ii.PhysicalWeight),
+            "vehicleNumber" => sortOrder == "asc" 
+                ? query.OrderBy(ii => ii.VehicleNumber) 
+                : query.OrderByDescending(ii => ii.VehicleNumber),
+            "productTitle" => sortOrder == "asc" 
+                ? query.OrderBy(ii => ii.Product.Title) 
+                : query.OrderByDescending(ii => ii.Product.Title),
+            "supplierTitle" => sortOrder == "asc" 
+                ? query.OrderBy(ii => ii.Supplier.Title) 
+                : query.OrderByDescending(ii => ii.Supplier.Title),
+            "createdByName" => sortOrder == "asc" 
+                ? query.OrderBy(ii => ii.CreatedBy.LastName) 
+                : query.OrderByDescending(ii => ii.CreatedBy.LastName),
+            _ => query // без сортування якщо поле не вказано
+        };
+    }
     
     public async Task<InputInvoice> UpdateInputInvoiceAsync(InputInvoice inputInvoice, int modifiedById, CancellationToken cancellationToken)
     {
