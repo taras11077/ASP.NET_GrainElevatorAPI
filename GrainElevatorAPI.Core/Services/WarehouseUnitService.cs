@@ -136,7 +136,28 @@ public class WarehouseUnitService: IWarehouseUnitService
         await _repository.UpdateAsync(warehouseUnit, cancellationToken);
     }
     
-
+    public async Task DeletingOutputInvoiceDataFromWarehouseUnit(OutputInvoice invoice, int modifiedById, CancellationToken cancellationToken)
+    {
+        // перевірка наявності WarehouseUnit із заданими SupplierId і ProductId
+        var warehouseUnit = await _repository.GetAll<WarehouseUnit>()
+            .FirstOrDefaultAsync(w => w.SupplierId == invoice.SupplierId && w.ProductId == invoice.ProductId);
+        
+        if (warehouseUnit == null)
+        {
+            throw new KeyNotFoundException($"Складський юніт не знайдено.");
+        }
+        
+        // оновлення значень Категорій продукції Складського юніта
+        foreach (var productCategory in warehouseUnit.ProductCategories)
+        {
+            if (productCategory.Title == invoice.ProductCategory)
+                productCategory.Value += invoice.ProductWeight;
+        }
+        
+        warehouseUnit.ModifiedById = modifiedById;
+        
+        await _repository.UpdateAsync(warehouseUnit, cancellationToken);
+    }
     
     public async Task<IEnumerable<WarehouseUnit>> GetPagedWarehouseUnits(int page, int size, CancellationToken cancellationToken)
     {

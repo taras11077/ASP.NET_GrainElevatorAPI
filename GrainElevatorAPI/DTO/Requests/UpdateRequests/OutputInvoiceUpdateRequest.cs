@@ -16,8 +16,4 @@ public class OutputInvoiceUpdateRequest
     [MinLength(2, ErrorMessage = "VehicleNumber must be at least 3 characters long.")]
     [MaxLength(10, ErrorMessage = "VehicleNumber must be at least 9 characters long.")]
     public string? VehicleNumber { get; set; } 
-    
-
-    [Range(0, int.MaxValue, ErrorMessage = "ProductWeight must be a positive number.")]
-    public int? ProductWeight { get; set; }
 }

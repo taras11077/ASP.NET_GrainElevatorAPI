@@ -9,19 +9,22 @@ namespace GrainElevatorAPI.Core.Services;
 public class OutputInvoiceService : IOutputInvoiceService
 {
     private readonly IRepository _repository;
+    private readonly IWarehouseUnitService _warehouseUnitService;
     private readonly ILogger<OutputInvoiceService> _logger;
 
-    public OutputInvoiceService(IRepository repository, ILogger<OutputInvoiceService> logger)
+    public OutputInvoiceService(IRepository repository, ILogger<OutputInvoiceService> logger, IWarehouseUnitService warehouseUnitService)
     {
         _repository = repository;
         _logger = logger;
+        _warehouseUnitService = warehouseUnitService;
     }
     
     public async Task<OutputInvoice> CreateOutputInvoiceAsync(
     string invoiceNumber,
+    DateTime shipmentDate,
     string vehicleNumber,
-    int supplierId,
-    int productId,
+    string supplierTitle,
+    string productTitle,
     string productCategory,
     int productWeight,
     int createdById, 
@@ -31,13 +34,25 @@ public class OutputInvoiceService : IOutputInvoiceService
 
     try
     {
+        // початок транзакції
+        //await _repository.BeginTransactionAsync(cancellationToken);
+        
+        var supplier = await _repository.GetAll<Supplier>()
+            .FirstOrDefaultAsync(s => s.Title == supplierTitle, cancellationToken);
 
+        var product = await _repository.GetAll<Product>()
+            .FirstOrDefaultAsync(p => p.Title == productTitle, cancellationToken);
+        
+        if (supplier == null || product == null)
+        {
+            throw new KeyNotFoundException($"Постачальника: {supplierTitle} або Продукта: {productTitle} не знайдено.");
+        }
         var warehouseUnit = await _repository.GetAll<WarehouseUnit>()
-            .FirstOrDefaultAsync(w => w.SupplierId == supplierId && w.ProductId == productId, cancellationToken);
+            .FirstOrDefaultAsync(w => w.SupplierId == supplier.Id && w.ProductId == product.Id, cancellationToken);
 
         if (warehouseUnit == null)
         {
-            throw new KeyNotFoundException($"Складський юніт із SupplierId {supplierId} та ProductId {productId} не знайдено.");
+            throw new KeyNotFoundException($"Складський юніт із Постачальником {supplierTitle} та Продукцією {productTitle} не знайдено.");
         }
         
         var productCategoryEntity = await _repository.GetAll<WarehouseProductCategory>()
@@ -62,12 +77,12 @@ public class OutputInvoiceService : IOutputInvoiceService
         var outputInvoice = new OutputInvoice
         {
             InvoiceNumber = invoiceNumber,
+            ShipmentDate = shipmentDate,
             VehicleNumber = vehicleNumber,
-            SupplierId = supplierId,
-            ProductId = productId,
+            SupplierId = supplier.Id,
+            ProductId = product.Id,
             ProductCategory = productCategory,
             ProductWeight = productWeight,
-            ShipmentDate = DateTime.UtcNow,
             WarehouseUnitId = warehouseUnit.Id,
             CreatedAt = DateTime.UtcNow,
             CreatedById = createdById,
@@ -97,9 +112,7 @@ public class OutputInvoiceService : IOutputInvoiceService
         throw new Exception("Помилка сервісу при додаванні видаткової накладної", ex);
     }
 }
-
     
-
     public async Task<IEnumerable<OutputInvoice>> GetOutputInvoices(int page, int size, CancellationToken cancellationToken)
     {
         try
@@ -144,7 +157,6 @@ public class OutputInvoiceService : IOutputInvoiceService
         string? productCategory = null,
         int? productWeight = null,
         string? createdByName = null,
-        DateTime? removedAt = null,
         int page = 1,
         int size = 10,
         string? sortField = null,
@@ -160,65 +172,12 @@ public class OutputInvoiceService : IOutputInvoiceService
                 .Where(oi => oi.RemovedAt == null);
 
             // Фільтрація
-            if (!string.IsNullOrEmpty(invoiceNumber))
-                query = query.Where(oi => oi.InvoiceNumber == invoiceNumber);
-
-            if (shipmentDate.HasValue)
-                query = query.Where(oi => oi.ShipmentDate.Date == shipmentDate.Value.Date);
-
-            if (!string.IsNullOrEmpty(vehicleNumber))
-                query = query.Where(oi => oi.VehicleNumber == vehicleNumber);
-            
-            if (!string.IsNullOrEmpty(supplierTitle))
-                query = query.Where(oi => oi.Supplier.Title.Contains(supplierTitle));
-
-            if (!string.IsNullOrEmpty(productTitle))
-                query = query.Where(oi => oi.Product.Title.Contains(productTitle));
-            
-            if (!string.IsNullOrEmpty(productCategory))
-                query = query.Where(oi => oi.ProductCategory == productCategory);
-            
-            if (productWeight.HasValue)
-                query = query.Where(oi => oi.ProductWeight == productWeight.Value);
-
-            if (!string.IsNullOrEmpty(createdByName))
-                query = query.Where(oi => oi.CreatedBy.LastName.Contains(createdByName));
-
-            if (removedAt.HasValue)
-                query = query.Where(oi => oi.RemovedAt == removedAt.Value);
+            query = ApplyFilters(query, invoiceNumber, shipmentDate, vehicleNumber, 
+                supplierTitle, productTitle, productCategory, productWeight, 
+                createdByName);
             
             // Сортування
-            if (!string.IsNullOrEmpty(sortField))
-            {
-                query = sortField switch
-                {
-                    "invoiceNumber" => sortOrder == "asc" 
-                        ? query.OrderBy(oi => oi.InvoiceNumber) 
-                        : query.OrderByDescending(oi => oi.InvoiceNumber),
-                    "shipmentDate" => sortOrder == "asc" 
-                        ? query.OrderBy(oi => oi.ShipmentDate) 
-                        : query.OrderByDescending(ii => ii.ShipmentDate),
-                    "vehicleNumber" => sortOrder == "asc" 
-                        ? query.OrderBy(ii => ii.VehicleNumber) 
-                        : query.OrderByDescending(ii => ii.VehicleNumber),
-                    "productTitle" => sortOrder == "asc" 
-                        ? query.OrderBy(ii => ii.Product.Title) 
-                        : query.OrderByDescending(ii => ii.Product.Title),
-                    "supplierTitle" => sortOrder == "asc" 
-                        ? query.OrderBy(ii => ii.Supplier.Title) 
-                        : query.OrderByDescending(ii => ii.Supplier.Title),
-                    "productCategory" => sortOrder == "asc" 
-                        ? query.OrderBy(ii => ii.ProductCategory) 
-                        : query.OrderByDescending(ii => ii.ProductCategory),
-                    "productWeight" => sortOrder == "asc" 
-                        ? query.OrderBy(ii => ii.ProductWeight) 
-                        : query.OrderByDescending(ii => ii.ProductWeight),
-                    "createdByName" => sortOrder == "asc" 
-                        ? query.OrderBy(ii => ii.CreatedBy.LastName) 
-                        : query.OrderByDescending(ii => ii.CreatedBy.LastName),
-                    _ => query // без сортування якщо поле не вказано
-                };
-            }
+            query = ApplySorting(query, sortField, sortOrder);
         
 
             // Пагінація
@@ -236,6 +195,88 @@ public class OutputInvoiceService : IOutputInvoiceService
             throw new Exception("Помилка сервісу при пошуку Видаткових накладних", ex);
         }
     }
+    
+    
+     private IQueryable<OutputInvoice> ApplyFilters(
+        IQueryable<OutputInvoice> query,
+        string? invoiceNumber,
+        DateTime? shipmentDate,
+        string? vehicleNumber,
+        string? supplierTitle,
+        string? productTitle,
+        string? productCategory,
+        int? productWeight,
+        string? createdByName
+)
+    {
+        if (!string.IsNullOrEmpty(invoiceNumber))
+            query = query.Where(oi => oi.InvoiceNumber == invoiceNumber);
+
+        if (shipmentDate.HasValue)
+            query = query.Where(oi => oi.ShipmentDate.Date == shipmentDate.Value.Date);
+
+        if (!string.IsNullOrEmpty(vehicleNumber))
+            query = query.Where(oi => oi.VehicleNumber == vehicleNumber);
+            
+        if (!string.IsNullOrEmpty(supplierTitle))
+            query = query.Where(oi => oi.Supplier.Title.Contains(supplierTitle));
+
+        if (!string.IsNullOrEmpty(productTitle))
+            query = query.Where(oi => oi.Product.Title.Contains(productTitle));
+            
+        if (!string.IsNullOrEmpty(productCategory))
+            query = query.Where(oi => oi.ProductCategory == productCategory);
+            
+        if (productWeight.HasValue)
+            query = query.Where(oi => oi.ProductWeight == productWeight.Value);
+
+        if (!string.IsNullOrEmpty(createdByName))
+            query = query.Where(oi => oi.CreatedBy.LastName.Contains(createdByName));
+
+        return query;
+    }
+
+    
+    private IQueryable<OutputInvoice> ApplySorting(
+        IQueryable<OutputInvoice> query,
+        string? sortField,
+        string? sortOrder)
+    {
+        if (string.IsNullOrEmpty(sortField)) return query; // Без сортування
+
+        return sortField switch
+        {
+            "invoiceNumber" => sortOrder == "asc" 
+                ? query.OrderBy(oi => oi.InvoiceNumber) 
+                : query.OrderByDescending(oi => oi.InvoiceNumber),
+            "shipmentDate" => sortOrder == "asc" 
+                ? query.OrderBy(oi => oi.ShipmentDate) 
+                : query.OrderByDescending(ii => ii.ShipmentDate),
+            "vehicleNumber" => sortOrder == "asc" 
+                ? query.OrderBy(ii => ii.VehicleNumber) 
+                : query.OrderByDescending(ii => ii.VehicleNumber),
+            "productTitle" => sortOrder == "asc" 
+                ? query.OrderBy(ii => ii.Product.Title) 
+                : query.OrderByDescending(ii => ii.Product.Title),
+            "supplierTitle" => sortOrder == "asc" 
+                ? query.OrderBy(ii => ii.Supplier.Title) 
+                : query.OrderByDescending(ii => ii.Supplier.Title),
+            "productCategory" => sortOrder == "asc" 
+                ? query.OrderBy(ii => ii.ProductCategory) 
+                : query.OrderByDescending(ii => ii.ProductCategory),
+            "productWeight" => sortOrder == "asc" 
+                ? query.OrderBy(ii => ii.ProductWeight) 
+                : query.OrderByDescending(ii => ii.ProductWeight),
+            "createdByName" => sortOrder == "asc" 
+                ? query.OrderBy(ii => ii.CreatedBy.LastName) 
+                : query.OrderByDescending(ii => ii.CreatedBy.LastName),
+            _ => query // без сортування якщо поле не вказано
+        };
+    }
+    
+    
+    
+    
     public async Task<OutputInvoice> UpdateOutputInvoiceAsync(OutputInvoice outputInvoice, int modifiedById, CancellationToken cancellationToken)
     {
         try
@@ -257,6 +298,8 @@ public class OutputInvoiceService : IOutputInvoiceService
         {
             outputInvoice.RemovedAt = DateTime.UtcNow;
             outputInvoice.RemovedById = removedById;
+            
+            await _warehouseUnitService.DeletingOutputInvoiceDataFromWarehouseUnit(outputInvoice, removedById, cancellationToken);
             
             return await _repository.UpdateAsync(outputInvoice, cancellationToken);
         }

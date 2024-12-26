@@ -166,7 +166,6 @@ public class InvoiceRegisterController : ControllerBase
                 supplierTitle,
                 productTitle,
                 createdByName,
-                removedAt, 
                 page, 
                 size,
                 sortField, sortOrder,

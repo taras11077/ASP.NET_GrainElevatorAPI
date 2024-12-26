@@ -38,7 +38,6 @@ public interface IInvoiceRegisterService
         string? supplierTitle,
         string? productTitle,
         string? createdByName,
-        DateTime? removedAt,
         int page,
         int size,
         string? sortField,

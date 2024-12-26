@@ -6,6 +6,7 @@ using GrainElevatorAPI.DTO.DTOs;
 using GrainElevatorAPI.DTO.Requests.CreateRequests;
 using GrainElevatorAPI.DTO.Requests.UpdateRequests;
 using GrainElevatorAPI.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GrainElevatorAPI.Controllers;
@@ -33,7 +34,7 @@ public class OutputInvoiceController: ControllerBase
     
     
     [HttpPost]
-    //[Authorize(Roles = "Admin, laboratory")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<ActionResult<OutputInvoiceDto>> CreateOutputInvoice(OutputInvoiceCreateRequest request)
     {
         if (!ModelState.IsValid)
@@ -53,9 +54,10 @@ public class OutputInvoiceController: ControllerBase
             
             var createdOutputInvoice = await _outputInvoiceService.CreateOutputInvoiceAsync(
                 request.InvoiceNumber,
+                request.ShipmentDate,
                 request.VehicleNumber,
-                request.SupplierId,
-                request.ProductId,
+                request.SupplierTitle,
+                request.ProductTitle,
                 request.ProductCategory,
                 request.ProductWeight,
                 createdById, 
@@ -85,28 +87,12 @@ public class OutputInvoiceController: ControllerBase
 
 
     [HttpGet]
-    //[Authorize(Roles = "admin, laboratory")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<ActionResult> GetOutputInvoices([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
-            
-            // _logger.LogInformation("Початок отримання видаткових накладних із сервісу.");
-            // var serviceStart = DateTime.UtcNow;
-            //
-            // var outputInvoices = await _outputInvoiceService.GetOutputInvoices(page, size, cancellationToken);
-            //
-            // var serviceEnd = DateTime.UtcNow;
-            // _logger.LogInformation("Сервіс завершив запит за {Duration} мс", (serviceEnd - serviceStart).TotalMilliseconds);
-            //
-            // _logger.LogInformation("Початок маппінгу видаткових накладних.");
-            // var mappingStart = DateTime.UtcNow;
-            //
-            // var outputInvoiceDtos = _mapper.Map<IEnumerable<OutputInvoiceDto>>(outputInvoices);
-            //
-            // var mappingEnd = DateTime.UtcNow;
-            // _logger.LogInformation("Маппінг завершено за {Duration} мс", (mappingEnd - mappingStart).TotalMilliseconds);
             
             var outputInvoices = await _outputInvoiceService.GetOutputInvoices(page, size, cancellationToken);
             var outputInvoiceDtos = _mapper.Map<IEnumerable<OutputInvoiceDto>>(outputInvoices);
@@ -122,7 +108,7 @@ public class OutputInvoiceController: ControllerBase
 
 
     [HttpGet("{id}")]
-    //[Authorize(Roles = "admin, laboratory")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<ActionResult> GetOutputInvoice(int id)
     {
         try
@@ -145,7 +131,7 @@ public class OutputInvoiceController: ControllerBase
     }
 
     [HttpGet("search")]
-    //[Authorize(Roles = "admin, laboratory")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<ActionResult> SearchOutputInvoices(
         [FromQuery] string? invoiceNumber = null,
         [FromQuery] DateTime? shipmentDate = null,
@@ -155,7 +141,6 @@ public class OutputInvoiceController: ControllerBase
         [FromQuery] string? productCategory = null,
         [FromQuery] int? productWeight = null,
         [FromQuery] string? createdByName = null,
-        [FromQuery] DateTime? removedAt = null,
         [FromQuery] int page = 1,
         [FromQuery] int size = 10,
         [FromQuery] string? sortField = null,
@@ -174,7 +159,6 @@ public class OutputInvoiceController: ControllerBase
                 productCategory,  
                 productWeight, 
                 createdByName, 
-                removedAt, 
                 page, size, 
                 sortField, sortOrder,
                 cancellationToken);
@@ -192,7 +176,7 @@ public class OutputInvoiceController: ControllerBase
 
     
     [HttpPut("{id}")]
-    //[Authorize(Roles = "admin, laboratory")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<IActionResult> UpdateOutputInvoice(int id, OutputInvoiceUpdateRequest request)
     {
         if (!ModelState.IsValid)
@@ -232,7 +216,7 @@ public class OutputInvoiceController: ControllerBase
     
     
     [HttpPatch("{id}/soft-remove")]
-    //[Authorize(Roles = "admin, laboratory")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<IActionResult> SoftDeleteOutputInvoice(int id)
     {
         try
@@ -265,7 +249,7 @@ public class OutputInvoiceController: ControllerBase
     
 
     [HttpPatch("{id}/restore")]
-    //[Authorize(Roles = "admin, laboratory")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> RestoreRemovedOutputInvoice(int id)
     {
         try
@@ -297,7 +281,7 @@ public class OutputInvoiceController: ControllerBase
     }
     
     [HttpDelete("{id}/hard-remove")]
-    //[Authorize(Roles = "admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteOutputInvoice(int id)
     {
         try

@@ -69,7 +69,11 @@ public class MapperProfile : Profile
         
         CreateMap<OutputInvoice, OutputInvoiceCreateRequest>().ReverseMap();
         CreateMap<OutputInvoice, OutputInvoiceUpdateRequest>().ReverseMap();
-        CreateMap<OutputInvoice, OutputInvoiceDto>().ReverseMap();
+        CreateMap<OutputInvoice, OutputInvoiceDto>()
+            .ForMember(dest => dest.SupplierTitle, opt => opt.MapFrom(src => src.Supplier.Title))
+            .ForMember(dest => dest.ProductTitle, opt => opt.MapFrom(src => src.Product.Title))
+            .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy.LastName))
+            .ReverseMap();
         
         CreateMap<CompletionReport, CompletionReportCreateRequest>().ReverseMap();
         CreateMap<CompletionReport, CompletionReportUpdateRequest>().ReverseMap();

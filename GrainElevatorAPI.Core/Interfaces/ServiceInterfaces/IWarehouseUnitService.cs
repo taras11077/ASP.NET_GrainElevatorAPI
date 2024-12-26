@@ -9,6 +9,9 @@ public interface IWarehouseUnitService
 
     Task DeletingRegisterDataFromWarehouseUnit(InvoiceRegister register, int modifiedById,
         CancellationToken cancellationToken);
+
+    Task DeletingOutputInvoiceDataFromWarehouseUnit(OutputInvoice invoice, int modifiedById,
+        CancellationToken cancellationToken);
     Task<WarehouseUnit> UpdateWarehouseUnitAsync(WarehouseUnit unit, int modifiedById, CancellationToken cancellationToken);
     Task<WarehouseUnit> SoftDeleteWarehouseUnitAsync(WarehouseUnit warehouseUnit, int removedById, CancellationToken cancellationToken);
     Task<WarehouseUnit> RestoreRemovedWarehouseUnitAsync(WarehouseUnit warehouseUnit, int restoredById, CancellationToken cancellationToken);

@@ -31,7 +31,7 @@ public class PriceListController : ControllerBase
     }
 
     [HttpPost]
-    //[Authorize(Roles = "Admin, Accountant")]
+    //[Authorize(Roles = "Admin,Accountant")]
     public async Task<ActionResult<PriceListDto>> CreatePriceList(PriceListCreateRequest request)
     {
         if (!ModelState.IsValid)

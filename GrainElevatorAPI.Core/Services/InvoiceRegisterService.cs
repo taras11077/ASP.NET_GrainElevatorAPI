@@ -88,14 +88,14 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         // Отримання SupplierId
         var supplier = _repository.GetAll<Supplier>().FirstOrDefault(s => s.Title == supplierTitle);
         if (supplier == null)
-            throw new InvalidOperationException($"Постачальника з назвою '{{supplierTitle}}' не знайдено.");
+            throw new InvalidOperationException($"Постачальника з назвою '{supplierTitle}' не знайдено.");
         
         var supplierId = supplier.Id;
 
         // Отримання ProductId
         var product = _repository.GetAll<Product>().FirstOrDefault(p => p.Title == productTitle);
         if (product == null)
-            throw new InvalidOperationException($"Товар з назвою '{{productTitle}}' не знайдено.");
+            throw new InvalidOperationException($"Товар з назвою '{productTitle}' не знайдено.");
         
         var productId = product.Id;
 
@@ -298,7 +298,6 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         string? supplierTitle = null,
         string? productTitle = null,
         string? createdByName = null,
-        DateTime? removedAt = null,
         int page = 1,
         int size = 10,
         string? sortField = null,
@@ -313,7 +312,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
             // Виклик методу фільтрації
             query = ApplyFilters(query, registerNumber, arrivalDate, physicalWeightReg, 
                 shrinkageReg, wasteReg, accWeightReg, weedImpurityBase, 
-                moistureBase, supplierTitle, productTitle, createdByName, removedAt);
+                moistureBase, supplierTitle, productTitle, createdByName);
 
             // Виклик методу сортування
             query = ApplySorting(query, sortField, sortOrder);
@@ -348,8 +347,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         double? moistureBase,
         string? supplierTitle,
         string? productTitle,
-        string? createdByName,
-        DateTime? removedAt)
+        string? createdByName)
     {
         if (!string.IsNullOrEmpty(registerNumber))
         {
@@ -405,12 +403,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         {
             query = query.Where(r => r.CreatedBy.LastName == createdByName);
         }
-
-        if (removedAt.HasValue)
-        {
-            query = query.Where(r => r.RemovedAt == removedAt.Value);
-        }
-
+        
         return query;
     }
 

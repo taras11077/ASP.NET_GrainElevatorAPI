@@ -4,10 +4,12 @@ namespace GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 
 public interface IOutputInvoiceService
 {
-    Task<OutputInvoice> CreateOutputInvoiceAsync(string invoiceNumber,
+    Task<OutputInvoice> CreateOutputInvoiceAsync(
+        string invoiceNumber,
+        DateTime shipmentDate,
         string vehicleNumber,
-        int supplierId,
-        int productId,
+        string supplierTitle,
+        string productTitle,
         string productCategory,
         int productWeight,
         int createdById, 
@@ -25,7 +27,6 @@ public interface IOutputInvoiceService
         string productCategory,
         int? productWeight,
         string? createdByName,
-        DateTime? removedAt,
         int page,
         int size, 
         string? sortField, string? sortOrder,
