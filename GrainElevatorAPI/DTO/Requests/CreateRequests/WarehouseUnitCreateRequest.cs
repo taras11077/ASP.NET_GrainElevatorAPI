@@ -1,15 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using GrainElevatorAPI.DTO.DTOs;
 
 namespace GrainElevatorAPI.DTO.Requests.CreateRequests;
 
 public class WarehouseUnitCreateRequest
 {
-    [Range(1, int.MaxValue, ErrorMessage = "SupplierId must be a positive number.")]
-    public int SupplierId { get; set; }
+    [MinLength(2, ErrorMessage = "Title must be at least 2 characters long.")]
+    [MaxLength(20, ErrorMessage = "Title must be at least 20 characters long.")]
+    public string SupplierTitle { get; set; }
     
-    [Range(1, int.MaxValue, ErrorMessage = "ProductId must be a positive number.")]
-    public int ProductId { get; set; }
-    
-    public ICollection<int>? WarehouseProductCategoryIds { get; set; }
-    public ICollection<int>? OutputInvoiceIds { get; set; }
+    [MinLength(2, ErrorMessage = "Title must be at least 2 characters long.")]
+    [MaxLength(20, ErrorMessage = "Title must be at least 20 characters long.")]
+    public string ProductTitle { get; set; }
 }

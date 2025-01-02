@@ -15,7 +15,4 @@ public class WarehouseProductCategoryDto
 
     [Range(1, int.MaxValue, ErrorMessage = "ProductWeight must be a positive number.")]
     public int? Value { get; set; }
-
-    [Range(1, int.MaxValue, ErrorMessage = "ProductWeight must be a positive number.")]
-    public int? WarehouseUnitId { get; set; }
 }

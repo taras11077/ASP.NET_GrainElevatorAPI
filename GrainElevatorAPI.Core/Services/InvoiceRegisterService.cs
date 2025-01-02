@@ -62,6 +62,8 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         catch (InvalidOperationException ex)
         {
             _logger.LogWarning($"Бізнес-помилка: {ex.Message}");
+            // відкат транзакції в разі помилки
+            await _repository.RollbackTransactionAsync(cancellationToken);
             throw;
         }
         catch (Exception ex)
@@ -210,7 +212,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
             await _repository.BeginTransactionAsync(cancellationToken);
             
             // видалення даних реєстру зі складського юніта
-            await _warehouseUnitService.DeletingRegisterDataFromWarehouseUnit(invoiceRegisterDb, modifiedById, cancellationToken);
+            await _warehouseUnitService.DeletingRegisterDataFromWarehouseUnitAsync(invoiceRegisterDb, modifiedById, cancellationToken);
             
             // видалення виробничих партій Реєстру
             foreach (var productionBatch in invoiceRegisterDb.ProductionBatches.ToList())
@@ -307,7 +309,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         try
         {
             var query = _repository.GetAll<InvoiceRegister>()
-                .Where(ii => ii.RemovedAt == null);
+                .Where(ir => ir.RemovedAt == null);
 
             // Виклик методу фільтрації
             query = ApplyFilters(query, registerNumber, arrivalDate, physicalWeightReg, 
@@ -494,7 +496,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
             }
             
             // видалення даних реєстру зі складського юніта
-            await _warehouseUnitService.DeletingRegisterDataFromWarehouseUnit(invoiceRegister, removedById, cancellationToken);
+            await _warehouseUnitService.DeletingRegisterDataFromWarehouseUnitAsync(invoiceRegister, removedById, cancellationToken);
 
             // Збереження змін у реєстрі
             return await _repository.UpdateAsync(invoiceRegister, cancellationToken);

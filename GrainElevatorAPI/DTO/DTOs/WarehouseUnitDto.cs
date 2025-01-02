@@ -7,12 +7,15 @@ public class WarehouseUnitDto
     [Range(1, int.MaxValue, ErrorMessage = "Id must be a positive number.")]
     public int Id { get; set; }
     
-    [Range(1, int.MaxValue, ErrorMessage = "SupplierId must be a positive number.")]
-    public int SupplierId { get; set; }
+    [MinLength(2, ErrorMessage = "Title must be at least 2 characters long.")]
+    [MaxLength(20, ErrorMessage = "Title must be at least 20 characters long.")]
+    public string SupplierTitle { get; set; }
     
-    [Range(1, int.MaxValue, ErrorMessage = "ProductId must be a positive number.")]
-    public int ProductId { get; set; }
+    [MinLength(2, ErrorMessage = "Title must be at least 2 characters long.")]
+    [MaxLength(20, ErrorMessage = "Title must be at least 20 characters long.")]
+    public string ProductTitle { get; set; }
     
-    public List<int> WarehouseProductCategoryIds { get; set; } = new List<int>();
-    public List<int> OutputInvoiceIds { get; set; } = new List<int>();
+    public string CreatedByName { get; set; }
+    
+    public List<WarehouseProductCategoryDto> ProductCategories { get; set; }
 }

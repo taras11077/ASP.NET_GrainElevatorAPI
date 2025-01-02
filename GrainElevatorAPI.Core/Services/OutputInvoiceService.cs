@@ -299,7 +299,7 @@ public class OutputInvoiceService : IOutputInvoiceService
             outputInvoice.RemovedAt = DateTime.UtcNow;
             outputInvoice.RemovedById = removedById;
             
-            await _warehouseUnitService.DeletingOutputInvoiceDataFromWarehouseUnit(outputInvoice, removedById, cancellationToken);
+            await _warehouseUnitService.DeletingOutputInvoiceDataFromWarehouseUnitAsync(outputInvoice, removedById, cancellationToken);
             
             return await _repository.UpdateAsync(outputInvoice, cancellationToken);
         }

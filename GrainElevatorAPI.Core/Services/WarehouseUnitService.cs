@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.ComponentModel.Design;
+using AutoMapper;
 using GrainElevatorAPI.Core.Interfaces;
 using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
@@ -9,12 +10,76 @@ namespace GrainElevatorAPI.Core.Services;
 public class WarehouseUnitService: IWarehouseUnitService
 {
     private readonly IRepository _repository;
+    private IWarehouseUnitService _iWarehouseUnitServiceImplementation;
 
     public WarehouseUnitService(IRepository repository)
     {
         _repository = repository;
     }
     
+   public async Task<WarehouseUnit> CreateWarehouseUnitAsync(
+    string supplierTitle,
+    string productTitle,
+    int employeeId,
+    CancellationToken cancellationToken)
+{
+    try
+    {
+        // Отримання постачальника
+        var supplier = await _repository.GetAll<Supplier>()
+            .FirstOrDefaultAsync(s => s.Title == supplierTitle, cancellationToken);
+        if (supplier == null)
+        {
+            throw new ArgumentException($"Постачальник з назвою '{supplierTitle}' не знайдено.", nameof(supplierTitle));
+        }
+
+        // Отримання продукту
+        var product = await _repository.GetAll<Product>()
+            .FirstOrDefaultAsync(p => p.Title == productTitle, cancellationToken);
+        if (product == null)
+        {
+            throw new ArgumentException($"Продукт з назвою '{productTitle}' не знайдено.", nameof(productTitle));
+        }
+
+        // Перевірка наявності WarehouseUnit із заданими SupplierId і ProductId
+        var existingWarehouseUnit = await _repository.GetAll<WarehouseUnit>()
+            .FirstOrDefaultAsync(
+                w => w.SupplierId == supplier.Id && w.ProductId == product.Id,
+                cancellationToken);
+
+        if (existingWarehouseUnit != null)
+        {
+            // Повертаємо наявний складський юніт
+            return existingWarehouseUnit;
+        }
+
+        // Створення нового складського юніта
+        var newWarehouseUnit = new WarehouseUnit
+        {
+            SupplierId = supplier.Id,
+            ProductId = product.Id,
+            CreatedAt = DateTime.UtcNow,
+            CreatedById = employeeId,
+            ProductCategories = new List<WarehouseProductCategory>
+            {
+                new WarehouseProductCategory { Title = "Кондиційна продукція", Value = 0 },
+                new WarehouseProductCategory { Title = "Відходи", Value = 0 }
+            }
+        };
+
+        await _repository.AddAsync(newWarehouseUnit, cancellationToken);
+        return newWarehouseUnit;
+    }
+    catch (ArgumentException ex)
+    {
+        throw new InvalidOperationException($"Некоректні дані: {ex.Message}", ex);
+    }
+    catch (Exception ex)
+    {
+        throw new Exception("Помилка сервісу при створенні Складського юніта", ex);
+    }
+}
+   
     public async Task<WarehouseUnit> WarehouseTransferAsync(InvoiceRegister register, int employeeId, CancellationToken cancellationToken)
     {
         try
@@ -48,7 +113,7 @@ public class WarehouseUnitService: IWarehouseUnitService
             else
             {
                 // оновлення існуючого WarehouseUnit новими даними з Register
-                await AddingRegisterDataToWarehouseUnit(warehouseUnit, register, employeeId, cancellationToken);
+                await AddingRegisterDataToWarehouseUnitAsync(warehouseUnit, register, employeeId, cancellationToken);
             }
 
             return warehouseUnit;
@@ -58,9 +123,8 @@ public class WarehouseUnitService: IWarehouseUnitService
             throw new Exception($"Помилка сервісу при обробці операції переміщення до складу продукції Реєстру з ID {register.Id}", ex);
         }
     }
-
     
-    private async Task AddingRegisterDataToWarehouseUnit(WarehouseUnit warehouseUnit, InvoiceRegister register, int employeeId, CancellationToken cancellationToken)
+    private async Task AddingRegisterDataToWarehouseUnitAsync(WarehouseUnit warehouseUnit, InvoiceRegister register, int employeeId, CancellationToken cancellationToken)
     {
         // пошук категорії для кондиційної продукції
         var conditionedProduct = warehouseUnit.ProductCategories
@@ -111,8 +175,7 @@ public class WarehouseUnitService: IWarehouseUnitService
         await _repository.UpdateAsync(warehouseUnit, cancellationToken);
     }
     
-    
-    public async Task DeletingRegisterDataFromWarehouseUnit(InvoiceRegister register, int modifiedById, CancellationToken cancellationToken)
+    public async Task DeletingRegisterDataFromWarehouseUnitAsync(InvoiceRegister register, int modifiedById, CancellationToken cancellationToken)
     {
         // перевірка наявності WarehouseUnit із заданими SupplierId і ProductId
         var warehouseUnit = await _repository.GetAll<WarehouseUnit>()
@@ -136,7 +199,7 @@ public class WarehouseUnitService: IWarehouseUnitService
         await _repository.UpdateAsync(warehouseUnit, cancellationToken);
     }
     
-    public async Task DeletingOutputInvoiceDataFromWarehouseUnit(OutputInvoice invoice, int modifiedById, CancellationToken cancellationToken)
+    public async Task DeletingOutputInvoiceDataFromWarehouseUnitAsync(OutputInvoice invoice, int modifiedById, CancellationToken cancellationToken)
     {
         // перевірка наявності WarehouseUnit із заданими SupplierId і ProductId
         var warehouseUnit = await _repository.GetAll<WarehouseUnit>()
@@ -159,7 +222,7 @@ public class WarehouseUnitService: IWarehouseUnitService
         await _repository.UpdateAsync(warehouseUnit, cancellationToken);
     }
     
-    public async Task<IEnumerable<WarehouseUnit>> GetPagedWarehouseUnits(int page, int size, CancellationToken cancellationToken)
+    public async Task<IEnumerable<WarehouseUnit>> GetPagedWarehouseUnitsAsync(int page, int size, CancellationToken cancellationToken)
     {
         try
         {
@@ -188,43 +251,90 @@ public class WarehouseUnitService: IWarehouseUnitService
 
     
     
-    public async Task<IEnumerable<WarehouseUnit>> SearchWarehouseUnits(int? id,
-        int? supplierId,
-        int? productId,
-        int? createdById,
-        DateTime? removedAt,
-        int page,
-        int size, 
-        CancellationToken cancellationToken)
+    public async Task<(IEnumerable<WarehouseUnit>, int)> SearchWarehouseUnitsAsync(
+        string? supplierTitle = null,
+        string? productTitle = null,
+        string? createdByName = null,
+        int page = 1,
+        int size = 10,
+        string? sortField = null,
+        string? sortOrder = null,
+        CancellationToken cancellationToken = default)
     {
         try
         {
-            var query = _repository.GetAll<WarehouseUnit>();
+            var query = _repository.GetAll<WarehouseUnit>()
+                .Include(wu => wu.ProductCategories)
+                .Include(wu => wu.Supplier)
+                .Include(wu => wu.Product)
+                .Where(wu => wu.RemovedAt == null);
 
-            if (id.HasValue)
-            {
-                query = query.Where(wu => wu.Id == id);
-            }
-            
-            if (supplierId.HasValue)
-                query = query.Where(wu => wu.SupplierId == supplierId.Value);
+            // Виклик методу фільтрації
+            query = ApplyFilters(query, supplierTitle, productTitle, createdByName);
 
-            if (productId.HasValue)
-                query = query.Where(wu => wu.ProductId == productId.Value);
+            // Виклик методу сортування
+            query = ApplySorting(query, sortField, sortOrder);
 
-            
-            if (createdById.HasValue)
-                query = query.Where(wu => wu.CreatedById == createdById.Value);
+            // Пагінація
+            int totalCount = await query.CountAsync(cancellationToken);
 
-            if (removedAt.HasValue)
-                query = query.Where(wu => wu.RemovedAt == removedAt.Value);
-            
-            return await query .ToListAsync(cancellationToken);
+            var filteredUnits = await query
+                .Skip((page - 1) * size)
+                .Take(size)
+                .ToListAsync(cancellationToken);
+
+            return (filteredUnits, totalCount);
         }
         catch (Exception ex)
         {
             throw new Exception("Помилка сервісу при пошуку Cкладських одиниць за параметрами", ex);
         }
+    }
+    
+     private IQueryable<WarehouseUnit> ApplyFilters(
+        IQueryable<WarehouseUnit> query,
+        string? supplierTitle,
+        string? productTitle,
+        string? createdByName)
+    {
+
+        if (!string.IsNullOrEmpty(supplierTitle))
+        {
+            query = query.Where(wu => wu.Supplier.Title == supplierTitle);
+        }
+        if (!string.IsNullOrEmpty(productTitle))
+        {
+            query = query.Where(wu => wu.Product.Title == productTitle);
+        }
+        if (!string.IsNullOrEmpty(createdByName))
+        {
+            query = query.Where(wu => wu.CreatedBy.LastName == createdByName);
+        }
+        
+        return query;
+    }
+
+    
+    private IQueryable<WarehouseUnit> ApplySorting(
+        IQueryable<WarehouseUnit> query,
+        string? sortField,
+        string? sortOrder)
+    {
+        if (string.IsNullOrEmpty(sortField)) return query; // Без сортування
+
+        return sortField switch
+        {
+            "productTitle" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.Product.Title)
+                : query.OrderByDescending(reg => reg.Product.Title),
+            "supplierTitle" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.Supplier.Title)
+                : query.OrderByDescending(reg => reg.Supplier.Title),
+            "createdByName" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.CreatedBy.LastName)
+                : query.OrderByDescending(reg => reg.CreatedBy.LastName),
+            _ => query // Якщо поле не визначене
+        };
     }
     
     public async Task<WarehouseUnit> UpdateWarehouseUnitAsync(WarehouseUnit warehouseUnit, int modifiedById, CancellationToken cancellationToken)
@@ -246,10 +356,25 @@ public class WarehouseUnitService: IWarehouseUnitService
     {
         try
         {
+            bool empty = true;
+            foreach (var productCategory in warehouseUnit.ProductCategories)
+            {
+                if(productCategory.Value != 0)
+                    empty = false;
+            }
+
+            if (!empty)
+                throw new CheckoutException($"Дозволено видалення тільки порожнього Складського юніта");
+            
             warehouseUnit.RemovedAt = DateTime.UtcNow;
             warehouseUnit.RemovedById = removedById;
+            var deletedWarehouseUnit = await _repository.UpdateAsync(warehouseUnit, cancellationToken);
             
-            return await _repository.UpdateAsync(warehouseUnit, cancellationToken);
+            return deletedWarehouseUnit;
+        }
+        catch (CheckoutException ex)
+        {
+            throw;
         }
         catch (Exception ex)
         {
