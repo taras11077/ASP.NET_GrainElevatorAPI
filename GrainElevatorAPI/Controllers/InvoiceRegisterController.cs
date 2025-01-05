@@ -131,7 +131,7 @@ public class InvoiceRegisterController : ControllerBase
     }
     
     [HttpGet("search")]
-    [Authorize(Roles = "Admin,Technologist")]
+    [Authorize(Roles = "Admin,Technologist,CEO")]
     public async Task<ActionResult<IEnumerable<InvoiceRegisterDto>>> SearchRegisters(
         [FromQuery] string? registerNumber,
         [FromQuery] DateTime? arrivalDate,

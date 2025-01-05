@@ -83,11 +83,17 @@ public class MapperProfile : Profile
         
         CreateMap<CompletionReport, CompletionReportCreateRequest>().ReverseMap();
         CreateMap<CompletionReport, CompletionReportUpdateRequest>().ReverseMap();
-        CreateMap<CompletionReport, CompletionReportDto>().ReverseMap();
+        CreateMap<CompletionReport, CompletionReportDto>()
+            .ForMember(dest => dest.SupplierTitle, opt => opt.MapFrom(src => src.Supplier.Title))
+            .ForMember(dest => dest.ProductTitle, opt => opt.MapFrom(src => src.Product.Title))
+            .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy.LastName))
+            .ReverseMap();
         
         CreateMap<CompletionReportOperation, CompletionReportOperationCreateRequest>().ReverseMap();
         CreateMap<CompletionReportOperation, CompletionReportOperationUpdateRequest>().ReverseMap();
-        CreateMap<CompletionReportOperation, CompletionReportOperationDto>().ReverseMap();
+        CreateMap<CompletionReportOperation, CompletionReportOperationDto>()
+            .ForMember(dest => dest.TechnologicalOperationTitle, opt => opt.MapFrom(src => src.TechnologicalOperation.Title))
+            .ReverseMap();
         
         CreateMap<PriceList, PriceListCreateRequest>().ReverseMap();
         CreateMap<PriceList, PriceListUpdateRequest>().ReverseMap();

@@ -9,7 +9,7 @@ public class InputInvoiceUpdateRequest
     public string? InvoiceNumber { get; set; }
     
     [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
-    [Range(typeof(DateTime), "01-01-1900", "31-12-2024", ErrorMessage = "ArrivalDate must be between 1900 and 2024.")]
+    [Range(typeof(DateTime), "01-01-1900", "31-12-2075", ErrorMessage = "ArrivalDate must be between 1900 and 2075.")]
     public DateTime? ArrivalDate { get; set; }
     
 

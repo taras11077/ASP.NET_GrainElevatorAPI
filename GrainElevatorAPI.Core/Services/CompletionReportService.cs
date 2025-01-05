@@ -28,12 +28,17 @@ public class CompletionReportService: ICompletionReportService
         
         if (registers == null || !registers.Any())
         {
-            throw new Exception("Не знайдено жодного реєстру для обробки.");
+            throw new ArgumentNullException("Не знайдено жодного Реєстру для обробки.");
         }
         
         var operations = await _repository.GetAll<TechnologicalOperation>()
             .Where(op => operationIds.Contains(op.Id))
             .ToListAsync(cancellationToken);
+        
+        // if (operations == null || !operations.Any())
+        // {
+        //     throw new ArgumentNullException("Не знайдено жодної Технологичної операції для обробки.");
+        // }
         
         var productId = registers.First().ProductId;
         var supplierId = registers.First().SupplierId;
@@ -52,7 +57,7 @@ public class CompletionReportService: ICompletionReportService
         var сompletionReportCalculator = new CompletionReportCalculator();
         сompletionReportCalculator.CalculateWeights(registers, completionReport);
 
-        // додавання операцій до звіту
+        // додавання операцій до Акта
         foreach (var operation in operations)
         {
             var amount = сompletionReportCalculator.MapOperationToReportField(operation, completionReport) ?? 0;
@@ -67,6 +72,10 @@ public class CompletionReportService: ICompletionReportService
         }
 
         return await _repository.AddAsync(completionReport, cancellationToken);
+    }
+    catch (ArgumentNullException ex)
+    {
+        throw;
     }
     catch (Exception ex)
     {
@@ -106,8 +115,6 @@ public class CompletionReportService: ICompletionReportService
         }
        
     }
-
-    
     
     public async Task<IEnumerable<CompletionReport>> GetCompletionReports(int page, int size, CancellationToken cancellationToken)
     {
@@ -135,75 +142,163 @@ public class CompletionReportService: ICompletionReportService
         }
     }
 
-     public async Task<IEnumerable<CompletionReport>> SearchCompletionReports(int? id,
-         string? reportNumber,
-         DateTime? reportDate,
-         double? quantitiesDryingReport,
-         double? physicalWeightReport,
-         int? supplierId,
-         int? productId,
-         int? createdById,
-         int page,
-         int size,
-         CancellationToken cancellationToken)
+     public async Task<(IEnumerable<CompletionReport>, int)> SearchCompletionReports(
+         string? reportNumber = null,
+         DateTime? reportDate = null,
+         double? physicalWeightReport =null,
+         decimal? totalCost = null,
+         string? supplierTitle = null,
+         string? productTitle = null,
+         string? createdByName = null,
+         int page = 1,
+         int size = 10,
+         string? sortField = null,
+         string? sortOrder = null,
+         CancellationToken cancellationToken = default)
     {
         try
         {
             var query = _repository.GetAll<CompletionReport>()
+                .Where(ir => ir.RemovedAt == null);
+            
+            // Виклик методу фільтрації
+            query = ApplyFilters(query, reportNumber, reportDate, physicalWeightReport, 
+                totalCost, supplierTitle, productTitle, createdByName);
+
+            // Виклик методу сортування
+            query = ApplySorting(query, sortField, sortOrder);
+
+            // Пагінація
+            int totalCount = await query.CountAsync(cancellationToken);
+
+            var filteredReports = await query
                 .Skip((page - 1) * size)
-                .Take(size);
+                .Take(size)
+                .ToListAsync(cancellationToken);
 
-            if (id.HasValue)
-            {
-                query = query.Where(cr => cr.Id == id);
-            }
-            
-            if (!string.IsNullOrEmpty(reportNumber))
-            {
-                query = query.Where(cr => cr.ReportNumber == reportNumber);
-            }
-            
-            if (reportDate.HasValue)
-            {
-                query = query.Where(cr => cr.ReportDate.Date == reportDate.Value.Date);
-            }
-            
-            if (quantitiesDryingReport.HasValue)
-                query = query.Where(cr => cr.QuantitiesDryingReport == quantitiesDryingReport.Value);
-            
-            if (physicalWeightReport.HasValue)
-                query = query.Where(cr => cr.PhysicalWeightReport == physicalWeightReport.Value);
-            
-            if (supplierId.HasValue)
-                query = query.Where(cr => cr.SupplierId == supplierId.Value);
-
-            if (productId.HasValue)
-                query = query.Where(cr => cr.ProductId == productId.Value);
-            
-            if (createdById.HasValue)
-                query = query.Where(cr => cr.CreatedById == createdById.Value);
-            
-            return await query.ToListAsync(cancellationToken);
+            return (filteredReports, totalCount);
         }
         catch (Exception ex)
         {
             throw new Exception("Помилка сервісу при пошуку Актів виконаних робіт за параметрами", ex);
         }
     }
+     
+     
+       private IQueryable<CompletionReport> ApplyFilters(
+        IQueryable<CompletionReport> query,
+        string? reportNumber,
+        DateTime? reportDate,
+        double? physicalWeightReport,
+        decimal? totalCost,
+        string? supplierTitle,
+        string? productTitle,
+        string? createdByName)
+    {
+        if (!string.IsNullOrEmpty(reportNumber))
+        {
+            query = query.Where(cr => cr.ReportNumber == reportNumber);
+        }
+            
+        if (reportDate.HasValue)
+        {
+            query = query.Where(cr => cr.ReportDate.Date == reportDate.Value.Date);
+        }
+        
+        if (physicalWeightReport.HasValue)
+            query = query.Where(cr => cr.PhysicalWeightReport == physicalWeightReport.Value);
+        
+        if (totalCost.HasValue)
+            query = query.Where(cr => cr.TotalCost == totalCost.Value);
+            
+        if (!string.IsNullOrEmpty(supplierTitle))
+        {
+            query = query.Where(cr => cr.Supplier.Title == supplierTitle);
+        }
+
+        if (!string.IsNullOrEmpty(productTitle))
+        {
+            query = query.Where(cr => cr.Product.Title == productTitle);
+        }
+            
+        if (!string.IsNullOrEmpty(createdByName))
+        {
+            query = query.Where(cr => cr.CreatedBy.LastName == createdByName);
+        }
+        
+        return query;
+    }
+
     
-    public async Task<CompletionReport> UpdateCompletionReportAsync(CompletionReport completionReport, int modifiedById, CancellationToken cancellationToken)
+    private IQueryable<CompletionReport> ApplySorting(
+        IQueryable<CompletionReport> query,
+        string? sortField,
+        string? sortOrder)
+    {
+        if (string.IsNullOrEmpty(sortField)) return query; // Без сортування
+
+        return sortField switch
+        {
+            "reportNumber" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.ReportNumber)
+                : query.OrderByDescending(reg => reg.ReportNumber),
+            "reportDate" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.ReportDate)
+                : query.OrderByDescending(reg => reg.ReportDate),
+            "productTitle" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.Product.Title)
+                : query.OrderByDescending(reg => reg.Product.Title),
+            "supplierTitle" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.Supplier.Title)
+                : query.OrderByDescending(reg => reg.Supplier.Title),
+            "physicalWeightReport" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.PhysicalWeightReport)
+                : query.OrderByDescending(reg => reg.PhysicalWeightReport),
+            "accWeightReport" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.AccWeightReport)
+                : query.OrderByDescending(reg => reg.AccWeightReport),
+            "wasteReport" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.WasteReport)
+                : query.OrderByDescending(reg => reg.WasteReport),
+            "quantitiesDryingReport" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.QuantitiesDryingReport)
+                : query.OrderByDescending(reg => reg.QuantitiesDryingReport),
+            "totalCost" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.TotalCost)
+                : query.OrderByDescending(reg => reg.TotalCost),
+            
+            "createdByName" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.CreatedBy.LastName)
+                : query.OrderByDescending(reg => reg.CreatedBy.LastName),
+            _ => query // Якщо поле не визначене
+        };
+    }
+    
+    public async Task<CompletionReport> UpdateCompletionReportAsync(
+        int id,
+        string? reportNumber,
+        DateTime? reportDate,
+        int modifiedById, 
+        CancellationToken cancellationToken)
     {
         try
         {
-            // TODO
-            completionReport.ModifiedAt = DateTime.UtcNow;
-            completionReport.ModifiedById = modifiedById;
+            var completionReportDb = await _repository.GetByIdAsync<CompletionReport>(id, cancellationToken)
+                                     ?? throw new InvalidOperationException($"CompletionReport with ID {id} not found.");
             
-            return await _repository.UpdateAsync(completionReport, cancellationToken);
+            if (reportNumber != null || reportDate != null)
+            {
+                completionReportDb.ReportNumber = reportNumber ?? completionReportDb.ReportNumber;
+                completionReportDb.ReportDate = reportDate ?? completionReportDb.ReportDate;
+                completionReportDb.ModifiedById = modifiedById;
+                completionReportDb.ModifiedAt = DateTime.UtcNow;
+            }
+            
+            return await _repository.UpdateAsync(completionReportDb, cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка сервісу при оновленні Акта виконаних робіт з ID  {completionReport.Id}", ex);
+            throw new Exception($"Помилка сервісу під час оновлення Акта виконаних робіт з ID {id}", ex);
         }
     }
 

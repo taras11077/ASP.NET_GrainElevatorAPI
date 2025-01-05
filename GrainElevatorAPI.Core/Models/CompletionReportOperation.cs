@@ -24,6 +24,6 @@ public class CompletionReportOperation : AuditableEntity, ICompletionReportOpera
 	public int? CompletionReportId { get; set; }
 
 	public virtual CompletionReport CompletionReport { get; set; }
-	
+	public virtual TechnologicalOperation TechnologicalOperation { get; set; }
 }
 

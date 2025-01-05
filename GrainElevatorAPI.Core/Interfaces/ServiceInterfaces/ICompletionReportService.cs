@@ -19,19 +19,26 @@ public interface ICompletionReportService
     Task<IEnumerable<CompletionReport>> GetCompletionReports(int page, int size, CancellationToken cancellationToken);
     Task<CompletionReport> GetCompletionReportByIdAsync(int id, CancellationToken cancellationToken);
     
-    Task<IEnumerable<CompletionReport>> SearchCompletionReports(int? id,
+    Task<(IEnumerable<CompletionReport>, int)> SearchCompletionReports(
         string? reportNumber,
         DateTime? reportDate,
-        double? quantitiesDryingReport,
         double? physicalWeightReport,
-        int? supplierId,
-        int? productId,
-        int? createdById,
+        decimal? totalCost,
+        string? supplierTitle,
+        string? productTitle,
+        string? createdByName,
         int page,
         int size,
+        string? sortField,
+        string? sortOrder,
         CancellationToken cancellationToken);
     
-    Task<CompletionReport> UpdateCompletionReportAsync(CompletionReport completionReport, int modifiedById, CancellationToken cancellationToken);
+    Task<CompletionReport> UpdateCompletionReportAsync(
+        int id, 
+        string? reportNumber,
+        DateTime? reportDate,
+        int modifiedById, 
+        CancellationToken cancellationToken);
     Task<CompletionReport> SoftDeleteCompletionReportAsync(CompletionReport completionReport, int removedById, CancellationToken cancellationToken);
     Task<CompletionReport> RestoreRemovedCompletionReportAsync(CompletionReport completionReport, int restoredById, CancellationToken cancellationToken);
     Task<bool> DeleteCompletionReportAsync(int id, CancellationToken cancellationToken);

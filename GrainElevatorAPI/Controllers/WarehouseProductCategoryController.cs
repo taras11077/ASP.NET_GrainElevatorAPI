@@ -7,11 +7,12 @@ using GrainElevatorAPI.DTO.Requests.UpdateRequests;
 using GrainElevatorAPI.DTOs;
 using GrainElevatorAPI.DTOs.Requests;
 using GrainElevatorAPI.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GrainElevatorAPI.Controllers;
 
-[Route("api/warehouseProductCategory")]
+[Route("api/warehouse-product-category")]
 [ApiController]
 public class WarehouseProductCategoryController: ControllerBase
 
@@ -33,7 +34,7 @@ public class WarehouseProductCategoryController: ControllerBase
     }
     
     [HttpPost]
-    //[Authorize(Roles = "Admin, Accountant")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<ActionResult<WarehouseProductCategoryDto>> CreateWarehouseProductCategory(WarehouseProductCategoryCreateRequest request)
     {
         if (!ModelState.IsValid)
@@ -60,7 +61,7 @@ public class WarehouseProductCategoryController: ControllerBase
 
 
     [HttpGet]
-    //[Authorize(Roles = "Admin, Accountant")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<ActionResult<IEnumerable<WarehouseProductCategoryDto>>> GetWarehouseProductCategory([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
@@ -80,7 +81,7 @@ public class WarehouseProductCategoryController: ControllerBase
 
 
     [HttpGet("{id}")]
-    //[Authorize(Roles = "Admin, Accountant")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<ActionResult<WarehouseProductCategoryDto>> GetWarehouseProductCategory(int id)
     {
         try
@@ -103,7 +104,7 @@ public class WarehouseProductCategoryController: ControllerBase
 
     
     [HttpGet("search")]
-    //[Authorize(Roles = "Admin, Accountant")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<ActionResult<IEnumerable<WarehouseProductCategoryDto>>> SearchWarehouseProductCategories(
         [FromQuery] int? id = null,
         [FromQuery] string? title = null,
@@ -142,7 +143,7 @@ public class WarehouseProductCategoryController: ControllerBase
     
 
     [HttpPut("{id}")]
-    //[Authorize(Roles = "Admin, Accountant")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<IActionResult> UpdateWarehouseProductCategory(int id, WarehouseProductCategoryUpdateRequest request)
     {
         if (!ModelState.IsValid)
@@ -174,7 +175,7 @@ public class WarehouseProductCategoryController: ControllerBase
     
     
     [HttpPatch("{id}/soft-remove")]
-    //[Authorize(Roles = "Admin, Accountant")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<IActionResult> SoftDeleteLaboratoryCar(int id)
     {
         try
@@ -200,7 +201,7 @@ public class WarehouseProductCategoryController: ControllerBase
     
 
     [HttpPatch("{id}/restore")]
-    //[Authorize(Roles = "Admin, Accountant")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> RestoreRemovedWarehouseProductCategory(int id)
     {
         try
@@ -226,7 +227,7 @@ public class WarehouseProductCategoryController: ControllerBase
     
     
     [HttpDelete("{id}/hard-remove")]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteWarehouseProductCategory(int id)
     {
         try

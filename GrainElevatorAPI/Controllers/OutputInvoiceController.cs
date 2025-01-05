@@ -87,7 +87,7 @@ public class OutputInvoiceController: ControllerBase
 
 
     [HttpGet]
-    [Authorize(Roles = "Admin,Accountant")]
+    [Authorize(Roles = "Admin,Accountant,CEO")]
     public async Task<ActionResult> GetOutputInvoices([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
@@ -108,7 +108,7 @@ public class OutputInvoiceController: ControllerBase
 
 
     [HttpGet("{id}")]
-    [Authorize(Roles = "Admin,Accountant")]
+    [Authorize(Roles = "Admin,Accountant,CEO")]
     public async Task<ActionResult> GetOutputInvoice(int id)
     {
         try
@@ -131,7 +131,7 @@ public class OutputInvoiceController: ControllerBase
     }
 
     [HttpGet("search")]
-    [Authorize(Roles = "Admin,Accountant")]
+    [Authorize(Roles = "Admin,Accountant,CEO")]
     public async Task<ActionResult> SearchOutputInvoices(
         [FromQuery] string? invoiceNumber = null,
         [FromQuery] DateTime? shipmentDate = null,

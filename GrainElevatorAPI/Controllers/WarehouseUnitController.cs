@@ -84,7 +84,7 @@ public class WarehouseUnitController : ControllerBase
     
     
     [HttpGet]
-    [Authorize(Roles = "Admin,Accountant")]
+    [Authorize(Roles = "Admin,Accountant,CEO")]
     public async Task<ActionResult<IEnumerable<WarehouseUnitDto>>> GetWarehouseUnits([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
@@ -103,7 +103,7 @@ public class WarehouseUnitController : ControllerBase
     }
     
     [HttpGet("{id}")]
-    [Authorize(Roles = "Admin,Technologist")]
+    [Authorize(Roles = "Admin,Technologist,CEO")]
     public async Task<ActionResult<WarehouseUnitDto>> GetWarehouseUnitById(int id)
     {
         try
@@ -128,7 +128,7 @@ public class WarehouseUnitController : ControllerBase
     
     
     [HttpGet("search")]
-    [Authorize(Roles = "Admin,Accountant")]
+    [Authorize(Roles = "Admin,Accountant,CEO")]
     public async Task<ActionResult<IEnumerable<WarehouseUnitDto>>> SearchWarehouseUnits(
         [FromQuery] string? supplierTitle,
         [FromQuery] string? productTitle,

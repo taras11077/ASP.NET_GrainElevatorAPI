@@ -4,6 +4,7 @@ using GrainElevatorAPI.DTO.DTOs;
 using GrainElevatorAPI.DTO.Requests.CreateRequests;
 using GrainElevatorAPI.DTO.Requests.UpdateRequests;
 using GrainElevatorAPI.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GrainElevatorAPI.Controllers;
@@ -30,7 +31,7 @@ public class CompletionReportController: ControllerBase
     
     
     [HttpPost]
-    //[Authorize(Roles = "Admin, Technologist")]
+    [Authorize(Roles = "Admin,Technologist")]
     public async Task<ActionResult<CompletionReportDto>> CreateCompletionReport([FromBody] CompletionReportCreateRequest request)
     {
         if (!ModelState.IsValid)
@@ -43,17 +44,26 @@ public class CompletionReportController: ControllerBase
             var cancellationToken = GetCancellationToken();
             
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (createdById <= 0)
+            {
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            }
             
             // створення Акта виконаних робіт
             var createdCompletionReport = await _completionReportService.CreateCompletionReportAsync(
                 request.ReportNumber,
-                request.RegisterIds,
+                request.InvoiceRegisterIds,
                 request.OperationIds,
                 createdById,
                 cancellationToken);
             
             return CreatedAtAction(nameof(GetCompletionReports), new { id = createdCompletionReport.Id },
                 _mapper.Map<CompletionReportDto>(createdCompletionReport));
+        }
+        catch (ArgumentNullException ex)
+        {
+            _logger.LogError($"Внутрішня помилка сервера при створенні Акта виконаних робіт: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при створенні Акта виконаних робіт: {ex.Message}");
         }
         catch (Exception ex)
         {
@@ -64,7 +74,7 @@ public class CompletionReportController: ControllerBase
     
     
     [HttpPut("{id}/cost-calculate")]
-    //[Authorize(Roles = "Admin, Accountant")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<IActionResult>CalculateCostCompletionReport(int id, int priceListId)
     {
         if (!ModelState.IsValid)
@@ -90,7 +100,7 @@ public class CompletionReportController: ControllerBase
     
     
     [HttpGet]
-    //[Authorize(Roles = "Admin, Technologist, Accountant ")]
+    [Authorize(Roles = "Admin,Technologist,Accountant,CEO")]
     public async Task<ActionResult<IEnumerable<CompletionReportDto>>> GetCompletionReports([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
@@ -110,7 +120,7 @@ public class CompletionReportController: ControllerBase
     
     
     [HttpGet("{id}")]
-    //[Authorize(Roles = "Admin, Technologist, Accountant")]
+    [Authorize(Roles = "Admin,Technologist,Accountant,CEO")]
     public async Task<ActionResult<CompletionReportDto>> GetCompletionReportById(int id)
     {
         try
@@ -134,37 +144,40 @@ public class CompletionReportController: ControllerBase
     }
     
     [HttpGet("search")]
-    //[Authorize(Roles = "Admin, Technologist, Accountant")]
+    [Authorize(Roles = "Admin,Technologist,Accountant,CEO")]
     public async Task<ActionResult<IEnumerable<CompletionReportDto>>> SearchCompletionReports(
-        [FromQuery] int? id,
         [FromQuery] string? reportNumber,
         [FromQuery] DateTime? reportDate,
-        [FromQuery] int? quantitiesDryingReport,
         [FromQuery] int? physicalWeightReport,
-        [FromQuery] int? supplierId,
-        [FromQuery] int? productId,
-        [FromQuery] int? createdById,
+        [FromQuery] decimal? totalCost,
+        [FromQuery] string? supplierTitle,
+        [FromQuery] string? productTitle,
+        [FromQuery] string? createdByName,
         [FromQuery] int page = 1,
-        [FromQuery] int size = 10)
+        [FromQuery] int size = 10,
+        [FromQuery] string? sortField = null,
+        [FromQuery] string? sortOrder = null)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
 
-            var filteredCompletionReports = await _completionReportService.SearchCompletionReports(
-                id, 
+            var (filteredCompletionReports, totalCount) = await _completionReportService.SearchCompletionReports(
                 reportNumber,
                 reportDate,
-                quantitiesDryingReport,
                 physicalWeightReport,
-                supplierId,
-                productId,
-                createdById, 
+                totalCost,
+                supplierTitle,
+                productTitle,
+                createdByName,
                 page, 
                 size,
+                sortField, sortOrder,
                 cancellationToken);
 
             var completionReportDtos = _mapper.Map<IEnumerable<CompletionReportDto>>(filteredCompletionReports);
+            Response.Headers.Append("X-Total-Count", totalCount.ToString());
+            
             return Ok(completionReportDtos);
         }
         catch (Exception ex)
@@ -177,7 +190,7 @@ public class CompletionReportController: ControllerBase
     
     
     [HttpPut("{id}")]
-    //[Authorize(Roles = "Admin, Accountant")]
+    [Authorize(Roles = "Admin,Technologist,Accountant")]
     public async Task<IActionResult> UpdateCompletionReport(int id, CompletionReportUpdateRequest request)
     {
         if (!ModelState.IsValid)
@@ -188,15 +201,20 @@ public class CompletionReportController: ControllerBase
         try
         {
             var cancellationToken = GetCancellationToken();
-            var completionReportDb = await _completionReportService.GetCompletionReportByIdAsync(id, cancellationToken);
-            if (completionReportDb == null)
+            
+            var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (modifiedById == 0)
             {
-                return NotFound($"Акта виконаних робіт з ID {id} не знайдено.");
+                return Unauthorized(new { message = "Користувач не авторизований." });
             }
             
-            completionReportDb.UpdateFromRequest(request); // TODO
-            var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
-            var updatedCompletionReport = await _completionReportService.UpdateCompletionReportAsync(completionReportDb, modifiedById, cancellationToken);
+            var updatedCompletionReport = await _completionReportService.UpdateCompletionReportAsync(
+                id, 
+                request.ReportNumber, 
+                request.ReportDate, 
+                modifiedById, 
+                cancellationToken);
+            
             
             return Ok(_mapper.Map<CompletionReportDto>(updatedCompletionReport));
         }
@@ -209,7 +227,7 @@ public class CompletionReportController: ControllerBase
     
     
     [HttpPatch("{id}/soft-remove")]
-    //[Authorize(Roles = "Admin, Technologist, Accountant")]
+    [Authorize(Roles = "Admin,Technologist,Accountant")]
     public async Task<IActionResult> SoftDeleteCompletionReport(int id)
     {
         try
@@ -221,7 +239,12 @@ public class CompletionReportController: ControllerBase
                 return NotFound($"Акта виконаних робіт з ID {id} не знайдено.");
             }
             
+            
             var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (removedById <= 0)
+            {
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            }
             var removedCompletionReport = await _completionReportService.SoftDeleteCompletionReportAsync(completionReportDb, removedById, cancellationToken);
             
             return Ok(_mapper.Map<CompletionReportDto>(removedCompletionReport));
@@ -235,7 +258,7 @@ public class CompletionReportController: ControllerBase
     
 
     [HttpPatch("{id}/restore")]
-    //[Authorize(Roles = "Admin, Technologist, Accountant")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> RestoreRemovedCompletionReport(int id)
     {
         try
@@ -261,7 +284,7 @@ public class CompletionReportController: ControllerBase
     
     
     [HttpDelete("{id}/hard-remove")]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteCompletionReport(int id)
     {
         try

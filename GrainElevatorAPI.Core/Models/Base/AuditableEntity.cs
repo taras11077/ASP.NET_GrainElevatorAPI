@@ -5,19 +5,19 @@ namespace GrainElevatorAPI.Core.Models.Base;
 public abstract class AuditableEntity
 {
     [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
-    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "CreatedAt must be between 1900 and 2024.")]
+    [Range(typeof(DateTime), "1900-01-01", "2075-12-31", ErrorMessage = "CreatedAt must be between 1900 and 2075.")]
     public DateTime CreatedAt { get; set; }
 
     [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
-    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "ModifiedAt must be between 1900 and 2024.")]
+    [Range(typeof(DateTime), "1900-01-01", "2075-12-31", ErrorMessage = "ModifiedAt must be between 1900 and 2075.")]
     public DateTime? ModifiedAt { get; set; }
 
     [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
-    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "RemovedAt must be between 1900 and 2024.")]
+    [Range(typeof(DateTime), "1900-01-01", "2075-12-31", ErrorMessage = "RemovedAt must be between 1900 and 2075.")]
     public DateTime? RemovedAt { get; set; }
 
     [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
-    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "RestoredAt must be between 1900 and 2024.")]
+    [Range(typeof(DateTime), "1900-01-01", "2075-12-31", ErrorMessage = "RestoredAt must be between 1900 and 2075.")]
     public DateTime? RestoredAt { get; set; }
 
     

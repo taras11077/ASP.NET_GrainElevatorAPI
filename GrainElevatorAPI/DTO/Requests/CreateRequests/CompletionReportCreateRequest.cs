@@ -10,6 +10,8 @@ public class CompletionReportCreateRequest
     [MaxLength(9, ErrorMessage = "ReportNumber must be at least 9 characters long.")]
     public string ReportNumber { get; set; }
     
-    public List<int> RegisterIds { get; set; } = new List<int>();
+    public DateTime ReportDate { get; set; }
+    
+    public List<int> InvoiceRegisterIds { get; set; } = new List<int>();
     public List<int> OperationIds { get; set; } = new List<int>();
 }

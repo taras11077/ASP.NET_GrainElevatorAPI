@@ -9,9 +9,7 @@ public class CompletionReportUpdateRequest
     public string? ReportNumber { get; set; }
     
     [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
-    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "ReportDate must be between 1900 and 2024.")]
+    [Range(typeof(DateTime), "1900-01-01", "2075-12-31", ErrorMessage = "ReportDate must be between 1900 and 2075.")]
     public DateTime? ReportDate { get; set; }
-    
-    public List<int>? RegisterIds { get; set; } = new List<int>();
-    public List<int>? OperationIds { get; set; } = new List<int>();
+
 }

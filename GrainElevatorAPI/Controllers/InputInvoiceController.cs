@@ -121,7 +121,7 @@ public class InputInvoiceController : ControllerBase
     }
 
     [HttpGet("search")]
-    [Authorize(Roles = "Admin,Laboratory")]
+    [Authorize(Roles = "Admin,Laboratory,CEO")]
     public async Task<ActionResult<IEnumerable<InputInvoiceDto>>> SearchInputInvoices(
         [FromQuery] int? id = null,
         [FromQuery] string? invoiceNumber = null,
