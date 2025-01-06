@@ -104,7 +104,9 @@ public class MapperProfile : Profile
         CreateMap<PriceListItem, PriceListItemDto>().ReverseMap();
         
         CreateMap<TechnologicalOperation, TechnologicalOperationCreateRequest>().ReverseMap();
-        CreateMap<TechnologicalOperation, TechnologicalOperationDto>().ReverseMap();
+        CreateMap<TechnologicalOperation, TechnologicalOperationDto>()
+            .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy.LastName))
+            .ReverseMap();
         
     }
 }

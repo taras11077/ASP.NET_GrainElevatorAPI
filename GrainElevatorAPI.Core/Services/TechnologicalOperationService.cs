@@ -58,18 +58,76 @@ public class TechnologicalOperationService: ITechnologicalOperationService
     }
     
     
-    public async Task<IEnumerable<TechnologicalOperation>> SearchTechnologicalOperation(string title, CancellationToken cancellationToken)
+    public async Task<(IEnumerable<TechnologicalOperation>, int)> SearchTechnologicalOperation(
+        string? title,
+        string? createdByName,
+        int page,
+        int size,
+        string? sortField,
+        string? sortOrder,
+        CancellationToken cancellationToken)
     {
         try
         {
-            return await _repository.GetAll<TechnologicalOperation>()
-                .Where(s => s.Title.ToLower().Contains(title.ToLower()))
+            var query = _repository.GetAll<TechnologicalOperation>()
+                .Where(ir => ir.RemovedAt == null);
+            
+            // Виклик методу фільтрації
+            query = ApplyFilters(query, title, createdByName);
+
+            // Виклик методу сортування
+            query = ApplySorting(query, sortField, sortOrder);
+
+            // Пагінація
+            int totalCount = await query.CountAsync(cancellationToken);
+
+            var filteredOperations = await query
+                .Skip((page - 1) * size)
+                .Take(size)
                 .ToListAsync(cancellationToken);
+
+            return (filteredOperations, totalCount);
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка сервісу при отриманні Технологічної операції з назвою {title}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Технологічної операції", ex);
         }
+    }
+    
+    private IQueryable<TechnologicalOperation> ApplyFilters(
+        IQueryable<TechnologicalOperation> query,
+        string? title,
+        string? createdByName)
+    {
+        if (!string.IsNullOrEmpty(title))
+        {
+            query = query.Where(to => to.Title == title);
+        }
+        if (!string.IsNullOrEmpty(createdByName))
+        {
+            query = query.Where(to => to.CreatedBy.LastName == createdByName);
+        }
+        
+        return query;
+    }
+    
+    private IQueryable<TechnologicalOperation> ApplySorting(
+        IQueryable<TechnologicalOperation> query,
+        string? sortField,
+        string? sortOrder)
+    {
+        if (string.IsNullOrEmpty(sortField)) return query; // Без сортування
+
+        return sortField switch
+        {
+            "title" => sortOrder == "asc"
+                ? query.OrderBy(to => to.Title)
+                : query.OrderByDescending(to => to.Title),
+            "createdByName" => sortOrder == "asc"
+                ? query.OrderBy(to => to.CreatedBy.LastName)
+                : query.OrderByDescending(to => to.CreatedBy.LastName),
+            _ => query // Якщо поле не визначене
+        };
     }
 
     public async Task<TechnologicalOperation> UpdateTechnologicalOperationAsync(TechnologicalOperation technologicalOperation, int modifiedById, CancellationToken cancellationToken)

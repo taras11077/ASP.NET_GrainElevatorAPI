@@ -12,4 +12,6 @@ public class TechnologicalOperationDto
     [MinLength(4, ErrorMessage = "Title must be at least 4 characters long.")]
     [MaxLength(20, ErrorMessage = "Title must be at least 20 characters long.")]
     public string Title { get; set; }
+    
+    public string CreatedByName { get; set; }
 }

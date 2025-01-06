@@ -35,10 +35,10 @@ public class CompletionReportService: ICompletionReportService
             .Where(op => operationIds.Contains(op.Id))
             .ToListAsync(cancellationToken);
         
-        // if (operations == null || !operations.Any())
-        // {
-        //     throw new ArgumentNullException("Не знайдено жодної Технологичної операції для обробки.");
-        // }
+        if (operations == null || !operations.Any())
+        {
+            throw new ArgumentNullException("Не знайдено жодної Технологичної операції для обробки.");
+        }
         
         var productId = registers.First().ProductId;
         var supplierId = registers.First().SupplierId;
