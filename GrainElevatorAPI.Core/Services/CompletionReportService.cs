@@ -57,6 +57,13 @@ public class CompletionReportService: ICompletionReportService
         var сompletionReportCalculator = new CompletionReportCalculator();
         сompletionReportCalculator.CalculateWeights(registers, completionReport);
 
+        // Встановлення IsFinalized = true для кожного Реєстра
+        foreach (var register in registers)
+        {
+            register.IsFinalized = true;
+            await _repository.UpdateAsync(register, cancellationToken);
+        }
+
         // додавання операцій до Акта
         foreach (var operation in operations)
         {
@@ -70,6 +77,8 @@ public class CompletionReportService: ICompletionReportService
                 OperationCost = 0
             });
         }
+        
+        
 
         return await _repository.AddAsync(completionReport, cancellationToken);
     }

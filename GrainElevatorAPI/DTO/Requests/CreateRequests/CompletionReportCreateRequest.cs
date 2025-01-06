@@ -13,5 +13,5 @@ public class CompletionReportCreateRequest
     public DateTime ReportDate { get; set; }
     
     public List<int> InvoiceRegisterIds { get; set; } = new List<int>();
-    public List<int> OperationIds { get; set; } = new List<int>();
+    public List<int> TechnologicalOperationIds { get; set; } = new List<int>();
 }

@@ -53,7 +53,7 @@ public class CompletionReportController: ControllerBase
             var createdCompletionReport = await _completionReportService.CreateCompletionReportAsync(
                 request.ReportNumber,
                 request.InvoiceRegisterIds,
-                request.OperationIds,
+                request.TechnologicalOperationIds,
                 createdById,
                 cancellationToken);
             
