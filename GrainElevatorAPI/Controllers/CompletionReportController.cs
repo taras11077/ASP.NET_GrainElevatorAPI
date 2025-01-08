@@ -45,9 +45,8 @@ public class CompletionReportController: ControllerBase
             
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             if (createdById <= 0)
-            {
                 return Unauthorized(new { message = "Користувач не авторизований." });
-            }
+            
             
             // створення Акта виконаних робіт
             var createdCompletionReport = await _completionReportService.CreateCompletionReportAsync(
@@ -87,6 +86,9 @@ public class CompletionReportController: ControllerBase
             var cancellationToken = GetCancellationToken();
 
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (modifiedById <= 0)
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            
             var calculatedCompletionReport = await _completionReportService.CalculateReportCostAsync(id, priceListId, modifiedById, cancellationToken);
             
             return Ok(_mapper.Map<CompletionReportDto>(calculatedCompletionReport));

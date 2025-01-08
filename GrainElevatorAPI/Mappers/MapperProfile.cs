@@ -97,11 +97,17 @@ public class MapperProfile : Profile
         
         CreateMap<PriceList, PriceListCreateRequest>().ReverseMap();
         CreateMap<PriceList, PriceListUpdateRequest>().ReverseMap();
-        CreateMap<PriceList, PriceListDto>().ReverseMap();
+        CreateMap<PriceList, PriceListDto>()
+            .ForMember(dest => dest.ProductTitle, opt => opt.MapFrom(src => src.Product.Title))
+            .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy.LastName))
+            .ReverseMap();
         
         CreateMap<PriceListItem, PriceListItemCreateRequest>().ReverseMap();
         CreateMap<PriceListItem, PriceListItemUpdateRequest>().ReverseMap();
-        CreateMap<PriceListItem, PriceListItemDto>().ReverseMap();
+        CreateMap<PriceListItem, PriceListItemDto>()
+            .ForMember(dest => dest.TechnologicalOperationTitle, opt => opt.MapFrom(src => src.TechnologicalOperation.Title))
+            .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy.LastName))
+            .ReverseMap();
         
         CreateMap<TechnologicalOperation, TechnologicalOperationCreateRequest>().ReverseMap();
         CreateMap<TechnologicalOperation, TechnologicalOperationDto>()

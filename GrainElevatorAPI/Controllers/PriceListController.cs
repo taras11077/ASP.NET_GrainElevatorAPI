@@ -5,6 +5,7 @@ using GrainElevatorAPI.DTO.DTOs;
 using GrainElevatorAPI.DTO.Requests.CreateRequests;
 using GrainElevatorAPI.DTO.Requests.UpdateRequests;
 using GrainElevatorAPI.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GrainElevatorAPI.Controllers;
@@ -31,7 +32,7 @@ public class PriceListController : ControllerBase
     }
 
     [HttpPost]
-    //[Authorize(Roles = "Admin,Accountant")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<ActionResult<PriceListDto>> CreatePriceList(PriceListCreateRequest request)
     {
         if (!ModelState.IsValid)
@@ -80,7 +81,7 @@ public class PriceListController : ControllerBase
 
 
     [HttpGet("{id}")]
-    //[Authorize(Roles = "Admin, Accountant")]
+    [Authorize(Roles = "Admin,Accountant,CEO")]
     public async Task<ActionResult<PriceListDto>> GetPriceList(int id)
     {
         try
@@ -103,7 +104,7 @@ public class PriceListController : ControllerBase
 
 
     [HttpGet("search")]
-    //[Authorize(Roles = "Admin, Accountant")]
+    [Authorize(Roles = "Admin,Accountant,CEO")]
     public async Task<ActionResult<IEnumerable<PriceListDto>>> SearchPriceLists(
         [FromQuery] int? id = null,
         [FromQuery] int? productId = null,
@@ -136,7 +137,7 @@ public class PriceListController : ControllerBase
 
 
     [HttpPut("{id}")]
-    //[Authorize(Roles = "Admin, Accountant")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<IActionResult> UpdatePriceList(int id, PriceListUpdateRequest request)
     {
         if (!ModelState.IsValid)
@@ -162,7 +163,7 @@ public class PriceListController : ControllerBase
 
 
     [HttpPatch("{id}/soft-remove")]
-    //[Authorize(Roles = "Admin, Accountant")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<IActionResult> SoftDeleteLaboratoryCar(int id)
     {
         try
@@ -189,7 +190,7 @@ public class PriceListController : ControllerBase
 
 
     [HttpPatch("{id}/restore")]
-    //[Authorize(Roles = "Admin, Accountant")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> RestoreRemovedPriceList(int id)
     {
         try
@@ -216,7 +217,7 @@ public class PriceListController : ControllerBase
 
 
     [HttpDelete("{id}/hard-remove")]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeletePriceList(int id)
     {
         try
