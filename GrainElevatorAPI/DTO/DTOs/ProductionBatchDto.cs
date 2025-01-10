@@ -21,9 +21,14 @@ public class ProductionBatchDto
 	public double? QuantitiesDrying { get; set; }
 	
 	
-	[Required(ErrorMessage = "LaboratoryCardId is required.")]
-	[Range(1, int.MaxValue, ErrorMessage = "LaboratoryCardId must be a positive number.")]
-	public int LaboratoryCardId { get; set; }
+	public string InvoiceNumber { get; set; }
+	
+	public string LabCardNumber { get; set; }
+	public int PhysicalWeight { get; set; }
+	public double WeedImpurity { get; set; }
+	public double WeedImpurityBase { get; set; }
+	public double Moisture { get; set; }
+	public double MoistureBase { get; set; }
 
 	[Range(1, int.MaxValue, ErrorMessage = "RegisterId must be a positive number.")]
 	public int? RegisterId { get; set; }

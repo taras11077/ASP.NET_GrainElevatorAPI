@@ -58,7 +58,15 @@ public class MapperProfile : Profile
             .ForMember(dest => dest.ProductTitle, opt => opt.MapFrom(src => src.InputInvoice.Product.Title))
             .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy.LastName));
         
-        CreateMap<ProductionBatch, ProductionBatchDto>().ReverseMap();
+        CreateMap<ProductionBatch, ProductionBatchDto>()
+            .ForMember(dest => dest.InvoiceNumber, opt => opt.MapFrom(src => src.LaboratoryCard.InputInvoice.InvoiceNumber))
+            .ForMember(dest => dest.LabCardNumber, opt => opt.MapFrom(src => src.LaboratoryCard.LabCardNumber))
+            .ForMember(dest => dest.PhysicalWeight, opt => opt.MapFrom(src => src.LaboratoryCard.InputInvoice.PhysicalWeight))
+            .ForMember(dest => dest.WeedImpurity, opt => opt.MapFrom(src => src.LaboratoryCard.WeedImpurity))
+            .ForMember(dest => dest.Moisture, opt => opt.MapFrom(src => src.LaboratoryCard.Moisture))
+            .ForMember(dest => dest.WeedImpurityBase, opt => opt.MapFrom(src => src.Register.WeedImpurityBase))
+            .ForMember(dest => dest.MoistureBase, opt => opt.MapFrom(src => src.Register.MoistureBase))
+            .ReverseMap();
         
         CreateMap<InvoiceRegister, InvoiceRegisterCreateRequest>().ReverseMap();
         CreateMap<InvoiceRegister, InvoiceRegisterUpdateRequest>().ReverseMap();
