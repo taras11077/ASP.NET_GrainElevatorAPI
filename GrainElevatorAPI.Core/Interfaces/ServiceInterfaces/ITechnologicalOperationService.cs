@@ -7,7 +7,7 @@ public interface ITechnologicalOperationService
     Task<TechnologicalOperation> CreateTechnologicalOperationAsync(TechnologicalOperation technologicalOperation, int createdById, CancellationToken cancellationToken);
     Task<IEnumerable<TechnologicalOperation>> GetTechnologicalOperations(int page, int size, CancellationToken cancellationToken);
     Task<TechnologicalOperation> GetTechnologicalOperationByIdAsync(int id, CancellationToken cancellationToken);
-    Task<(IEnumerable<TechnologicalOperation>, int)> SearchTechnologicalOperation(
+    Task<(IEnumerable<TechnologicalOperation>, int)> SearchTechnologicalOperationAsync(
         string? title,
         string? createdByName,
         int page,

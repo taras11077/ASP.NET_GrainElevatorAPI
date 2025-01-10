@@ -13,5 +13,12 @@ public interface IProductService
     
     Task<bool> DeleteProductAsync(int id, CancellationToken cancellationToken);
     Task<IEnumerable<Product>> GetProducts(int page, int size, CancellationToken cancellationToken);
-    Task<IEnumerable<Product>> SearchProduct(string title, CancellationToken cancellationToken);
+    Task<(IEnumerable<Product>, int)> SearchProductsAsync(
+        string? title,
+        string? createdByName,
+        int page,
+        int size,
+        string? sortField,
+        string? sortOrder,
+        CancellationToken cancellationToken);
 }

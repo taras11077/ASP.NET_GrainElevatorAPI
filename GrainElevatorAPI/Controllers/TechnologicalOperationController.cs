@@ -107,7 +107,7 @@ public class TechnologicalOperationController : ControllerBase
 		try
 		{
 			var cancellationToken = GetCancellationToken();
-			var (filteredTechnologicalOperations, totalCount) = await _technologicalOperationService.SearchTechnologicalOperation(
+			var (filteredTechnologicalOperations, totalCount) = await _technologicalOperationService.SearchTechnologicalOperationAsync(
 				title,
 				createdByName,
 				page, 

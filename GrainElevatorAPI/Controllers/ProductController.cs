@@ -32,7 +32,7 @@ public class ProductController : ControllerBase
     }
     
     [HttpPost]
-    //[Authorize(Roles = "admin")]
+    [Authorize(Roles = "Admin,Laboratory,Accountant")]
     public async Task<ActionResult<ProductDto>> CreateProduct(ProductCreateRequest request)
     {
         if (!ModelState.IsValid)
@@ -43,8 +43,11 @@ public class ProductController : ControllerBase
         try
         {
             var cancellationToken = GetCancellationToken();
-            var newProduct = _mapper.Map<Product>(request);
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (createdById <= 0)
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            
+            var newProduct = _mapper.Map<Product>(request);
             
             var createdProduct = await _productService.CreateProductAsync(newProduct, createdById, cancellationToken);
             return CreatedAtAction(nameof(GetProductById), new { id = createdProduct.Id }, _mapper.Map<ProductDto>(createdProduct));
@@ -58,6 +61,7 @@ public class ProductController : ControllerBase
     
     
     [HttpGet]
+    [Authorize(Roles = "Admin,Laboratory,Technologist,Accountant,CEO")]
     public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
         try
@@ -77,6 +81,7 @@ public class ProductController : ControllerBase
     
     
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin,Laboratory,Technologist,Accountant,CEO")]
     public async Task<ActionResult<ProductDto>> GetProductById(int id)
     {
         try
@@ -97,14 +102,29 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("search")]
-    public async Task<ActionResult<IEnumerable<ProductDto>>> SearchProducts(string title)
+    [Authorize(Roles = "Admin,Laboratory,Technologist,Accountant,CEO")]
+    public async Task<ActionResult<IEnumerable<ProductDto>>> SearchProducts(
+        [FromQuery] string? title,
+        [FromQuery] string? createdByName,
+        [FromQuery] int page = 1,
+        [FromQuery] int size = 10,
+        [FromQuery] string? sortField = null,
+        [FromQuery] string? sortOrder = null)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
-            var products = await _productService.SearchProduct(title, cancellationToken);
+            var (products, totalCount) = await _productService.SearchProductsAsync(
+                title,
+                createdByName,
+                page, 
+                size,
+                sortField, sortOrder,
+                cancellationToken);
             
             var productsDto = _mapper.Map<IEnumerable<ProductDto>>(products);
+            Response.Headers.Append("X-Total-Count", totalCount.ToString());
+            
             return Ok(productsDto);
         }
         catch (Exception ex)
@@ -115,6 +135,7 @@ public class ProductController : ControllerBase
     } 
     
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin,Laboratory,Accountant")]
     public async Task<IActionResult> UpdateProduct(int id, ProductCreateRequest request)
     {
         if (!ModelState.IsValid)
@@ -146,7 +167,7 @@ public class ProductController : ControllerBase
     
     
     [HttpPatch("{id}/soft-remove")]
-    //[Authorize(Roles = "admin, laboratory")]
+    [Authorize(Roles = "Admin,Laboratory,Accountant")]
     public async Task<IActionResult> SoftDeleteProduct(int id)
     {
         try
@@ -172,7 +193,7 @@ public class ProductController : ControllerBase
     
 
     [HttpPatch("{id}/restore")]
-    //[Authorize(Roles = "admin, laboratory")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> RestoreRemovedProduct(int id)
     {
         try
@@ -197,7 +218,7 @@ public class ProductController : ControllerBase
     }
     
     [HttpDelete("{id}/hard-remove")]
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteProduct(int id)
     {
         try

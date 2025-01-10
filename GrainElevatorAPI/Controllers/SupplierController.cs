@@ -32,6 +32,7 @@ public class SupplierController : ControllerBase
 	}
 
 	[HttpPost]
+	[Authorize(Roles = "Admin,Laboratory,Accountant")]
 	public async Task<ActionResult<SupplierDto>> CreateSupplier(SupplierCreateRequest request)
 	{
 		if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -39,8 +40,12 @@ public class SupplierController : ControllerBase
 		try
 		{
 			var cancellationToken = GetCancellationToken();
-			var newSupplier = _mapper.Map<Supplier>(request);
 			var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+			if (createdById <= 0)
+				return Unauthorized(new { message = "Користувач не авторизований." });
+			
+			var newSupplier = _mapper.Map<Supplier>(request);
+			
 
 			var createdSupplier = await _supplierService.CreateSupplierAsync(newSupplier, createdById, cancellationToken);
 			return CreatedAtAction(nameof(GetSupplierById), new { id = createdSupplier.Id },
@@ -55,6 +60,7 @@ public class SupplierController : ControllerBase
 
 
 	[HttpGet]
+	[Authorize(Roles = "Admin,Laboratory,Technologist,Accountant,CEO")]
 	public async Task<ActionResult<IEnumerable<SupplierDto>>> GetSuppliers([FromQuery] int page = 1, [FromQuery] int size = 10)
 	{
 		try
@@ -74,6 +80,7 @@ public class SupplierController : ControllerBase
 
 
 	[HttpGet("{id}")]
+	[Authorize(Roles = "Admin,Laboratory,Technologist,Accountant,CEO")]
 	public async Task<ActionResult<SupplierDto>> GetSupplierById(int id)
 	{
 		try
@@ -92,14 +99,29 @@ public class SupplierController : ControllerBase
 	}
 
 	[HttpGet("search")]
-	public async Task<ActionResult<IEnumerable<SupplierDto>>> SearchSuppliers(string title)
+	[Authorize(Roles = "Admin,Laboratory,Technologist,Accountant,CEO")]
+	public async Task<ActionResult<IEnumerable<SupplierDto>>> SearchSuppliers(
+		[FromQuery] string? title,
+		[FromQuery] string? createdByName,
+		[FromQuery] int page = 1,
+		[FromQuery] int size = 10,
+		[FromQuery] string? sortField = null,
+		[FromQuery] string? sortOrder = null)
 	{
 		try
 		{
 			var cancellationToken = GetCancellationToken();
-			var suppliers = await _supplierService.SearchSupplier(title, cancellationToken);
+			var (suppliers, totalCount) = await _supplierService.SearchSuppliersAsync(
+				title,
+				createdByName,
+				page, 
+				size,
+				sortField, sortOrder,
+				cancellationToken);
 			
 			var supplierDtos = _mapper.Map<IEnumerable<SupplierDto>>(suppliers);
+			Response.Headers.Append("X-Total-Count", totalCount.ToString());
+			
 			return Ok(supplierDtos);
 		}
 		catch (Exception ex)
@@ -111,6 +133,7 @@ public class SupplierController : ControllerBase
 	
 	
 	[HttpPut("{id}")]
+	[Authorize(Roles = "Admin,Laboratory,Accountant")]
 	public async Task<IActionResult> UpdateSupplier(int id, SupplierCreateRequest request)
 	{
 		if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -118,11 +141,16 @@ public class SupplierController : ControllerBase
 		try
 		{
 			var cancellationToken = GetCancellationToken();
+			
+			var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+			if (modifiedById <= 0)
+				return Unauthorized(new { message = "Користувач не авторизований." });
+			
 			var supplierDb = await _supplierService.GetSupplierByIdAsync(id, cancellationToken);
-			if (supplierDb == null) return NotFound($"Постачальника з ID {id} не знайдено.");
+			if (supplierDb == null) 
+				return NotFound($"Постачальника з ID {id} не знайдено.");
 			
 			supplierDb.Title = request.Title;
-			var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
 			var updatedSupplier = await _supplierService.UpdateSupplierAsync(supplierDb, modifiedById, cancellationToken);
 			
 			return Ok(_mapper.Map<SupplierDto>(updatedSupplier));
@@ -136,16 +164,21 @@ public class SupplierController : ControllerBase
 
 	
 	[HttpPatch("{id}/soft-remove")]
-	//[Authorize(Roles = "admin, laboratory")]
+	[Authorize(Roles = "Admin,Laboratory,Accountant")]
 	public async Task<IActionResult> SoftDeleteSupplier(int id)
 	{
 		try
 		{
 			var cancellationToken = GetCancellationToken();
-			var supplierDb = await _supplierService.GetSupplierByIdAsync(id, cancellationToken);
-			if (supplierDb == null) return NotFound($"Постачальника з ID {id} не знайдено.");
-
 			var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+			if (removedById <= 0)
+				return Unauthorized(new { message = "Користувач не авторизований." });
+			
+			
+			var supplierDb = await _supplierService.GetSupplierByIdAsync(id, cancellationToken);
+			if (supplierDb == null)
+				return NotFound($"Постачальника з ID {id} не знайдено.");
+			
 			var removedSupplier = await _supplierService.SoftDeleteSupplierAsync(supplierDb, removedById, cancellationToken);
 			
 			return Ok(_mapper.Map<SupplierDto>(removedSupplier));
@@ -159,16 +192,21 @@ public class SupplierController : ControllerBase
 
 
 	[HttpPatch("{id}/restore")]
-	//[Authorize(Roles = "admin, laboratory")]
+	[Authorize(Roles = "Admin")]
 	public async Task<IActionResult> RestoreRemovedSupplier(int id)
 	{
 		try
 		{
 			var cancellationToken = GetCancellationToken();
-			var supplierDb = await _supplierService.GetSupplierByIdAsync(id, cancellationToken);
-			if (supplierDb == null) return NotFound($"Постачальника з ID {id} не знайдено.");
 			
 			var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+			if (restoredById <= 0)
+				return Unauthorized(new { message = "Користувач не авторизований." });
+			
+			var supplierDb = await _supplierService.GetSupplierByIdAsync(id, cancellationToken);
+			if (supplierDb == null)
+				return NotFound($"Постачальника з ID {id} не знайдено.");
+			
 			var restoredSupplier = await _supplierService.RestoreRemovedSupplierAsync(supplierDb, restoredById, cancellationToken);
 			
 			return Ok(_mapper.Map<SupplierDto>(restoredSupplier));
@@ -181,7 +219,7 @@ public class SupplierController : ControllerBase
 	}
 	
 	[HttpDelete("{id}/hard-remove")]
-	[Authorize(Roles = "admin")]
+	[Authorize(Roles = "Admin")]
 	public async Task<IActionResult> DeleteSupplier(int id)
 	{
 		try

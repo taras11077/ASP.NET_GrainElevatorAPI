@@ -25,14 +25,20 @@ public class MapperProfile : Profile
             .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy.LastName))
             .ReverseMap();
         
-        CreateMap<Role, RoleDto>().ReverseMap();
-        CreateMap<Role, RoleCreateRequest>().ReverseMap();;
+        CreateMap<Role, RoleCreateRequest>().ReverseMap();
+        CreateMap<Role, RoleDto>()
+            .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy.LastName))
+            .ReverseMap();
         
-        CreateMap<Supplier, SupplierDto>().ReverseMap();
         CreateMap<Supplier, SupplierCreateRequest>().ReverseMap();
+        CreateMap<Supplier, SupplierDto>()
+            .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy.LastName))
+            .ReverseMap();
         
-        CreateMap<Product, ProductDto>().ReverseMap();
         CreateMap<Product, ProductCreateRequest>().ReverseMap();
+        CreateMap<Product, ProductDto>()
+            .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy.LastName))
+            .ReverseMap();
         
         CreateMap<InputInvoice, InputInvoiceCreateRequest>().ReverseMap();
         CreateMap<InputInvoice, InputInvoiceUpdateRequest>().ReverseMap();

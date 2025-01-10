@@ -44,8 +44,11 @@ public class RoleController : ControllerBase
         try
         {
             var cancellationToken = GetCancellationToken();
-            var newRole = _mapper.Map<Role>(request);
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (createdById <= 0)
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            
+            var newRole = _mapper.Map<Role>(request);
             
             var createdRole = await _roleService.AddRoleAsync(newRole, createdById, cancellationToken);
             return CreatedAtAction(nameof(GetRoleById), new { id = createdRole.Id }, _mapper.Map<RoleDto>(createdRole));
@@ -63,7 +66,7 @@ public class RoleController : ControllerBase
         try
         {
             var cancellationToken = GetCancellationToken();
-            var roles = await _roleService.GetRoles(page, size, cancellationToken);
+            var roles = await _roleService.GetRolesAsync(page, size, cancellationToken);
             
             var rolesDtos = _mapper.Map<IEnumerable<RoleDto>>(roles);
             return Ok(rolesDtos);
@@ -99,14 +102,28 @@ public class RoleController : ControllerBase
     }
     
     [HttpGet("search")]
-    public async Task<ActionResult<IEnumerable<RoleDto>>> SearchRoles(string title)
+    public async Task<ActionResult<IEnumerable<RoleDto>>> SearchRoles(
+        [FromQuery] string? title,
+        [FromQuery] string? createdByName,
+        [FromQuery] int page = 1,
+        [FromQuery] int size = 10,
+        [FromQuery] string? sortField = null,
+        [FromQuery] string? sortOrder = null)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
-            var roles = await _roleService.SearchRoles(title, cancellationToken);
+            var (roles, totalCount) = await _roleService.SearchRolesAsync(
+                title,
+                createdByName,
+                page, 
+                size,
+                sortField, sortOrder,
+                cancellationToken);
             
             var rolesDtos = _mapper.Map<IEnumerable<RoleDto>>(roles);
+            Response.Headers.Append("X-Total-Count", totalCount.ToString());
+            
             return Ok(rolesDtos);
         }
         catch (Exception ex)
@@ -127,14 +144,15 @@ public class RoleController : ControllerBase
         try
         {
             var cancellationToken = GetCancellationToken();
+            var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (modifiedById <= 0)
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            
             var roleDb = await _roleService.GetRoleByIdAsync(id, cancellationToken);
             if (roleDb == null)
-            {
                 return NotFound($"Роль з ID {id} не знайдено.");
-            }
             
             roleDb.Title = request.Title;
-            var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             var updatedRole = await _roleService.UpdateRoleAsync(roleDb, modifiedById, cancellationToken);
             
             return Ok(_mapper.Map<RoleDto>(updatedRole));
@@ -153,13 +171,16 @@ public class RoleController : ControllerBase
         try
         {
             var cancellationToken = GetCancellationToken();
+            var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (removedById <= 0)
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            
             var roleDb = await _roleService.GetRoleByIdAsync(id, cancellationToken);
             if (roleDb == null)
             {
                 return NotFound($"Роль з ID {id} не знайдено.");
             }
             
-            var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             var removedRole = await _roleService.SoftDeleteRoleAsync(roleDb, removedById, cancellationToken);
             
             return Ok(_mapper.Map<RoleDto>(removedRole));
@@ -179,13 +200,16 @@ public class RoleController : ControllerBase
         try
         {
             var cancellationToken = GetCancellationToken();
-            var roleDb = await _roleService.GetRoleByIdAsync(id, cancellationToken);
-            if (roleDb == null)
-            {
-                return NotFound($"Роль з ID {id} не знайдено.");
-            }
             
             var restoredById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (restoredById <= 0)
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            
+            var roleDb = await _roleService.GetRoleByIdAsync(id, cancellationToken);
+            if (roleDb == null)
+                return NotFound($"Роль з ID {id} не знайдено.");
+            
+
             var restoredRole = await _roleService.RestoreRemovedRoleAsync(roleDb, restoredById, cancellationToken);
             
             return Ok(_mapper.Map<RoleDto>(restoredRole));

@@ -58,7 +58,7 @@ public class TechnologicalOperationService: ITechnologicalOperationService
     }
     
     
-    public async Task<(IEnumerable<TechnologicalOperation>, int)> SearchTechnologicalOperation(
+    public async Task<(IEnumerable<TechnologicalOperation>, int)> SearchTechnologicalOperationAsync(
         string? title,
         string? createdByName,
         int page,

@@ -57,7 +57,7 @@ public class RoleService : IRoleService
         }
     }
 
-    public async Task<Role?> GetRoleByTitleAsync(string title, CancellationToken cancellationToken)
+    public async Task<Role> GetRoleByTitleAsync(string title, CancellationToken cancellationToken)
     {
         try
         {
@@ -71,7 +71,7 @@ public class RoleService : IRoleService
         }
     }
 
-    public async Task<IEnumerable<Role>> GetRoles(int page, int size, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Role>> GetRolesAsync(int page, int size, CancellationToken cancellationToken)
     {
         try
         {
@@ -86,19 +86,80 @@ public class RoleService : IRoleService
         }
     }
 
-    public async Task<IEnumerable<Role>> SearchRoles(string title, CancellationToken cancellationToken)
+    public async Task<(IEnumerable<Role>, int)> SearchRolesAsync(
+        string? title,
+        string? createdByName,
+        int page,
+        int size,
+        string? sortField,
+        string? sortOrder,
+        CancellationToken cancellationToken)
     {
         try
         {
-            return await _repository.GetAll<Role>()
-                .Where(r => r.Title.ToLower().Contains(title.ToLower()))
+            
+            var query = _repository.GetAll<Role>()
+                .Where(r => r.RemovedAt == null);
+            
+            // Виклик методу фільтрації
+            query = ApplyFilters(query, title, createdByName);
+
+            // Виклик методу сортування
+            query = ApplySorting(query, sortField, sortOrder);
+
+            // Пагінація
+            int totalCount = await query.CountAsync(cancellationToken);
+
+            var filteredRoles = await query
+                .Skip((page - 1) * size)
+                .Take(size)
                 .ToListAsync(cancellationToken);
+
+            return (filteredRoles, totalCount);
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка сервісу при отриманні Ролі з назвою {title}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Ролі", ex);
         }
     }
+    
+    private IQueryable<Role> ApplyFilters(
+        IQueryable<Role> query,
+        string? title,
+        string? createdByName)
+    {
+        if (!string.IsNullOrEmpty(title))
+        {
+            query = query.Where(r => r.Title == title);
+        }
+        if (!string.IsNullOrEmpty(createdByName))
+        {
+            query = query.Where(r => r.CreatedBy.LastName == createdByName);
+        }
+        
+        return query;
+    }
+    
+    private IQueryable<Role> ApplySorting(
+        IQueryable<Role> query,
+        string? sortField,
+        string? sortOrder)
+    {
+        if (string.IsNullOrEmpty(sortField)) return query; // Без сортування
+
+        return sortField switch
+        {
+            "title" => sortOrder == "asc"
+                ? query.OrderBy(r => r.Title)
+                : query.OrderByDescending(r => r.Title),
+            "createdByName" => sortOrder == "asc"
+                ? query.OrderBy(r => r.CreatedBy.LastName)
+                : query.OrderByDescending(r => r.CreatedBy.LastName),
+            _ => query // Якщо поле не визначене
+        };
+    }
+    
+    
     
     public async Task<Role> UpdateRoleAsync(Role role, int modifiedById, CancellationToken cancellationToken)
     {

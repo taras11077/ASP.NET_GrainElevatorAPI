@@ -58,19 +58,80 @@ public class SupplierService : ISupplierService
     }
     
     
-    public async Task<IEnumerable<Supplier>> SearchSupplier(string title, CancellationToken cancellationToken)
+    public async Task<(IEnumerable<Supplier>, int)> SearchSuppliersAsync(
+        string? title,
+        string? createdByName,
+        int page,
+        int size,
+        string? sortField,
+        string? sortOrder,
+        CancellationToken cancellationToken)
     {
         try
         {
-            return await _repository.GetAll<Supplier>()
-                .Where(s => s.Title.ToLower().Contains(title.ToLower()))
+            
+            var query = _repository.GetAll<Supplier>()
+                .Where(to => to.RemovedAt == null);
+            
+            // Виклик методу фільтрації
+            query = ApplyFilters(query, title, createdByName);
+
+            // Виклик методу сортування
+            query = ApplySorting(query, sortField, sortOrder);
+
+            // Пагінація
+            int totalCount = await query.CountAsync(cancellationToken);
+
+            var filteredSuppliers = await query
+                .Skip((page - 1) * size)
+                .Take(size)
                 .ToListAsync(cancellationToken);
+
+            return (filteredSuppliers, totalCount);
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка сервісу при отриманні Постачальника з назвою {title}", ex);
+            throw new Exception($"Помилка сервісу при отриманні Постачальника", ex);
         }
     }
+    
+    
+    private IQueryable<Supplier> ApplyFilters(
+        IQueryable<Supplier> query,
+        string? title,
+        string? createdByName)
+    {
+        if (!string.IsNullOrEmpty(title))
+        {
+            query = query.Where(s => s.Title == title);
+        }
+        if (!string.IsNullOrEmpty(createdByName))
+        {
+            query = query.Where(s => s.CreatedBy.LastName == createdByName);
+        }
+        
+        return query;
+    }
+    
+    private IQueryable<Supplier> ApplySorting(
+        IQueryable<Supplier> query,
+        string? sortField,
+        string? sortOrder)
+    {
+        if (string.IsNullOrEmpty(sortField)) return query; // Без сортування
+
+        return sortField switch
+        {
+            "title" => sortOrder == "asc"
+                ? query.OrderBy(s => s.Title)
+                : query.OrderByDescending(s => s.Title),
+            "createdByName" => sortOrder == "asc"
+                ? query.OrderBy(s => s.CreatedBy.LastName)
+                : query.OrderByDescending(s => s.CreatedBy.LastName),
+            _ => query // Якщо поле не визначене
+        };
+    }
+    
 
     public async Task<Supplier> UpdateSupplierAsync(Supplier supplier, int modifiedById, CancellationToken cancellationToken)
     {
