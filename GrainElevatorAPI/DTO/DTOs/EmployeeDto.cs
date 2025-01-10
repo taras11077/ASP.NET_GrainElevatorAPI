@@ -20,7 +20,7 @@ public class EmployeeDto
     
     
     [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
-    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "BirthDate must be between 1900 and 2024.")]
+    [Range(typeof(DateTime), "1900-01-01", "2075-12-31", ErrorMessage = "BirthDate must be between 1900 and 2075.")]
     public DateTime? BirthDate { get; set; }
     
     
@@ -46,10 +46,15 @@ public class EmployeeDto
     public string? Country { get; set; }
     
     [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
-    [Range(typeof(DateTime), "1900-01-01", "2024-12-31", ErrorMessage = "LastSeenOnline must be between 1900 and 2024.")]
+    [Range(typeof(DateTime), "1900-01-01", "2075-12-31", ErrorMessage = "LastSeenOnline must be between 1900 and 2075.")]
     public DateTime LastSeenOnline { get; set; }
     
+    [Required(ErrorMessage = "Password is required.")]
+    [MinLength(8, ErrorMessage = "Password must be at least 6 characters long.")]
+    public string PasswordHash { get; set; }
     
-    [Range(1, int.MaxValue, ErrorMessage = "RoleId must be a positive number.")]
-    public int RoleId { get; set; }
+    [Required(ErrorMessage = "RoleTitle is required.")]
+    public string RoleTitle { get; set; }
+    
+    public string CreatedByName { get; set; }
 }

@@ -20,7 +20,10 @@ public class MapperProfile : Profile
 
         CreateMap<Employee, EmployeeRegisterRequest>().ReverseMap();
         CreateMap<Employee, EmployeeUpdateRequest>().ReverseMap();
-        CreateMap<Employee, EmployeeDto>().ReverseMap();
+        CreateMap<Employee, EmployeeDto>()
+            .ForMember(dest => dest.RoleTitle, opt => opt.MapFrom(src => src.Role.Title))
+            .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy.LastName))
+            .ReverseMap();
         
         CreateMap<Role, RoleDto>().ReverseMap();
         CreateMap<Role, RoleCreateRequest>().ReverseMap();;

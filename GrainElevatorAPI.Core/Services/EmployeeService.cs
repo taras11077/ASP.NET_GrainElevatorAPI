@@ -16,7 +16,186 @@ public class EmployeeService : IEmployeeService
     {
         _repository = repository;
     }
+
+    public async Task<(IEnumerable<Employee>, int)> SearchEmployeesAsync(
+        string? firstName,
+        string? lastName,
+        string? roleTitle,
+        string? gender,
+        string? email,
+        string? phone,
+        string? city,
+        string? country,
+        DateTime? birthDate,
+        DateTime? lastSeenOnline,
+        string? createdByName,
+        int page = 1,
+        int size = 10,
+        string? sortField = null,
+        string? sortOrder = null,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var query = _repository.GetAll<Employee>()
+                .Where(ir => ir.RemovedAt == null);
+            
+            // Виклик методу фільтрації
+            query = ApplyFilters(
+                            query, 
+                            firstName, 
+                            lastName, 
+                            roleTitle,
+                            gender, 
+                            email, 
+                            phone, 
+                            city,
+                            country,
+                            birthDate,
+                            lastSeenOnline,
+                            createdByName);
+
+            // Виклик методу сортування
+            query = ApplySorting(query, sortField, sortOrder);
+
+            // Пагінація
+            int totalCount = await query.CountAsync(cancellationToken);
+
+            var filteredEmployees = await query
+                .Skip((page - 1) * size)
+                .Take(size)
+                .ToListAsync(cancellationToken);
+
+            return (filteredEmployees, totalCount);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Помилка сервісу при пошуку Актів виконаних робіт за параметрами", ex);
+        }
+    }
     
+    
+      private IQueryable<Employee> ApplyFilters(
+        IQueryable<Employee> query,
+        string? firstName,
+        string? lastName,
+        string? roleTitle,
+        string? gender,
+        string? email,
+        string? phone,
+        string? city,
+        string? country,
+        DateTime? birthDate,
+        DateTime? lastSeenOnline,
+        string? createdByName)
+    {
+        if (!string.IsNullOrEmpty(firstName))
+        {
+            query = query.Where(e => e.FirstName == firstName);
+        }
+        
+        if (!string.IsNullOrEmpty(lastName))
+        {
+            query = query.Where(e => e.LastName == lastName);
+        }
+
+        if (!string.IsNullOrEmpty(roleTitle))
+        {
+            query = query.Where(e => e.Role.Title == roleTitle);
+        }
+        
+        if (!string.IsNullOrEmpty(gender))
+        {
+            query = query.Where(e => e.Gender == gender);
+        }
+        
+        if (!string.IsNullOrEmpty(email))
+        {
+            query = query.Where(e => e.Email == email);
+        }
+        
+        if (!string.IsNullOrEmpty(phone))
+        {
+            query = query.Where(e => e.Phone == phone);
+        }
+        
+        if (!string.IsNullOrEmpty(city))
+        {
+            query = query.Where(e => e.City == city);
+        }
+
+        if (!string.IsNullOrEmpty(country))
+        {
+            query = query.Where(e => e.Country == country);
+        }
+        
+        if (birthDate.HasValue)
+        {
+            query = query.Where(e => e.BirthDate == birthDate.Value.Date);
+        }
+        
+        if (lastSeenOnline.HasValue)
+        {
+            query = query.Where(e => e.LastSeenOnline.Date == lastSeenOnline.Value.Date);
+        }
+            
+        if (!string.IsNullOrEmpty(createdByName))
+        {
+            query = query.Where(cr => cr.CreatedBy.LastName == createdByName);
+        }
+        
+        return query;
+    }
+
+    
+    private IQueryable<Employee> ApplySorting(
+        IQueryable<Employee> query,
+        string? sortField,
+        string? sortOrder)
+    {
+        if (string.IsNullOrEmpty(sortField)) return query; // Без сортування
+
+        return sortField switch
+        {
+            "id" => sortOrder == "asc"
+                ? query.OrderBy(e => e.Id)
+                : query.OrderByDescending(e => e.Id),
+            "firstName" => sortOrder == "asc"
+                ? query.OrderBy(e => e.FirstName)
+                : query.OrderByDescending(e => e.FirstName),
+            "lastName" => sortOrder == "asc"
+                ? query.OrderBy(e => e.LastName)
+                : query.OrderByDescending(e => e.LastName),
+            "roleTitle" => sortOrder == "asc"
+                ? query.OrderBy(e => e.Role.Title)
+                : query.OrderByDescending(e => e.Role.Title),
+            "gender" => sortOrder == "asc"
+                ? query.OrderBy(e => e.Gender)
+                : query.OrderByDescending(e => e.Gender),
+            "email" => sortOrder == "asc"
+                ? query.OrderBy(e => e.Email)
+                : query.OrderByDescending(e => e.Email),
+            "phone" => sortOrder == "asc"
+                ? query.OrderBy(e => e.FirstName)
+                : query.OrderByDescending(e => e.FirstName),
+            "city" => sortOrder == "asc"
+                ? query.OrderBy(e => e.LastName)
+                : query.OrderByDescending(e => e.LastName),
+            "country" => sortOrder == "asc"
+                ? query.OrderBy(e => e.Gender)
+                : query.OrderByDescending(e => e.Gender),
+            "birthDate" => sortOrder == "asc"
+                ? query.OrderBy(e => e.BirthDate)
+                : query.OrderByDescending(e => e.BirthDate),
+            "lastSeenOnline" => sortOrder == "asc"
+                ? query.OrderBy(e => e.LastSeenOnline)
+                : query.OrderByDescending(e => e.LastSeenOnline),
+            "createdByName" => sortOrder == "asc"
+                ? query.OrderBy(reg => reg.CreatedBy.LastName)
+                : query.OrderByDescending(reg => reg.CreatedBy.LastName),
+            _ => query // Якщо поле не визначене
+        };
+    }
     
     public async Task<Employee> GetEmployeeByIdAsync(int id, CancellationToken cancellationToken)
     {
@@ -61,7 +240,11 @@ public class EmployeeService : IEmployeeService
     }
 
     
-    public async Task<Employee> UpdateEmployeeAsync(Employee employee, string passwordHash, int modifiedById, CancellationToken cancellationToken)
+    public async Task<Employee> UpdateEmployeeAsync(
+        Employee employee,
+        string? passwordHash, 
+        int modifiedById, 
+        CancellationToken cancellationToken)
     {
         try
         {

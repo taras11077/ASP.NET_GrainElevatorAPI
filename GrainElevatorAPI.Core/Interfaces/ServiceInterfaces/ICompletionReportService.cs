@@ -19,7 +19,7 @@ public interface ICompletionReportService
     Task<IEnumerable<CompletionReport>> GetCompletionReports(int page, int size, CancellationToken cancellationToken);
     Task<CompletionReport> GetCompletionReportByIdAsync(int id, CancellationToken cancellationToken);
     
-    Task<(IEnumerable<CompletionReport>, int)> SearchCompletionReports(
+    Task<(IEnumerable<CompletionReport>, int)> SearchCompletionReportsAsync(
         string? reportNumber,
         DateTime? reportDate,
         double? physicalWeightReport,

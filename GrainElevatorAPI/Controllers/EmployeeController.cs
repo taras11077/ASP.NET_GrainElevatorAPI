@@ -16,8 +16,6 @@ namespace GrainElevatorAPI.Controllers;
 
 [ApiController]
 [Route("api/employee")]
-
-//[Authorize(Roles = "admin")]
 public class EmployeeController : ControllerBase
 {
     private readonly IEmployeeService _employeeService;
@@ -39,9 +37,8 @@ public class EmployeeController : ControllerBase
         return HttpContext.RequestAborted;
     }
     
-    
-    [Authorize]
     [HttpGet("user-info")]
+    [Authorize(Roles = "Admin,HR,CEO")]
     public async Task<ActionResult> GetEmployeeInfo()
     {
         try
@@ -82,9 +79,9 @@ public class EmployeeController : ControllerBase
             return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
         }
     }
-
-
+    
     [HttpGet]
+    [Authorize(Roles = "Admin,HR,CEO")]
     public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetEmployees(int page = 1, int size = 10)
     {
         try
@@ -100,9 +97,9 @@ public class EmployeeController : ControllerBase
             return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
         }
     }
-
-
+    
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin,HR,CEO")]
     public async Task<ActionResult<EmployeeDto>> GetEmployee(int id)
     {
         try
@@ -120,16 +117,51 @@ public class EmployeeController : ControllerBase
             return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
         }
     }
-
+    
     [HttpGet("search")]
-    public async Task<ActionResult<IEnumerable<EmployeeDto>>> SearchEmployees(string name)
+    [Authorize(Roles = "Admin,HR,CEO")]
+    public async Task<ActionResult<IEnumerable<EmployeeDto>>> SearchEmployees(
+        [FromQuery] string? firstName,
+        [FromQuery] string? lastName,
+        [FromQuery] string? roleTitle,
+        [FromQuery] string? gender,
+        [FromQuery] string? email,
+        [FromQuery] string? phone,
+        [FromQuery] string? city,
+        [FromQuery] string? country,
+        [FromQuery] DateTime? birthDate,
+        [FromQuery] DateTime? lastSeenOnline,
+        [FromQuery] string? createdByName,
+        [FromQuery] int page = 1,
+        [FromQuery] int size = 10,
+        [FromQuery] string? sortField = null,
+        [FromQuery] string? sortOrder = null)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
-            var employees = await _employeeService.GetEmployeesByConditionAsync(e => e.FirstName.Contains(name) || e.LastName.Contains(name), cancellationToken);
+            
+            var (filteredEmployees, totalCount) = await _employeeService.SearchEmployeesAsync(
+                firstName,
+                lastName,
+                roleTitle,
+                gender,
+                email,
+                phone,
+                city,
+                country,
+                birthDate,
+                lastSeenOnline,
+                createdByName,
+                page,
+                size,
+                sortField,
+                sortOrder,
+                cancellationToken);
            
-            var employeeDtos = _mapper.Map<IEnumerable<EmployeeDto>>(employees);
+            var employeeDtos = _mapper.Map<IEnumerable<EmployeeDto>>(filteredEmployees);
+            Response.Headers.Append("X-Total-Count", totalCount.ToString());
+            
             return Ok(employeeDtos);
         }
         catch (Exception ex)
@@ -139,9 +171,27 @@ public class EmployeeController : ControllerBase
         }
     }
 
+   
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin,HR")]
     public async Task<IActionResult> UpdateEmployee(int id, EmployeeUpdateRequest request)
     {
+        // валідатор
+        if (request.FirstName == null) ModelState.Remove("FirstName");
+        if (request.LastName == null) ModelState.Remove("LastName");
+        if (request.BirthDate == null) ModelState.Remove("BirthDate");
+        if (request.Email == null) ModelState.Remove("Email");
+        if (request.Phone == null) ModelState.Remove("Phone");
+        if (request.City == null) ModelState.Remove("City");
+        if (request.Country == null) ModelState.Remove("Country");
+        if (request.RoleId == null) ModelState.Remove("RoleId");
+        if (request.PasswordHash == null) ModelState.Remove("PasswordHash");
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
         try
         {
             var cancellationToken = GetCancellationToken();
@@ -154,6 +204,11 @@ public class EmployeeController : ControllerBase
             employeeDb.UpdateFromRequest(request);
             
             var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (modifiedById == 0)
+            {
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            }
+            
             var updatedEmployee = await _employeeService.UpdateEmployeeAsync(employeeDb, request.PasswordHash, modifiedById, cancellationToken);
             
             return Ok(_mapper.Map<EmployeeDto>(updatedEmployee));
@@ -166,7 +221,7 @@ public class EmployeeController : ControllerBase
     }
     
     [HttpPatch("{id}/soft-remove")]
-    //[Authorize(Roles = "admin, laboratory")]
+    [Authorize(Roles = "Admin,HR")]
     public async Task<IActionResult> SoftDeleteEmployee(int id)
     {
         try
@@ -192,7 +247,7 @@ public class EmployeeController : ControllerBase
     
 
     [HttpPatch("{id}/restore")]
-    //[Authorize(Roles = "admin, laboratory")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> RestoreRemovedEmployee(int id)
     {
         try
@@ -218,6 +273,7 @@ public class EmployeeController : ControllerBase
     
     
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteEmployee(int id)
     {
         try

@@ -164,7 +164,7 @@ public class CompletionReportController: ControllerBase
         {
             var cancellationToken = GetCancellationToken();
 
-            var (filteredCompletionReports, totalCount) = await _completionReportService.SearchCompletionReports(
+            var (filteredCompletionReports, totalCount) = await _completionReportService.SearchCompletionReportsAsync(
                 reportNumber,
                 reportDate,
                 physicalWeightReport,

@@ -151,7 +151,7 @@ public class CompletionReportService: ICompletionReportService
         }
     }
 
-     public async Task<(IEnumerable<CompletionReport>, int)> SearchCompletionReports(
+     public async Task<(IEnumerable<CompletionReport>, int)> SearchCompletionReportsAsync(
          string? reportNumber = null,
          DateTime? reportDate = null,
          double? physicalWeightReport =null,
