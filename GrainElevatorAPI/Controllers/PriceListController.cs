@@ -60,7 +60,7 @@ public class PriceListController : ControllerBase
 
 
     [HttpGet]
-    //[Authorize(Roles = "Admin, Accountant")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<ActionResult<IEnumerable<PriceListDto>>> GetPriceList([FromQuery] int page = 1,
         [FromQuery] int size = 10)
     {
@@ -106,25 +106,29 @@ public class PriceListController : ControllerBase
     [HttpGet("search")]
     [Authorize(Roles = "Admin,Accountant,CEO")]
     public async Task<ActionResult<IEnumerable<PriceListDto>>> SearchPriceLists(
-        [FromQuery] int? id = null,
-        [FromQuery] int? productId = null,
-        [FromQuery] int? createdById = null,
+        [FromQuery] string? productTitle,
+        [FromQuery] string? createdByName,
         [FromQuery] int page = 1,
-        [FromQuery] int size = 10)
+        [FromQuery] int size = 10,
+        [FromQuery] string? sortField = null,
+        [FromQuery] string? sortOrder = null)
     {
         try
         {
             var cancellationToken = GetCancellationToken();
-            // передаємо параметри у сервіс для фільтрації
-            var filteredPriceLists = await _priceListService.SearchPriceLists(
-                id,
-                productId,
-                createdById,
+
+            var (filteredPriceLists, totalCount) = await _priceListService.SearchPriceLists(
+                productTitle,
+                createdByName,
                 page,
                 size,
+                sortField,
+                sortOrder,
                 cancellationToken);
 
             var priceListDtos = _mapper.Map<IEnumerable<PriceListDto>>(filteredPriceLists);
+            Response.Headers.Append("X-Total-Count", totalCount.ToString());
+            
             return Ok(priceListDtos);
         }
         catch (Exception ex)

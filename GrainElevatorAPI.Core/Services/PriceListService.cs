@@ -58,37 +58,79 @@ public class PriceListService: IPriceListService
         }
     }
 
-     public async Task<IEnumerable<PriceList>> SearchPriceLists(int? id,
-         int? productId,
-         int? createdById,
+     public async Task<(IEnumerable<PriceList>, int)> SearchPriceLists(
+         string? productTitle,
+         string? createdByName,
          int page,
          int size,
+         string? sortField,
+         string? sortOrder,
          CancellationToken cancellationToken)
     {
         try
         {
             var query = _repository.GetAll<PriceList>()
-                .Skip((page - 1) * size)
-                .Take(size);
+                .Include(pl => pl.Product)
+                .Where(pl => pl.RemovedAt == null);
 
-            if (id.HasValue)
-            {
-                query = query.Where(pl => pl.Id == id);
-            }
-            
-            if (productId.HasValue)
-                query = query.Where(pl => pl.ProductId == productId.Value);
-            
-            if (createdById.HasValue)
-                query = query.Where(pl => pl.CreatedById == createdById.Value);
-            
-            return await query.ToListAsync(cancellationToken);
+            // Виклик методу фільтрації
+            query = ApplyFilters(query, productTitle, createdByName);
+
+            // Виклик методу сортування
+            query = ApplySorting(query, sortField, sortOrder);
+
+            // Пагінація
+            int totalCount = await query.CountAsync(cancellationToken);
+
+            var filteredPriceLists = await query
+                .Skip((page - 1) * size)
+                .Take(size)
+                .ToListAsync(cancellationToken);
+
+            return (filteredPriceLists, totalCount);
         }
         catch (Exception ex)
         {
             throw new Exception("Помилка сервісу при пошуку Прайс-листів за параметрами", ex);
         }
     }
+     
+    private IQueryable<PriceList> ApplyFilters(
+        IQueryable<PriceList> query,
+        string? productTitle,
+        string? createdByName)
+    {
+        if (!string.IsNullOrEmpty(productTitle))
+        {
+            query = query.Where(pl => pl.Product.Title == productTitle);
+        }
+        if (!string.IsNullOrEmpty(createdByName))
+        {
+            query = query.Where(pl => pl.CreatedBy.LastName == createdByName);
+        }
+        
+        return query;
+    }
+    
+    private IQueryable<PriceList> ApplySorting(
+        IQueryable<PriceList> query,
+        string? sortField,
+        string? sortOrder)
+    {
+        if (string.IsNullOrEmpty(sortField)) return query; // Без сортування
+
+        return sortField switch
+        {
+            "title" => sortOrder == "asc"
+                ? query.OrderBy(pl => pl.Product.Title)
+                : query.OrderByDescending(pl => pl.Product.Title),
+            "createdByName" => sortOrder == "asc"
+                ? query.OrderBy(to => to.CreatedBy.LastName)
+                : query.OrderByDescending(to => to.CreatedBy.LastName),
+            _ => query // Якщо поле не визначене
+        };
+    }
+
     
     public async Task<PriceList> UpdatePriceListAsync(int id, int? productId, List<int>? priceListItemIds, int modifiedById, CancellationToken cancellationToken)
     {

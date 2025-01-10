@@ -8,11 +8,13 @@ public interface IPriceListService
     Task<IEnumerable<PriceList>> GetPriceLists(int page, int size, CancellationToken cancellationToken);
     Task<PriceList> GetPriceListByIdAsync(int id, CancellationToken cancellationToken);
     
-    Task<IEnumerable<PriceList>> SearchPriceLists(int? id,
-        int? productId,
-        int? createdById,
+    Task<(IEnumerable<PriceList>, int)> SearchPriceLists(
+        string? productTitle,
+        string? createdByName,
         int page,
         int size,
+        string? sortField,
+        string? sortOrder,
         CancellationToken cancellationToken);
     
     Task<PriceList> UpdatePriceListAsync(int id, int? productId, List<int>? priceListItemIds, int modifiedById, CancellationToken cancellationToken);
