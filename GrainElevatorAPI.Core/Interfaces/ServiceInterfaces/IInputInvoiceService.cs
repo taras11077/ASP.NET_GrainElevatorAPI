@@ -15,7 +15,11 @@ public interface IInputInvoiceService
         CancellationToken cancellationToken);
     Task<InputInvoice> GetInputInvoiceByIdAsync(int id, CancellationToken cancellationToken);
     
-    Task<(IEnumerable<InputInvoice>, int)> GetInputInvoices(int page, int size, CancellationToken cancellationToken);
+    Task<(IEnumerable<InputInvoice>, int)> GetInputInvoicesAsync(int page, int size, CancellationToken cancellationToken);
+
+
+    Task<(Dictionary<string, int> BySupplier, Dictionary<string, int> ByProduct)> 
+        GetTotalPhysicalWeightBySupplierAndProductAsync(CancellationToken cancellationToken);
 
     Task<(IEnumerable<InputInvoice>, int)> SearchInputInvoices(
         int? id,

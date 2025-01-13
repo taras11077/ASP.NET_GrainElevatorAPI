@@ -81,7 +81,7 @@ public class InputInvoiceService : IInputInvoiceService
         }
     }
 
-    public async Task<(IEnumerable<InputInvoice>, int)> GetInputInvoices(int page, int size, CancellationToken cancellationToken)
+    public async Task<(IEnumerable<InputInvoice>, int)> GetInputInvoicesAsync(int page, int size, CancellationToken cancellationToken)
     {
         try
         {
@@ -310,4 +310,53 @@ public class InputInvoiceService : IInputInvoiceService
         }
     }
     
+    
+    public async Task<(Dictionary<string, int> BySupplier, Dictionary<string, int> ByProduct)> 
+        GetTotalPhysicalWeightBySupplierAndProductAsync(CancellationToken cancellationToken)
+    {
+        // Отримуємо всі накладні
+        var invoices = await _repository.GetAll<InputInvoice>()
+            .Include(ii => ii.Supplier)
+            .Include(ii => ii.Product)
+            .ToListAsync(cancellationToken);
+
+        // Групуємо за постачальниками
+        var bySupplier = invoices
+            .GroupBy(invoice => invoice.Supplier)
+            .ToDictionary(
+                group => group.Key.Title, // Ім'я постачальника
+                group => group.Sum(invoice => invoice.PhysicalWeight) // Сума фізичної ваги
+            );
+
+        // Групуємо за продуктами
+        var byProduct = invoices
+            .GroupBy(invoice => invoice.Product)
+            .ToDictionary(
+                group => group.Key.Title, // Назва продукту
+                group => group.Sum(invoice => invoice.PhysicalWeight) // Сума фізичної ваги
+            );
+
+        return (BySupplier: bySupplier, ByProduct: byProduct);
+    }
+    
+    
+    public async Task<Dictionary<DateTime, Dictionary<string, int>>> GetProductArrivalsAsync(CancellationToken cancellationToken)
+    {
+        var invoices = await _repository.GetAll<InputInvoice>()
+            .Include(ii => ii.Product)
+            .ToListAsync(cancellationToken);
+
+        return invoices
+            .GroupBy(i => i.ArrivalDate.Date)
+            .ToDictionary(
+                group => group.Key,
+                group => group
+                    .GroupBy(i => i.Product.Title)
+                    .ToDictionary(
+                        productGroup => productGroup.Key,
+                        productGroup => productGroup.Sum(i => i.PhysicalWeight)
+                    )
+            );
+    }
+
 }

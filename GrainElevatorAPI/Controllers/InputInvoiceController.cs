@@ -33,7 +33,6 @@ public class InputInvoiceController : ControllerBase
         return HttpContext.RequestAborted;
     }
     
-    
     [HttpPost]
     [Authorize(Roles = "Admin,Laboratory")]
     public async Task<ActionResult<InputInvoiceDto>> CreateInputInvoice(InputInvoiceCreateRequest request)
@@ -83,7 +82,7 @@ public class InputInvoiceController : ControllerBase
         try
         {
             var cancellationToken = GetCancellationToken();
-            var (inputInvoices, totalCount) = await _inputInvoiceService.GetInputInvoices(page, size, cancellationToken);
+            var (inputInvoices, totalCount) = await _inputInvoiceService.GetInputInvoicesAsync(page, size, cancellationToken);
             
             var inputInvoiceDtos = _mapper.Map<IEnumerable<InputInvoiceDto>>(inputInvoices);
             Response.Headers.Append("X-Total-Count", totalCount.ToString());
@@ -96,6 +95,68 @@ public class InputInvoiceController : ControllerBase
             return StatusCode(500, $"Внутрішня помилка сервера при отриманні Прибуткових накладних: {ex.Message}");
         }
     }
+    
+    
+    
+    
+    
+    [HttpGet("statistic")]
+    [Authorize(Roles = "Admin,CEO")]
+    public async Task<IActionResult> GetStatistics()
+    {
+        try
+        {
+            var cancellationToken = GetCancellationToken();
+        
+            // Отримання даних через сервіс
+            var result = await _inputInvoiceService.GetTotalPhysicalWeightBySupplierAndProductAsync(cancellationToken);
+
+            // Перевірка результату
+            if (result.BySupplier == null || result.ByProduct == null)
+            {
+                _logger.LogWarning("Сервіс повернув некоректні дані для статистики.");
+                return NotFound("Дані статистики не знайдені.");
+            }
+
+            // Повернення успішної відповіді з даними
+            return Ok(new
+            {
+                BySupplier = result.BySupplier,
+                ByProduct = result.ByProduct
+            });
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogWarning("Запит було скасовано.");
+            return StatusCode(499, "Запит було скасовано.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Внутрішня помилка сервера при отриманні статистичних даних: {ex.Message}", ex);
+            return StatusCode(500, "Внутрішня помилка сервера при отриманні статистичних даних.");
+        }
+    }
+
+    
+    [HttpGet("product-arrivals")]
+    [Authorize(Roles = "Admin,CEO")]
+    public async Task<ActionResult<Dictionary<DateTime, Dictionary<string, int>>>> GetProductArrivals()
+    {
+        try
+        {
+            var cancellationToken = GetCancellationToken();
+            var arrivals = await _inputInvoiceService.GetProductArrivalsAsync(cancellationToken);
+            return Ok(arrivals);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Внутрішня помилка сервера: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+        }
+    }
+
+    
+    
 
 
     [HttpGet("{id}")]
