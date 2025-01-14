@@ -137,25 +137,37 @@ public class InputInvoiceController : ControllerBase
         }
     }
 
-    
-    [HttpGet("product-arrivals")]
+    [HttpGet("timeline-statistic")]
     [Authorize(Roles = "Admin,CEO")]
-    public async Task<ActionResult<Dictionary<DateTime, Dictionary<string, int>>>> GetProductArrivals()
+    public async Task<IActionResult> GetTimelineStatistics()
     {
         try
         {
             var cancellationToken = GetCancellationToken();
-            var arrivals = await _inputInvoiceService.GetProductArrivalsAsync(cancellationToken);
-            return Ok(arrivals);
+
+            // Отримання даних через сервіс
+            var result = await _inputInvoiceService.GetTimelineStatisticsAsync(cancellationToken);
+
+            if (result.BySupplierTimeline == null || result.ByProductTimeline == null)
+            {
+                _logger.LogWarning("Сервіс повернув некоректні дані для статистики по часі.");
+                return NotFound("Дані статистики по часі не знайдені.");
+            }
+
+            // Повернення успішної відповіді з даними
+            return Ok(new
+            {
+                BySupplierTimeline = result.BySupplierTimeline,
+                ByProductTimeline = result.ByProductTimeline
+            });
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Внутрішня помилка сервера: {ex.Message}");
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера при отриманні статистичних даних по часі: {ex.Message}", ex);
+            return StatusCode(500, "Внутрішня помилка сервера при отриманні статистичних даних по часі.");
         }
     }
 
-    
     
 
 

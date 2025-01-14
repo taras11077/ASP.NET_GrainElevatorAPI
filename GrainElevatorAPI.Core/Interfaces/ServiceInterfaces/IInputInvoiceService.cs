@@ -21,6 +21,10 @@ public interface IInputInvoiceService
     Task<(Dictionary<string, int> BySupplier, Dictionary<string, int> ByProduct)> 
         GetTotalPhysicalWeightBySupplierAndProductAsync(CancellationToken cancellationToken);
 
+    Task<(Dictionary<string, Dictionary<DateTime, int>> BySupplierTimeline,
+            Dictionary<string, Dictionary<DateTime, int>> ByProductTimeline)>
+        GetTimelineStatisticsAsync(CancellationToken cancellationToken);
+    
     Task<(IEnumerable<InputInvoice>, int)> SearchInputInvoices(
         int? id,
         string? invoiceNumber,
