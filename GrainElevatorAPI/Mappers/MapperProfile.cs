@@ -19,7 +19,9 @@ public class MapperProfile : Profile
             .ReverseMap();
 
         CreateMap<Employee, EmployeeRegisterRequest>().ReverseMap();
-        CreateMap<Employee, EmployeeUpdateRequest>().ReverseMap();
+        CreateMap<Employee, EmployeeUpdateRequest>()
+            .ForMember(dest => dest.RoleTitle, opt => opt.MapFrom(src => src.Role.Title))
+            .ReverseMap();
         CreateMap<Employee, EmployeeDto>()
             .ForMember(dest => dest.RoleTitle, opt => opt.MapFrom(src => src.Role.Title))
             .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy.LastName))

@@ -184,7 +184,6 @@ public class EmployeeController : ControllerBase
         if (request.Phone == null) ModelState.Remove("Phone");
         if (request.City == null) ModelState.Remove("City");
         if (request.Country == null) ModelState.Remove("Country");
-        if (request.RoleId == null) ModelState.Remove("RoleId");
         if (request.PasswordHash == null) ModelState.Remove("PasswordHash");
 
         if (!ModelState.IsValid)
@@ -209,7 +208,7 @@ public class EmployeeController : ControllerBase
                 return Unauthorized(new { message = "Користувач не авторизований." });
             }
             
-            var updatedEmployee = await _employeeService.UpdateEmployeeAsync(employeeDb, request.PasswordHash, modifiedById, cancellationToken);
+            var updatedEmployee = await _employeeService.UpdateEmployeeAsync(employeeDb, request.PasswordHash, request.RoleTitle, modifiedById, cancellationToken);
             
             return Ok(_mapper.Map<EmployeeDto>(updatedEmployee));
         }
@@ -217,6 +216,42 @@ public class EmployeeController : ControllerBase
         {
             _logger.LogError($"Внутрішня помилка сервера при оновленні Співробітника з ID {id}: {ex.Message}");
             return StatusCode(500, $"Внутрішня помилка сервера при оновленні Співробітника з ID {id}: {ex.Message}");
+        }
+    }
+    
+    
+    [HttpPut("{id}/last-seen-online")]
+    [Authorize(Roles = "Admin,HR")]
+    public async Task<IActionResult> UpdateLastSeenOnlineEmployee(int id)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
+        try
+        {
+            var cancellationToken = GetCancellationToken();
+            var employeeDb = await _employeeService.GetEmployeeByIdAsync(id, cancellationToken);
+            if (employeeDb == null)
+            {
+                return NotFound($"Співробітника з ID {id} не знайдено.");
+            }
+            
+            var modifiedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
+            if (modifiedById == 0)
+            {
+                return Unauthorized(new { message = "Користувач не авторизований." });
+            }
+            
+            var updatedEmployee = await _employeeService.UpdateLastSeenOnlineEmployeeAsync(employeeDb, cancellationToken);
+            
+            return Ok(_mapper.Map<EmployeeDto>(updatedEmployee));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Внутрішня помилка сервера при оновленні часу останньої присутності Співробітника з ID {id}: {ex.Message}");
+            return StatusCode(500, $"Внутрішня помилка сервера при оновленні часу останньої присутності Співробітника з ID {id}: {ex.Message}");
         }
     }
     

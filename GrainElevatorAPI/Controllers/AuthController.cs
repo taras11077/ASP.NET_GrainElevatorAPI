@@ -90,8 +90,6 @@ public class AuthController : Controller
             var jwt = JwtGenerator.GenerateJwt(employee, role.Title, tokenKey, expiryDate);
             
             HttpContext.Session.SetInt32("EmployeeId", employee.Id);
-
-            //return Created("token", jwt);
             
             return Created("token", new 
             {
@@ -153,5 +151,7 @@ public class AuthController : Controller
 
         return Ok($"EmployeeId: {employeeId}");
     }
+    
+    
     
 }

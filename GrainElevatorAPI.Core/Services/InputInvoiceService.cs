@@ -339,44 +339,6 @@ public class InputInvoiceService : IInputInvoiceService
         return (BySupplier: bySupplier, ByProduct: byProduct);
     }
     
-    // public async Task<(Dictionary<string, Dictionary<DateTime, int>> BySupplierTimeline, 
-    //         Dictionary<string, Dictionary<DateTime, int>> ByProductTimeline)> 
-    //     GetTimelineStatisticsAsync(CancellationToken cancellationToken)
-    // {
-    //     var invoices = await _repository.GetAll<InputInvoice>()
-    //         .Include(ii => ii.Supplier)
-    //         .Include(ii => ii.Product)
-    //         .ToListAsync(cancellationToken);
-    //
-    //     // Групуємо по постачальникам і датам
-    //     var bySupplierTimeline = invoices
-    //         .GroupBy(invoice => invoice.Supplier.Title)
-    //         .ToDictionary(
-    //             group => group.Key,
-    //             group => group
-    //                 .GroupBy(invoice => invoice.ArrivalDate.Date) // Групування по днях
-    //                 .ToDictionary(
-    //                     dateGroup => dateGroup.Key, // Дата
-    //                     dateGroup => dateGroup.Sum(invoice => invoice.PhysicalWeight) // Сума ваги
-    //                 )
-    //         );
-    //
-    //     // Групуємо по продуктах і датам
-    //     var byProductTimeline = invoices
-    //         .GroupBy(invoice => invoice.Product.Title)
-    //         .ToDictionary(
-    //             group => group.Key,
-    //             group => group
-    //                 .GroupBy(invoice => invoice.ArrivalDate.Date) // Групування по днях
-    //                 .ToDictionary(
-    //                     dateGroup => dateGroup.Key, // Дата
-    //                     dateGroup => dateGroup.Sum(invoice => invoice.PhysicalWeight) // Сума ваги
-    //                 )
-    //         );
-    //
-    //     return (BySupplierTimeline: bySupplierTimeline, ByProductTimeline: byProductTimeline);
-    // }
-    
     
     public async Task<(Dictionary<string, Dictionary<DateTime, int>> BySupplierTimeline, 
     Dictionary<string, Dictionary<DateTime, int>> ByProductTimeline)> 

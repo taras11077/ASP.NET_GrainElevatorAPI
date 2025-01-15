@@ -30,9 +30,12 @@ public interface IEmployeeService
     
     Task<Employee> UpdateEmployeeAsync(
         Employee employee,
-        string? passwordHash, 
+        string? passwordHash,
+        string? roleTitle, 
         int modifiedById, 
         CancellationToken cancellationToken);
+    
+    Task<Employee> UpdateLastSeenOnlineEmployeeAsync(Employee employee, CancellationToken cancellationToken);
     
     Task<Employee> SoftDeleteEmployeeAsync(Employee employee, int removedById, CancellationToken cancellationToken);
     Task<Employee> RestoreRemovedEmployeeAsync(Employee employee, int restoredById, CancellationToken cancellationToken);

@@ -31,8 +31,8 @@ public class EmployeeUpdateRequest
     [MaxLength(50, ErrorMessage = "Country name can't exceed 50 characters.")]
     public string? Country { get; set; }
     
-    [Range(1, int.MaxValue, ErrorMessage = "RoleId must be a positive number.")]
-    public int? RoleId { get; set; }
+    [Required(ErrorMessage = "RoleTitle is required.")]
+    public string RoleTitle { get; set; }
     
     public string? PasswordHash { get; set; }
 }

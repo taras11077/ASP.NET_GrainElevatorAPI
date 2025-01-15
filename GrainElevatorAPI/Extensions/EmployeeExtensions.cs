@@ -16,7 +16,6 @@ public static class EmployeeExtensions
         employee.Gender = request.Gender ?? employee.Gender;
         employee.City = request.City ?? employee.City;
         employee.Country = request.Country ?? employee.Country;
-        employee.RoleId = request.RoleId ?? employee.RoleId;
-        employee.PasswordHash = employee.PasswordHash;
+        employee.PasswordHash = request.PasswordHash ?? employee.PasswordHash;
     }
 }

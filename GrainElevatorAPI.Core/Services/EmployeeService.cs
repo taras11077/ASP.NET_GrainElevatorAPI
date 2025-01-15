@@ -242,12 +242,17 @@ public class EmployeeService : IEmployeeService
     
     public async Task<Employee> UpdateEmployeeAsync(
         Employee employee,
-        string? passwordHash, 
+        string? passwordHash,
+        string? roleTitle, 
         int modifiedById, 
         CancellationToken cancellationToken)
     {
         try
         {
+            var role = await _repository.GetAll<Role>()
+                .FirstOrDefaultAsync(r => r.Title == roleTitle, cancellationToken);
+        
+            employee.RoleId = role?.Id ?? employee.RoleId;
             employee.PasswordHash = passwordHash != null ? PasswordHasher.HashPassword(passwordHash) : employee.PasswordHash;
             employee.ModifiedAt = DateTime.UtcNow;
             employee.ModifiedById = modifiedById;
@@ -256,7 +261,21 @@ public class EmployeeService : IEmployeeService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка сервісу при оновленні співробітника з ID  {employee.Id}", ex);
+            throw new Exception($"Помилка сервісу при оновленні Співробітника з ID  {employee.Id}", ex);
+        }
+    }
+
+    public async Task<Employee> UpdateLastSeenOnlineEmployeeAsync(Employee employee, CancellationToken cancellationToken)
+    {
+        try
+        {
+            employee.LastSeenOnline = DateTime.UtcNow;
+            
+            return await _repository.UpdateAsync(employee, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Помилка сервісу при оновленні часу останньої присутності Співробітника з ID  {employee.Id}", ex);
         }
     }
     
@@ -271,7 +290,7 @@ public class EmployeeService : IEmployeeService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка сервісу при видаленні Вхідної накладної з ID  {employee.Id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Співробітника з ID  {employee.Id}", ex);
         }
     }
     
@@ -287,7 +306,7 @@ public class EmployeeService : IEmployeeService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка сервісу при відновленні Вхідної накладної з ID  {employee.Id}", ex);
+            throw new Exception($"Помилка сервісу при відновленні Співробітника з ID  {employee.Id}", ex);
         }
     }
 
@@ -305,7 +324,7 @@ public class EmployeeService : IEmployeeService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Помилка сервісу при видаленні співробітника з ID {id}", ex);
+            throw new Exception($"Помилка сервісу при видаленні Співробітника з ID {id}", ex);
         }
         
     }
@@ -318,7 +337,7 @@ public class EmployeeService : IEmployeeService
         }
         catch (Exception ex)
         {
-            throw new Exception("Помилка сервісу під час виконання пошуку співробітників", ex);
+            throw new Exception("Помилка сервісу під час виконання пошуку Співробітників", ex);
         }
     }
 }
