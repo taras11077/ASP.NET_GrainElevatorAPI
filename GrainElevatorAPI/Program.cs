@@ -15,7 +15,6 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MySQL;
-
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -157,26 +156,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
     });
 
-
-// Log.Logger = new LoggerConfiguration()
-//     .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Debug)
-//     .WriteTo.Console()
-//     .WriteTo.MSSqlServer(
-//         connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
-//         sinkOptions: new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true },
-//         restrictedToMinimumLevel: LogEventLevel.Error)  // Записує тільки Error і вище
-//     .CreateLogger();
-
-// Log.Logger = new LoggerConfiguration()
-//     .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Debug)
-//     .WriteTo.Console()
-//     .WriteTo.MySql(
-//         connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
-//         tableName: "Logs",
-//         AutoCreateSqlTable: true,
-//         restrictedToMinimumLevel: LogEventLevel.Error 
-//     )
-//     .CreateLogger();
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Debug)
+    .WriteTo.Console()
+    .WriteTo.MySQL(
+        connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
+        tableName: "Logs",
+        restrictedToMinimumLevel: LogEventLevel.Error 
+    )
+    .CreateLogger();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog();

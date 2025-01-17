@@ -7,19 +7,19 @@ namespace GrainElevator.Storage;
 
 public class GrainElevatorApiContext : DbContext
 {
-    // public GrainElevatorApiContext(DbContextOptions<GrainElevatorApiContext> options) : base(options)
-    // {
-    //     
-    // }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    public GrainElevatorApiContext(DbContextOptions<GrainElevatorApiContext> options) : base(options)
     {
-        var connectionString =
-            "Server=localhost;Port=3306;Database=grainElevatorAPI_db;User=root;Password='';";
-        var serverVersion = new MySqlServerVersion(new Version(8, 0, 2));
-
-        optionsBuilder.UseMySql(connectionString, serverVersion);
+        
     }
+
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // {
+    //     var connectionString =
+    //         "Server=localhost;Port=3306;Database=grainElevatorAPI_db;User=root;Password='';";
+    //     var serverVersion = new MySqlServerVersion(new Version(8, 0, 2));
+    //
+    //     optionsBuilder.UseMySql(connectionString, serverVersion);
+    // }
 
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Role> Roles { get; set; }
