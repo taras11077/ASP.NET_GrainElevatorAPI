@@ -18,9 +18,9 @@ namespace GrainElevator.Storage.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.8")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.CompletionReport", b =>
                 {
@@ -28,28 +28,28 @@ namespace GrainElevator.Storage.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<double?>("AccWeightReport")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
 
                     b.Property<bool?>("IsFinalized")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("ModifiedById")
                         .HasColumnType("int");
 
                     b.Property<double?>("PhysicalWeightReport")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.Property<int?>("PriceListId")
                         .HasColumnType("int");
@@ -58,39 +58,39 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<double?>("QuantitiesDryingReport")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("RemovedById")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ReportDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("ReportNumber")
                         .IsRequired()
                         .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
+                        .HasColumnType("varchar(9)");
 
                     b.Property<int?>("RestoreById")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RestoredAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<double?>("ShrinkageReport")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.Property<int>("SupplierId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("TotalCost")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<double?>("WasteReport")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.HasKey("Id");
 
@@ -108,7 +108,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("CompletionReports", (string)null);
+                    b.ToTable("CompletionReports");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.CompletionReportOperation", b =>
@@ -117,31 +117,31 @@ namespace GrainElevator.Storage.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<double>("Amount")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.Property<int?>("CompletionReportId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("ModifiedById")
                         .HasColumnType("int");
 
                     b.Property<decimal?>("OperationCost")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("RemovedById")
                         .HasColumnType("int");
@@ -150,7 +150,7 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RestoredAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("TechnologicalOperationId")
                         .HasColumnType("int");
@@ -169,7 +169,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("TechnologicalOperationId");
 
-                    b.ToTable("CompletionReportOperations", (string)null);
+                    b.ToTable("CompletionReportOperations");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.Employee", b =>
@@ -178,61 +178,61 @@ namespace GrainElevator.Storage.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("BirthDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("City")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Country")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("varchar(30)");
 
                     b.Property<string>("Gender")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("varchar(30)");
 
                     b.Property<DateTime>("LastSeenOnline")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("ModifiedById")
                         .HasColumnType("int");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Phone")
                         .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasColumnType("varchar(15)");
 
                     b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("RemovedById")
                         .HasColumnType("int");
@@ -241,7 +241,7 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RestoredAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
@@ -258,7 +258,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Employees", (string)null);
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.InputInvoice", b =>
@@ -267,13 +267,13 @@ namespace GrainElevator.Storage.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("ArrivalDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
@@ -281,13 +281,13 @@ namespace GrainElevator.Storage.Migrations
                     b.Property<string>("InvoiceNumber")
                         .IsRequired()
                         .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
+                        .HasColumnType("varchar(9)");
 
                     b.Property<bool?>("IsFinalized")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("ModifiedById")
                         .HasColumnType("int");
@@ -299,7 +299,7 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("RemovedById")
                         .HasColumnType("int");
@@ -308,14 +308,14 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RestoredAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("SupplierId")
                         .HasColumnType("int");
 
                     b.Property<string>("VehicleNumber")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("varchar(10)");
 
                     b.HasKey("Id");
 
@@ -331,7 +331,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("InputInvoices", (string)null);
+                    b.ToTable("InputInvoices");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.InvoiceRegister", b =>
@@ -340,34 +340,34 @@ namespace GrainElevator.Storage.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("AccWeightReg")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ArrivalDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("CompletionReportId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
 
                     b.Property<bool?>("IsFinalized")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("ModifiedById")
                         .HasColumnType("int");
 
                     b.Property<double>("MoistureBase")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.Property<int?>("PhysicalWeightReg")
                         .HasColumnType("int");
@@ -376,15 +376,15 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<double?>("QuantitiesDryingReg")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.Property<string>("RegisterNumber")
                         .IsRequired()
                         .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
+                        .HasColumnType("varchar(9)");
 
                     b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("RemovedById")
                         .HasColumnType("int");
@@ -393,7 +393,7 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RestoredAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("ShrinkageReg")
                         .HasColumnType("int");
@@ -405,7 +405,7 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<double>("WeedImpurityBase")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.HasKey("Id");
 
@@ -423,7 +423,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("Registers", (string)null);
+                    b.ToTable("Registers");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.LaboratoryCard", b =>
@@ -432,45 +432,45 @@ namespace GrainElevator.Storage.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
 
                     b.Property<double?>("GrainImpurity")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.Property<int>("InputInvoiceId")
                         .HasColumnType("int");
 
                     b.Property<bool?>("IsFinalized")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool?>("IsProduction")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("LabCardNumber")
                         .IsRequired()
                         .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
+                        .HasColumnType("varchar(9)");
 
                     b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("ModifiedById")
                         .HasColumnType("int");
 
                     b.Property<double>("Moisture")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.Property<int?>("ProductionBatchId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("RemovedById")
                         .HasColumnType("int");
@@ -479,20 +479,21 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RestoredAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("SpecialNotes")
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("varchar(300)");
 
                     b.Property<double>("WeedImpurity")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("InputInvoiceId");
+                    b.HasIndex("InputInvoiceId")
+                        .IsUnique();
 
                     b.HasIndex("ModifiedById");
 
@@ -500,7 +501,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("RestoreById");
 
-                    b.ToTable("LaboratoryCards", (string)null);
+                    b.ToTable("LaboratoryCards");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.OutputInvoice", b =>
@@ -509,10 +510,10 @@ namespace GrainElevator.Storage.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
@@ -520,10 +521,10 @@ namespace GrainElevator.Storage.Migrations
                     b.Property<string>("InvoiceNumber")
                         .IsRequired()
                         .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
+                        .HasColumnType("varchar(9)");
 
                     b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("ModifiedById")
                         .HasColumnType("int");
@@ -531,7 +532,7 @@ namespace GrainElevator.Storage.Migrations
                     b.Property<string>("ProductCategory")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("varchar(20)");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
@@ -540,7 +541,7 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("RemovedById")
                         .HasColumnType("int");
@@ -549,17 +550,17 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RestoredAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime>("ShipmentDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("SupplierId")
                         .HasColumnType("int");
 
                     b.Property<string>("VehicleNumber")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("WarehouseUnitId")
                         .HasColumnType("int");
@@ -580,7 +581,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("WarehouseUnitId");
 
-                    b.ToTable("OutputInvoices", (string)null);
+                    b.ToTable("OutputInvoices");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.PriceList", b =>
@@ -589,19 +590,19 @@ namespace GrainElevator.Storage.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
 
                     b.Property<bool?>("IsFinalized")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("ModifiedById")
                         .HasColumnType("int");
@@ -610,7 +611,7 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("RemovedById")
                         .HasColumnType("int");
@@ -619,7 +620,7 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RestoredAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
@@ -633,7 +634,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("RestoreById");
 
-                    b.ToTable("PriceLists", (string)null);
+                    b.ToTable("PriceLists");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.PriceListItem", b =>
@@ -642,28 +643,28 @@ namespace GrainElevator.Storage.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("ModifiedById")
                         .HasColumnType("int");
 
                     b.Property<decimal>("OperationPrice")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<int>("PriceListId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("RemovedById")
                         .HasColumnType("int");
@@ -672,7 +673,7 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RestoredAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("TechnologicalOperationId")
                         .HasColumnType("int");
@@ -691,7 +692,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("TechnologicalOperationId");
 
-                    b.ToTable("PriceListItems", (string)null);
+                    b.ToTable("PriceListItems");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.Product", b =>
@@ -700,22 +701,22 @@ namespace GrainElevator.Storage.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("ModifiedById")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("RemovedById")
                         .HasColumnType("int");
@@ -724,12 +725,12 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RestoredAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("varchar(20)");
 
                     b.HasKey("Id");
 
@@ -741,7 +742,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("RestoreById");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.ProductionBatch", b =>
@@ -750,13 +751,13 @@ namespace GrainElevator.Storage.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("AccountWeight")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
@@ -765,19 +766,19 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("ModifiedById")
                         .HasColumnType("int");
 
                     b.Property<double?>("QuantitiesDrying")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.Property<int?>("RegisterId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("RemovedById")
                         .HasColumnType("int");
@@ -786,7 +787,7 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RestoredAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("Shrinkage")
                         .HasColumnType("int");
@@ -809,7 +810,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("RestoreById");
 
-                    b.ToTable("ProductionBatches", (string)null);
+                    b.ToTable("ProductionBatches");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.Role", b =>
@@ -818,22 +819,22 @@ namespace GrainElevator.Storage.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("ModifiedById")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("RemovedById")
                         .HasColumnType("int");
@@ -842,12 +843,12 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RestoredAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("varchar(20)");
 
                     b.HasKey("Id");
 
@@ -859,7 +860,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("RestoreById");
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.Supplier", b =>
@@ -868,22 +869,22 @@ namespace GrainElevator.Storage.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("ModifiedById")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("RemovedById")
                         .HasColumnType("int");
@@ -892,12 +893,12 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RestoredAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("varchar(20)");
 
                     b.HasKey("Id");
 
@@ -909,7 +910,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("RestoreById");
 
-                    b.ToTable("Suppliers", (string)null);
+                    b.ToTable("Suppliers");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.TechnologicalOperation", b =>
@@ -918,22 +919,22 @@ namespace GrainElevator.Storage.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("ModifiedById")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("RemovedById")
                         .HasColumnType("int");
@@ -942,12 +943,12 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RestoredAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
 
@@ -959,7 +960,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("RestoreById");
 
-                    b.ToTable("TechnologicalOperations", (string)null);
+                    b.ToTable("TechnologicalOperations");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.WarehouseProductCategory", b =>
@@ -968,22 +969,22 @@ namespace GrainElevator.Storage.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("ModifiedById")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("RemovedById")
                         .HasColumnType("int");
@@ -992,12 +993,12 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RestoredAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("varchar(20)");
 
                     b.Property<int?>("Value")
                         .HasColumnType("int");
@@ -1017,7 +1018,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("WarehouseUnitId");
 
-                    b.ToTable("WarehouseProductCategories", (string)null);
+                    b.ToTable("WarehouseProductCategories");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.WarehouseUnit", b =>
@@ -1026,16 +1027,16 @@ namespace GrainElevator.Storage.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("ModifiedById")
                         .HasColumnType("int");
@@ -1044,7 +1045,7 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("RemovedById")
                         .HasColumnType("int");
@@ -1053,7 +1054,7 @@ namespace GrainElevator.Storage.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RestoredAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("SupplierId")
                         .HasColumnType("int");
@@ -1072,7 +1073,7 @@ namespace GrainElevator.Storage.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("WarehouseUnits", (string)null);
+                    b.ToTable("WarehouseUnits");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.CompletionReport", b =>
@@ -1155,7 +1156,7 @@ namespace GrainElevator.Storage.Migrations
                         .HasForeignKey("RestoreById")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("GrainElevatorAPI.Core.Models.TechnologicalOperation", null)
+                    b.HasOne("GrainElevatorAPI.Core.Models.TechnologicalOperation", "TechnologicalOperation")
                         .WithMany("CompletionReportOperations")
                         .HasForeignKey("TechnologicalOperationId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1170,6 +1171,8 @@ namespace GrainElevator.Storage.Migrations
                     b.Navigation("RemovedBy");
 
                     b.Navigation("RestoreBy");
+
+                    b.Navigation("TechnologicalOperation");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.Employee", b =>
@@ -1319,8 +1322,8 @@ namespace GrainElevator.Storage.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("GrainElevatorAPI.Core.Models.InputInvoice", "InputInvoice")
-                        .WithMany()
-                        .HasForeignKey("InputInvoiceId")
+                        .WithOne("LaboratoryCard")
+                        .HasForeignKey("GrainElevatorAPI.Core.Models.LaboratoryCard", "InputInvoiceId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -1778,6 +1781,11 @@ namespace GrainElevator.Storage.Migrations
                     b.Navigation("WarehouseProductCategories");
 
                     b.Navigation("WarehouseUnits");
+                });
+
+            modelBuilder.Entity("GrainElevatorAPI.Core.Models.InputInvoice", b =>
+                {
+                    b.Navigation("LaboratoryCard");
                 });
 
             modelBuilder.Entity("GrainElevatorAPI.Core.Models.InvoiceRegister", b =>

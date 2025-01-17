@@ -14,15 +14,20 @@ using GrainElevatorAPI.Core.Services;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
-using Serilog.Sinks.MSSqlServer;
+using Serilog.Sinks.MySQL;
+
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("Local");
 
 builder.Services.AddDbContext<GrainElevatorApiContext>(opt =>
-    opt.UseSqlServer(connectionString)
-        .UseLazyLoadingProxies());
+    opt.UseMySql(
+        connectionString,
+        new MySqlServerVersion(new Version(8, 0, 2))
+    ).UseLazyLoadingProxies()
+);
 
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();
@@ -153,14 +158,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Debug)
-    .WriteTo.Console()
-    .WriteTo.MSSqlServer(
-        connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
-        sinkOptions: new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true },
-        restrictedToMinimumLevel: LogEventLevel.Error)  // Записує тільки Error і вище
-    .CreateLogger();
+// Log.Logger = new LoggerConfiguration()
+//     .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Debug)
+//     .WriteTo.Console()
+//     .WriteTo.MSSqlServer(
+//         connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
+//         sinkOptions: new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true },
+//         restrictedToMinimumLevel: LogEventLevel.Error)  // Записує тільки Error і вище
+//     .CreateLogger();
+
+// Log.Logger = new LoggerConfiguration()
+//     .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Debug)
+//     .WriteTo.Console()
+//     .WriteTo.MySql(
+//         connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
+//         tableName: "Logs",
+//         AutoCreateSqlTable: true,
+//         restrictedToMinimumLevel: LogEventLevel.Error 
+//     )
+//     .CreateLogger();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog();
