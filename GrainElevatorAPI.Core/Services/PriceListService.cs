@@ -12,13 +12,19 @@ public class PriceListService: IPriceListService
     public PriceListService(IRepository repository) => _repository = repository;
 
 
-    public async Task<PriceList> CreatePriceListAsync(int productId, IEnumerable<PriceListItem> items, int createdById, CancellationToken cancellationToken)
+    public async Task<PriceList> CreatePriceListAsync(string productTitle, IEnumerable<PriceListItem> items, int createdById, CancellationToken cancellationToken)
     {
         try
         {
+            var product = await _repository.GetAll<Product>()
+                .FirstOrDefaultAsync(p => p.Title == productTitle, cancellationToken);
+        
+            if (product == null)
+                throw new KeyNotFoundException($"Продукта: {productTitle} не знайдено.");
+            
             var priceList = new PriceList()
             {
-                ProductId = productId,
+                ProductId = product.Id,
                 CreatedAt = DateTime.UtcNow,
                 CreatedById = createdById,
                 PriceListItems = items.ToList()
@@ -70,6 +76,7 @@ public class PriceListService: IPriceListService
         try
         {
             var query = _repository.GetAll<PriceList>()
+                .Include(pl => pl.PriceListItems)
                 .Include(pl => pl.Product)
                 .Where(pl => pl.RemovedAt == null);
 

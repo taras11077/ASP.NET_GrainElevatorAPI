@@ -38,7 +38,7 @@ public class EmployeeController : ControllerBase
     }
     
     [HttpGet("user-info")]
-    [Authorize(Roles = "Admin,HR,CEO")]
+    [Authorize]
     public async Task<ActionResult> GetEmployeeInfo()
     {
         try
@@ -221,7 +221,7 @@ public class EmployeeController : ControllerBase
     
     
     [HttpPut("{id}/last-seen-online")]
-    [Authorize(Roles = "Admin,HR")]
+    [Authorize]
     public async Task<IActionResult> UpdateLastSeenOnlineEmployee(int id)
     {
         if (!ModelState.IsValid)

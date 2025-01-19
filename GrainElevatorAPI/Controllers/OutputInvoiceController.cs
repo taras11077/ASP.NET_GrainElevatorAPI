@@ -38,20 +38,15 @@ public class OutputInvoiceController: ControllerBase
     public async Task<ActionResult<OutputInvoiceDto>> CreateOutputInvoice(OutputInvoiceCreateRequest request)
     {
         if (!ModelState.IsValid)
-        {
             return BadRequest(ModelState);
-        }
-        
+
         try
         {
             var cancellationToken = GetCancellationToken();
-            
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             if (createdById <= 0)
-            {
                 return Unauthorized(new { message = "Користувач не авторизований." });
-            }
-            
+
             var createdOutputInvoice = await _outputInvoiceService.CreateOutputInvoiceAsync(
                 request.InvoiceNumber,
                 request.ShipmentDate,
@@ -60,28 +55,30 @@ public class OutputInvoiceController: ControllerBase
                 request.ProductTitle,
                 request.ProductCategory,
                 request.ProductWeight,
-                createdById, 
+                createdById,
                 cancellationToken);
-            
+
             _logger.LogInformation($"Створено Видаткову накладну з ID = {createdOutputInvoice.Id}.");
-            
-            return CreatedAtAction(nameof(GetOutputInvoice), new { id = createdOutputInvoice.Id },
+
+            return CreatedAtAction(
+                nameof(GetOutputInvoice),
+                new { id = createdOutputInvoice.Id },
                 _mapper.Map<OutputInvoiceDto>(createdOutputInvoice));
         }
-        catch (ArgumentException ex)
+        catch (KeyNotFoundException ex)
         {
-            _logger.LogWarning($"Помилка валідації під час створення Видаткової накладної: {ex.Message}");
-            return BadRequest($"Помилка валідації: {ex.Message}");
+            _logger.LogWarning($"Помилка пошуку даних: {ex.Message}");
+            return NotFound(new { message = ex.Message });
         }
         catch (InvalidOperationException ex)
         {
-            _logger.LogWarning($"Некоректна операція під час створення Видаткової накладної: {ex.Message}");
-            return StatusCode(409, $"Конфлікт даних: {ex.Message}");
+            _logger.LogWarning($"Помилка операції: {ex.Message}");
+            return Conflict(new { message = ex.Message });
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Внутрішня помилка сервера під час створення Видаткової накладної: {ex.Message}");
-            return StatusCode(500, $"Внутрішня помилка сервера: {ex.Message}");
+            _logger.LogError($"Внутрішня помилка сервера: {ex.Message}");
+            return StatusCode(500, new { message = "Внутрішня помилка сервера. Спробуйте пізніше." });
         }
     }
 

@@ -48,9 +48,8 @@ public class InputInvoiceController : ControllerBase
             
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             if (createdById <= 0)
-            {
                 return Unauthorized(new { message = "Користувач не авторизований." });
-            }
+            
             
             var createdInputInvoice = await _inputInvoiceService.CreateInputInvoiceAsync(
                 request.InvoiceNumber,

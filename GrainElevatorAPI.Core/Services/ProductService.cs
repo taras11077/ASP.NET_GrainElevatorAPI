@@ -69,6 +69,7 @@ public class ProductService : IProductService
         {
             
             var query = _repository.GetAll<Product>()
+                .Include(s => s.CreatedBy)
                 .Where(to => to.RemovedAt == null);
             
             // Виклик методу фільтрації
@@ -128,8 +129,6 @@ public class ProductService : IProductService
             _ => query // Якщо поле не визначене
         };
     }
-    
-    
     
     
     public async Task<Product> UpdateProductAsync(Product product, int modifiedById, CancellationToken cancellationToken)

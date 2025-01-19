@@ -103,8 +103,8 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromSeconds(builder.Configuration.GetValue<int>("SessionTimeout"));
     options.Cookie.HttpOnly = true; // Заборонити доступ до cookie з JS
     
-    // options.Cookie.SameSite = SameSiteMode.None; // Дозволити міждоменні запити
-    // options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Вимагати HTTPS
+    options.Cookie.SameSite = SameSiteMode.None; // Дозволити міждоменні запити
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Вимагати HTTPS
     
     options.Cookie.SameSite = SameSiteMode.Lax; // Для локальной разработки
     options.Cookie.SecurePolicy = CookieSecurePolicy.None; // Для локальной разработки

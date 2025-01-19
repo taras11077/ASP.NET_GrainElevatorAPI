@@ -45,9 +45,10 @@ public class PriceListController : ControllerBase
             var cancellationToken = GetCancellationToken();
             var createdById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             
-            var priceListItems = _mapper.Map<IEnumerable<PriceListItem>>(request.PriceListItems);
-
-            var createdPriceList = await _priceListService.CreatePriceListAsync(request.ProductId, priceListItems, createdById, cancellationToken);
+            //var priceListItems = _mapper.Map<IEnumerable<PriceListItem>>(request.PriceListItems);
+            var priceListItems = new List<PriceListItem>(); // TODO
+            
+            var createdPriceList = await _priceListService.CreatePriceListAsync(request.ProductTitle, priceListItems, createdById, cancellationToken);
             return CreatedAtAction(nameof(GetPriceList), new { id = createdPriceList.Id },
                 _mapper.Map<PriceListDto>(createdPriceList));
         }

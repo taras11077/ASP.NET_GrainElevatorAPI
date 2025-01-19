@@ -39,34 +39,34 @@ public class OutputInvoiceService : IOutputInvoiceService
         
         var supplier = await _repository.GetAll<Supplier>()
             .FirstOrDefaultAsync(s => s.Title == supplierTitle, cancellationToken);
+        if (supplier == null)
+            throw new KeyNotFoundException($"Постачальника з назвою '{supplierTitle}' не знайдено.");
 
         var product = await _repository.GetAll<Product>()
             .FirstOrDefaultAsync(p => p.Title == productTitle, cancellationToken);
+        if (product == null)
+            throw new KeyNotFoundException($"Продукт з назвою '{productTitle}' не знайдено.");
+      
         
-        if (supplier == null || product == null)
-        {
-            throw new KeyNotFoundException($"Постачальника: {supplierTitle} або Продукта: {productTitle} не знайдено.");
-        }
         var warehouseUnit = await _repository.GetAll<WarehouseUnit>()
             .FirstOrDefaultAsync(w => w.SupplierId == supplier.Id && w.ProductId == product.Id, cancellationToken);
-
         if (warehouseUnit == null)
-        {
             throw new KeyNotFoundException($"Складський юніт із Постачальником {supplierTitle} та Продукцією {productTitle} не знайдено.");
-        }
+        
         
         var productCategoryEntity = await _repository.GetAll<WarehouseProductCategory>()
             .FirstOrDefaultAsync(pc => pc.Title == productCategory && pc.WarehouseUnitId == warehouseUnit.Id, cancellationToken);
-
         if (productCategoryEntity == null)
-        {
             throw new KeyNotFoundException($"Категорію продукту {productCategory} не знайдено на складі.");
-        }
+        
 
         // перевірка доступного залишку продукту
         if (productCategoryEntity.Value == null || productCategoryEntity.Value < productWeight)
         {
-            throw new InvalidOperationException($"Недостатньо продукції в категорії {productCategory}. Доступно: {productCategoryEntity.Value}");
+            throw new InvalidOperationException(
+                $"Недостатньо продукту в категорії '{productCategory}'. " +
+                $"Доступно: {productCategoryEntity.Value ?? 0}, потрібно: {productWeight}."
+            );
         }
 
         // зменшення значення категорії продукту
@@ -95,21 +95,11 @@ public class OutputInvoiceService : IOutputInvoiceService
 
         return addedInvoice;
     }
-    catch (KeyNotFoundException ex)
+    catch
     {
         // Відкат транзакції у випадку відсутності запису
         await _repository.RollbackTransactionAsync(cancellationToken);
-        throw new ArgumentException("Не знайдено необхідних даних для створення видаткової накладної.", ex);
-    }
-    catch (InvalidOperationException ex)
-    {
-        await _repository.RollbackTransactionAsync(cancellationToken);
-        throw new InvalidOperationException("Недостатньо продукції на складі для видаткової накладної.", ex);
-    }
-    catch (Exception ex)
-    {
-        await _repository.RollbackTransactionAsync(cancellationToken);
-        throw new Exception("Помилка сервісу при додаванні видаткової накладної", ex);
+        throw;
     }
 }
     

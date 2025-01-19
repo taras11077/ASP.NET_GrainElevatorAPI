@@ -38,7 +38,7 @@ public class InputInvoiceService : IInputInvoiceService
         
             if (supplier == null)
             {
-                supplier = new Supplier { Title = supplierTitle };
+                supplier = new Supplier { Title = supplierTitle, CreatedById = createdById };
                 await _repository.AddAsync(supplier, cancellationToken);
             }
             
@@ -47,7 +47,7 @@ public class InputInvoiceService : IInputInvoiceService
         
             if (product == null)
             {
-                product = new Product { Title = productTitle };
+                product = new Product { Title = productTitle, CreatedById = createdById };
                 await _repository.AddAsync(product, cancellationToken);
             }
             

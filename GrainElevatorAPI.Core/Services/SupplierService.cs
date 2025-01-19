@@ -71,6 +71,7 @@ public class SupplierService : ISupplierService
         {
             
             var query = _repository.GetAll<Supplier>()
+                .Include(s => s.CreatedBy)
                 .Where(to => to.RemovedAt == null);
             
             // Виклик методу фільтрації
