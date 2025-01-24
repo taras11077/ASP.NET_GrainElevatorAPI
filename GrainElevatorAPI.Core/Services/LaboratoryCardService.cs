@@ -88,7 +88,7 @@ public class LaboratoryCardService : ILaboratoryCardService
             var query = _repository.GetAll<LaboratoryCard>()
                 .Include(lc => lc.CreatedBy)
                 .Include(lc => lc.InputInvoice) 
-                .ThenInclude(lc => lc.Product) 
+                    .ThenInclude(lc => lc.Product) 
                 .Include(lc => lc.InputInvoice.Supplier) 
                 .Where(lc => lc.RemovedAt == null);
 

@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrainElevatorAPI.Core", "Gr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrainElevatorAPI.Storage", "GrainElevatorAPI.Storage\GrainElevatorAPI.Storage.csproj", "{B347235A-0469-477D-9451-F1F8C7F85603}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{57B73412-78D2-406B-8046-89C126C69C30}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{B347235A-0469-477D-9451-F1F8C7F85603}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B347235A-0469-477D-9451-F1F8C7F85603}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B347235A-0469-477D-9451-F1F8C7F85603}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57B73412-78D2-406B-8046-89C126C69C30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57B73412-78D2-406B-8046-89C126C69C30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57B73412-78D2-406B-8046-89C126C69C30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57B73412-78D2-406B-8046-89C126C69C30}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -25,7 +25,7 @@ builder.Services.AddDbContext<GrainElevatorApiContext>(opt =>
     opt.UseMySql(
         connectionString,
         new MySqlServerVersion(new Version(8, 0, 2))
-    ).UseLazyLoadingProxies()
+    ).UseLazyLoadingProxies(false)
 );
 
 builder.Services.AddEndpointsApiExplorer();

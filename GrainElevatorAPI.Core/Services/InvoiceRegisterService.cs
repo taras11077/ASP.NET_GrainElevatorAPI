@@ -309,7 +309,13 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         try
         {
             var query = _repository.GetAll<InvoiceRegister>()
-                .Where(ir => ir.RemovedAt == null);
+                .Include(r => r.ProductionBatches)
+                    .ThenInclude(pb => pb.LaboratoryCard)
+                    .ThenInclude( lc => lc.InputInvoice)
+                .Include(r => r.Product)
+                .Include(r => r.Supplier)
+                .Include(r => r.CreatedBy)
+                .Where(r => r.RemovedAt == null);
 
             // Виклик методу фільтрації
             query = ApplyFilters(query, registerNumber, arrivalDate, physicalWeightReg, 

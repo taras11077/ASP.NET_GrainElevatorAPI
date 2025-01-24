@@ -12,7 +12,7 @@ public class StandardRegisterCalculator : IRegisterCalculator
         var inputInvoice = (laboratoryCard as LaboratoryCard)?.InputInvoice;
         
         if (inputInvoice != null && inputInvoice.PhysicalWeight <= 0)
-            throw new ArgumentException("Physical weight must be greater than zero.",
+            throw new ArgumentException("Фізична вага має бути більшою за 0.",
                 nameof(inputInvoice.PhysicalWeight));
 
         // розрахунок втрати ваги при очищенні (Waste)
