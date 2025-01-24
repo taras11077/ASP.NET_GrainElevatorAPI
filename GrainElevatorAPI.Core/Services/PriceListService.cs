@@ -77,7 +77,9 @@ public class PriceListService: IPriceListService
         {
             var query = _repository.GetAll<PriceList>()
                 .Include(pl => pl.PriceListItems)
+                    .ThenInclude(pli => pli.TechnologicalOperation)
                 .Include(pl => pl.Product)
+                .Include(cr => cr.CreatedBy)
                 .Where(pl => pl.RemovedAt == null);
 
             // Виклик методу фільтрації

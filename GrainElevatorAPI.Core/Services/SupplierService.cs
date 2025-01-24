@@ -96,7 +96,6 @@ public class SupplierService : ISupplierService
         }
     }
     
-    
     private IQueryable<Supplier> ApplyFilters(
         IQueryable<Supplier> query,
         string? title,
@@ -133,7 +132,6 @@ public class SupplierService : ISupplierService
         };
     }
     
-
     public async Task<Supplier> UpdateSupplierAsync(Supplier supplier, int modifiedById, CancellationToken cancellationToken)
     {
         try

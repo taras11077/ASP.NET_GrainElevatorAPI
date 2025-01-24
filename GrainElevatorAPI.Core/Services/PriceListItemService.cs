@@ -64,6 +64,7 @@ public class PriceListItemService: IPriceListItemService
         try
         {
             var query = _repository.GetAll<PriceListItem>()
+                .Where(pli => pli.RemovedAt == null)
                 .Skip((page - 1) * size)
                 .Take(size);
 

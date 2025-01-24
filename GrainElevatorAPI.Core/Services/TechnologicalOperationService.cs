@@ -70,6 +70,7 @@ public class TechnologicalOperationService: ITechnologicalOperationService
         try
         {
             var query = _repository.GetAll<TechnologicalOperation>()
+                .Include(cr => cr.CreatedBy)
                 .Where(to => to.RemovedAt == null);
             
             // Виклик методу фільтрації

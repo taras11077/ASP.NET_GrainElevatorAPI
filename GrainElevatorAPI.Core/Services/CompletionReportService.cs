@@ -168,6 +168,11 @@ public class CompletionReportService: ICompletionReportService
         try
         {
             var query = _repository.GetAll<CompletionReport>()
+                .Include(cr => cr.CompletionReportOperations)
+                    .ThenInclude(op => op.TechnologicalOperation)
+                .Include(cr => cr.CreatedBy)
+                .Include(cr => cr.Supplier)
+                .Include(cr => cr.Product)
                 .Where(ir => ir.RemovedAt == null);
             
             // Виклик методу фільтрації

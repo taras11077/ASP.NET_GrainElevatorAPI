@@ -248,8 +248,6 @@ public class WarehouseUnitService: IWarehouseUnitService
             throw new Exception($"Помилка сервісу при отриманні Cкладської одиниці з ID {id}", ex);
         }
     }
-
-    
     
     public async Task<(IEnumerable<WarehouseUnit>, int)> SearchWarehouseUnitsAsync(
         string? supplierTitle = null,
@@ -267,6 +265,7 @@ public class WarehouseUnitService: IWarehouseUnitService
                 .Include(wu => wu.ProductCategories)
                 .Include(wu => wu.Supplier)
                 .Include(wu => wu.Product)
+                .Include(wu => wu.CreatedBy)
                 .Where(wu => wu.RemovedAt == null);
 
             // Виклик методу фільтрації

@@ -14,7 +14,7 @@ public class ProductService : IProductService
         _repository = repository;
     }
     
- public async Task<Product> CreateProductAsync(Product product, int createdById, CancellationToken cancellationToken)
+    public async Task<Product> CreateProductAsync(Product product, int createdById, CancellationToken cancellationToken)
     {
         try
         {
@@ -40,7 +40,6 @@ public class ProductService : IProductService
             throw new Exception($"Помилка сервісу при отриманні Продукції з ID {id}", ex);
         }
     }
-
     
     public async Task<IEnumerable<Product>> GetProducts(int page, int size, CancellationToken cancellationToken)
     {

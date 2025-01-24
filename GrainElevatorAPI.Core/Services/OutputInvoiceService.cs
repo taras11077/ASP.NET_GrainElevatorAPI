@@ -265,8 +265,6 @@ public class OutputInvoiceService : IOutputInvoiceService
     }
     
     
-    
-    
     public async Task<OutputInvoice> UpdateOutputInvoiceAsync(OutputInvoice outputInvoice, int modifiedById, CancellationToken cancellationToken)
     {
         try

@@ -38,7 +38,9 @@ public class EmployeeService : IEmployeeService
         try
         {
             var query = _repository.GetAll<Employee>()
-                .Where(ir => ir.RemovedAt == null);
+                .Include(cr => cr.Role)
+                .Include(e => e.CreatedBy)
+                .Where(e => e.RemovedAt == null);
             
             // Виклик методу фільтрації
             query = ApplyFilters(

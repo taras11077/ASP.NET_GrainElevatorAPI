@@ -41,7 +41,6 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
         }
     }
     
-    
     public async Task<WarehouseProductCategory> GetWarehouseProductCategoryByIdAsync(int id, CancellationToken cancellationToken)
     {
         try
@@ -68,7 +67,8 @@ public class WarehouseProductCategoryService : IWarehouseProductCategoryService
         {
             var query = _repository.GetAll<WarehouseProductCategory>()
                 .Include(wpc => wpc.WarehouseUnit)
-                .AsQueryable();
+                .Include(wpc => wpc.CreatedBy)
+                .Where(wpc => wpc.RemovedAt == null);
 
             if (id.HasValue)
             {

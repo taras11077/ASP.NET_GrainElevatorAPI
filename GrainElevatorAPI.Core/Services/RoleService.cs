@@ -27,7 +27,6 @@ public class RoleService : IRoleService
         }
     }
     
-    
     public async Task<Role> AddRoleAsync(Role role, int? createdById, CancellationToken cancellationToken)
     {
         try
@@ -99,6 +98,7 @@ public class RoleService : IRoleService
         {
             
             var query = _repository.GetAll<Role>()
+                .Include(cr => cr.CreatedBy)
                 .Where(r => r.RemovedAt == null);
             
             // Виклик методу фільтрації
@@ -158,8 +158,6 @@ public class RoleService : IRoleService
             _ => query // Якщо поле не визначене
         };
     }
-    
-    
     
     public async Task<Role> UpdateRoleAsync(Role role, int modifiedById, CancellationToken cancellationToken)
     {
