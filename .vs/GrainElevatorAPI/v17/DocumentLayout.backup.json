@@ -1,7 +1,24 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorBackend\\",
-  "Documents": [],
+  "WorkspaceRootPath": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{3E2DBCC0-50A7-443D-9FB0-715C589CB826}|GrainElevatorAPI\\GrainElevatorAPI.csproj|e:\\0_step\\00 hw\\000\\grainelevator\\grainelevatorapi\\grainelevatorapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3E2DBCC0-50A7-443D-9FB0-715C589CB826}|GrainElevatorAPI\\GrainElevatorAPI.csproj|solutionrelative:grainelevatorapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3E2DBCC0-50A7-443D-9FB0-715C589CB826}|GrainElevatorAPI\\GrainElevatorAPI.csproj|e:\\0_step\\00 hw\\000\\grainelevator\\grainelevatorapi\\grainelevatorapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{3E2DBCC0-50A7-443D-9FB0-715C589CB826}|GrainElevatorAPI\\GrainElevatorAPI.csproj|solutionrelative:grainelevatorapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3E2DBCC0-50A7-443D-9FB0-715C589CB826}|GrainElevatorAPI\\GrainElevatorAPI.csproj|e:\\0_step\\00 hw\\000\\grainelevator\\grainelevatorapi\\grainelevatorapi\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{3E2DBCC0-50A7-443D-9FB0-715C589CB826}|GrainElevatorAPI\\GrainElevatorAPI.csproj|solutionrelative:grainelevatorapi\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B347235A-0469-477D-9451-F1F8C7F85603}|GrainElevatorAPI.Storage\\GrainElevatorAPI.Storage.csproj|e:\\0_step\\00 hw\\000\\grainelevator\\grainelevatorapi\\grainelevatorapi.storage\\grainelevatorapicontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B347235A-0469-477D-9451-F1F8C7F85603}|GrainElevatorAPI.Storage\\GrainElevatorAPI.Storage.csproj|solutionrelative:grainelevatorapi.storage\\grainelevatorapicontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,7 +26,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 129,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Bookmark",
@@ -22,6 +39,57 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "GrainElevatorApiContext.cs",
+              "DocumentMoniker": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI.Storage\\GrainElevatorApiContext.cs",
+              "RelativeDocumentMoniker": "GrainElevatorAPI.Storage\\GrainElevatorApiContext.cs",
+              "ToolTip": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI.Storage\\GrainElevatorApiContext.cs",
+              "RelativeToolTip": "GrainElevatorAPI.Storage\\GrainElevatorApiContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-27T09:48:26.339Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "GrainElevatorAPI\\Properties\\launchSettings.json",
+              "ToolTip": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI\\Properties\\launchSettings.json",
+              "RelativeToolTip": "GrainElevatorAPI\\Properties\\launchSettings.json",
+              "ViewState": "AgIAABkAAAAAAAAAAAAowDMAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-01-26T14:19:39.822Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI\\Program.cs",
+              "RelativeDocumentMoniker": "GrainElevatorAPI\\Program.cs",
+              "ToolTip": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI\\Program.cs",
+              "RelativeToolTip": "GrainElevatorAPI\\Program.cs",
+              "ViewState": "AgIAABsAAAAAAAAAAAAAACgAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-25T19:44:55.68Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI\\appsettings.json",
+              "RelativeDocumentMoniker": "GrainElevatorAPI\\appsettings.json",
+              "ToolTip": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI\\appsettings.json",
+              "RelativeToolTip": "GrainElevatorAPI\\appsettings.json",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAqwCUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-01-25T19:25:42.645Z",
+              "EditorCaption": ""
             }
           ]
         },

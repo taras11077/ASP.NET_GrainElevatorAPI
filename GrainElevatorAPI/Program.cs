@@ -19,18 +19,28 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("Local");
+//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<GrainElevatorApiContext>(opt =>
-    opt.UseMySql(
+// Визначаємо рядок підключення
+var environment = builder.Environment.IsDevelopment() ? "Local" : "DefaultConnection";
+var connectionString = builder.Configuration.GetConnectionString(environment);
+
+builder.Services.AddDbContext<GrainElevatorApiContext>(options =>
+    options.UseMySql(
         connectionString,
-        new MySqlServerVersion(new Version(8, 0, 2))
-    ).UseLazyLoadingProxies(false)
+        new MySqlServerVersion(new Version(8, 0, 2)),
+        mysqlOptions => mysqlOptions.EnableRetryOnFailure())
+    .UseLazyLoadingProxies(false)
 );
 
-builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
+// builder.WebHost.ConfigureKestrel(options =>
+// {
+//     options.ListenAnyIP(5012); // перевірка що бекенд слухає на порту 5012
+// });
 
+builder.Services.AddEndpointsApiExplorer();
+
+//builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -78,8 +88,6 @@ builder.Services.AddTransient<IPriceListService, PriceListService>();
 builder.Services.AddTransient<ICompletionReportOperationService, CompletionReportOperationService>();
 builder.Services.AddTransient<ICompletionReportService, CompletionReportService>();
 builder.Services.AddTransient<ITechnologicalOperationService, TechnologicalOperationService>();
-
-
 builder.Services.AddTransient<IInputInvoice, InputInvoice>();
 builder.Services.AddTransient<ILaboratoryCard, LaboratoryCard>();
 builder.Services.AddTransient<IProductionBatch, ProductionBatch>();
@@ -116,7 +124,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("https://localhost:3000") // URL фронтенда
+        policy.WithOrigins("https://localhost", "https://localhost:3000") // URL фронтенда
             .AllowCredentials() // дозволити cookie
             .AllowAnyMethod()
             .AllowAnyHeader()
@@ -170,6 +178,7 @@ builder.Logging.ClearProviders();
 builder.Logging.AddSerilog();
 
 var app = builder.Build();
+
 
 // створення адміністратора під час запуску програми
 using (var scope = app.Services.CreateScope())
