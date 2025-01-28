@@ -33,11 +33,6 @@ builder.Services.AddDbContext<GrainElevatorApiContext>(options =>
     .UseLazyLoadingProxies(false)
 );
 
-// builder.WebHost.ConfigureKestrel(options =>
-// {
-//     options.ListenAnyIP(5012); // перевірка що бекенд слухає на порту 5012
-// });
-
 builder.Services.AddEndpointsApiExplorer();
 
 //builder.Services.AddSwaggerGen();
