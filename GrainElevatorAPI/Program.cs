@@ -115,11 +115,33 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+
+// Отримуємо список дозволених доменів із змінної середовища
+var allowedOrigins = (builder.Configuration["CORS_ALLOWED_ORIGINS"]?
+                         .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) 
+                     ?? Array.Empty<string>())
+    .Concat(new[] { "https://localhost", "https://localhost:3000" }) // Додаємо localhost
+    .Distinct() // Видаляємо можливі дублікати
+    .ToArray();
+
+// Створюємо логер **до app.Build()**
+var loggerFactory = LoggerFactory.Create(loggingBuilder =>
+{
+    loggingBuilder.AddConsole();
+});
+var logger = loggerFactory.CreateLogger<Program>();
+
+logger.LogInformation("CORS Allowed Origins: {Origins}", string.Join(", ", allowedOrigins));
+
+
+
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("https://localhost", "https://localhost:3000") // URL фронтенда
+        policy.WithOrigins(allowedOrigins) // URL фронтенда
+        //policy.SetIsOriginAllowed(_ => true)
             .AllowCredentials() // дозволити cookie
             .AllowAnyMethod()
             .AllowAnyHeader()
@@ -172,8 +194,9 @@ Log.Logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog();
 
-var app = builder.Build();
 
+
+var app = builder.Build();
 
 // створення адміністратора під час запуску програми
 using (var scope = app.Services.CreateScope())
@@ -185,8 +208,8 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Сталася помилка при створенні адміністратора.");
+        var scopedLogger  = services.GetRequiredService<ILogger<Program>>();
+        scopedLogger .LogError(ex, "Сталася помилка при створенні адміністратора.");
     }
 }
 
