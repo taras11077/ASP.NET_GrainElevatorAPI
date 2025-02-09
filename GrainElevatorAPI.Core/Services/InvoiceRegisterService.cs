@@ -522,10 +522,17 @@ public class InvoiceRegisterService : IInvoiceRegisterService
             await _warehouseUnitService.DeletingRegisterDataFromWarehouseUnitAsync(invoiceRegister, removedById, cancellationToken);
 
             // Збереження змін у реєстрі
-            return await _repository.UpdateAsync(invoiceRegister, cancellationToken);
+            var deletedRegister = await _repository.UpdateAsync(invoiceRegister, cancellationToken);
+            
+            // Фіксація транзакції
+            await transaction.CommitAsync(cancellationToken);
+            
+            return deletedRegister;
         }
         catch (Exception ex)
         {
+            // Відкат транзакції
+            await transaction.RollbackAsync(cancellationToken);
             throw new Exception($"Помилка сервісу під час видалення Реєстру з ID  {invoiceRegister.Id}", ex);
         }
         });
