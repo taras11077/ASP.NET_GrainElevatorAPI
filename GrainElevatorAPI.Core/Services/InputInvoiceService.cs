@@ -17,7 +17,6 @@ public class InputInvoiceService : IInputInvoiceService
         _logger = logger;
     }
     
-    
     public async Task<InputInvoice> CreateInputInvoiceAsync(
         string invoiceNumber,
         DateTime arrivalDate,
@@ -28,57 +27,62 @@ public class InputInvoiceService : IInputInvoiceService
         int createdById, 
         CancellationToken cancellationToken)
     {
-        try
+        var executionStrategy = _repository.CreateExecutionStrategy(); // Отримання стратегії повторних спроб
+        
+        return await executionStrategy.ExecuteAsync(async () =>
         {
             // початок транзакції
-            await _repository.BeginTransactionAsync(cancellationToken);
-            
-            var supplier = await _repository.GetAll<Supplier>()
-                .FirstOrDefaultAsync(s => s.Title == supplierTitle, cancellationToken);
+            await using var transaction = await _repository.BeginTransactionAsync(cancellationToken);
         
-            if (supplier == null)
+            try
             {
-                supplier = new Supplier { Title = supplierTitle, CreatedById = createdById };
-                await _repository.AddAsync(supplier, cancellationToken);
-            }
+                var supplier = await _repository.GetAll<Supplier>()
+                    .FirstOrDefaultAsync(s => s.Title == supplierTitle, cancellationToken);
             
-            var product = await _repository.GetAll<Product>()
-                .FirstOrDefaultAsync(p => p.Title == productTitle, cancellationToken);
-        
-            if (product == null)
-            {
-                product = new Product { Title = productTitle, CreatedById = createdById };
-                await _repository.AddAsync(product, cancellationToken);
-            }
+                if (supplier == null)
+                {
+                    supplier = new Supplier { Title = supplierTitle, CreatedById = createdById };
+                    await _repository.AddAsync(supplier, cancellationToken);
+                }
+                
+                var product = await _repository.GetAll<Product>()
+                    .FirstOrDefaultAsync(p => p.Title == productTitle, cancellationToken);
             
-            var inputInvoice = new InputInvoice
-            {
-                InvoiceNumber = invoiceNumber,
-                ArrivalDate = arrivalDate,
-                CreatedAt = DateTime.UtcNow,
-                CreatedById = createdById,
-                SupplierId = supplier.Id,
-                ProductId = product.Id,
-                PhysicalWeight = physicalWeight,
-                VehicleNumber = vehicleNumber,
-                Supplier = supplier,
-                Product = product
-            };
+                if (product == null)
+                {
+                    product = new Product { Title = productTitle, CreatedById = createdById };
+                    await _repository.AddAsync(product, cancellationToken);
+                }
+                
+                var inputInvoice = new InputInvoice
+                {
+                    InvoiceNumber = invoiceNumber,
+                    ArrivalDate = arrivalDate,
+                    CreatedAt = DateTime.UtcNow,
+                    CreatedById = createdById,
+                    SupplierId = supplier.Id,
+                    ProductId = product.Id,
+                    PhysicalWeight = physicalWeight,
+                    VehicleNumber = vehicleNumber,
+                    Supplier = supplier,
+                    Product = product
+                };
 
-            var addedInvoice = await _repository.AddAsync(inputInvoice, cancellationToken);
-            await _repository.SaveChangesAsync(cancellationToken);
-            
-            // фіксація транзакції
-            await _repository.CommitTransactionAsync(cancellationToken);
+                var addedInvoice = await _repository.AddAsync(inputInvoice, cancellationToken);
+                await _repository.SaveChangesAsync(cancellationToken);
+                
+                // Фіксація транзакції
+                await transaction.CommitAsync(cancellationToken);
 
-            return addedInvoice;
-        }
-        catch (Exception ex)
-        {
-            // відкат транзакції в разі помилки
-            await _repository.RollbackTransactionAsync(cancellationToken);
-            throw new Exception("Помилка сервісу при додаванні Прибуткової накладної", ex);
-        }
+                return addedInvoice;
+            }
+            catch (Exception ex)
+            {
+                // відкат транзакції в разі помилки
+                await transaction.RollbackAsync(cancellationToken);
+                throw new Exception("Помилка сервісу при додаванні Прибуткової накладної", ex);
+            }
+        });
     }
 
     public async Task<(IEnumerable<InputInvoice>, int)> GetInputInvoicesAsync(int page, int size, CancellationToken cancellationToken)
@@ -401,6 +405,4 @@ public class InputInvoiceService : IInputInvoiceService
 
     return (BySupplierTimeline: bySupplierTimeline, ByProductTimeline: byProductTimeline);
 }
-
-
 }

@@ -227,11 +227,8 @@ public class InvoiceRegisterController : ControllerBase
         try
         {
             var cancellationToken = GetCancellationToken();
+            
             var registerDb = await _invoiceRegisterService.GetInvoiceRegisterByIdAsync(id, cancellationToken);
-            if (registerDb == null)
-            {
-                return NotFound($"Реєстру з ID {id} не знайдено.");
-            }
             
             var removedById = HttpContext.Session.GetInt32("EmployeeId").GetValueOrDefault();
             if (removedById <= 0)
@@ -239,12 +236,19 @@ public class InvoiceRegisterController : ControllerBase
                 return Unauthorized(new { message = "Користувач не авторизований." });
             }
             
-            
             var removedRegister = await _invoiceRegisterService.SoftDeleteInvoiceRegisterAsync(registerDb, removedById, cancellationToken);
-            
+
             return Ok(_mapper.Map<InvoiceRegisterDto>(removedRegister));
         }
-        catch (Exception ex)
+        catch (KeyNotFoundException ex) // Якщо реєстр не знайдено
+        {
+            return NotFound(ex.Message);
+        }
+        catch (InvalidOperationException ex) // Якщо є помилки бізнес-логіки
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex) // Інші внутрішні помилки сервера
         {
             _logger.LogError($"Внутрішня помилка сервера під час видалення Реєстру з ID {id}: {ex.Message}");
             return StatusCode(500, $"Внутрішня помилка сервера під час видалення Реєстру з ID {id}: {ex.Message}");

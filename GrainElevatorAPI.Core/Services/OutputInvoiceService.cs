@@ -18,8 +18,8 @@ public class OutputInvoiceService : IOutputInvoiceService
         _logger = logger;
         _warehouseUnitService = warehouseUnitService;
     }
-    
-    public async Task<OutputInvoice> CreateOutputInvoiceAsync(
+
+public async Task<OutputInvoice> CreateOutputInvoiceAsync(
     string invoiceNumber,
     DateTime shipmentDate,
     string vehicleNumber,
@@ -30,78 +30,79 @@ public class OutputInvoiceService : IOutputInvoiceService
     int createdById, 
     CancellationToken cancellationToken)
 {
-    await _repository.BeginTransactionAsync(cancellationToken);
+    var executionStrategy = _repository.CreateExecutionStrategy(); // Отримання стратегії повторних спроб
 
-    try
+    return await executionStrategy.ExecuteAsync(async () =>
     {
         // початок транзакції
-        //await _repository.BeginTransactionAsync(cancellationToken);
-        
-        var supplier = await _repository.GetAll<Supplier>()
-            .FirstOrDefaultAsync(s => s.Title == supplierTitle, cancellationToken);
-        if (supplier == null)
-            throw new KeyNotFoundException($"Постачальника з назвою '{supplierTitle}' не знайдено.");
+        await using var transaction = await _repository.BeginTransactionAsync(cancellationToken);
 
-        var product = await _repository.GetAll<Product>()
-            .FirstOrDefaultAsync(p => p.Title == productTitle, cancellationToken);
-        if (product == null)
-            throw new KeyNotFoundException($"Продукт з назвою '{productTitle}' не знайдено.");
-      
-        
-        var warehouseUnit = await _repository.GetAll<WarehouseUnit>()
-            .FirstOrDefaultAsync(w => w.SupplierId == supplier.Id && w.ProductId == product.Id, cancellationToken);
-        if (warehouseUnit == null)
-            throw new KeyNotFoundException($"Складський юніт із Постачальником {supplierTitle} та Продукцією {productTitle} не знайдено.");
-        
-        
-        var productCategoryEntity = await _repository.GetAll<WarehouseProductCategory>()
-            .FirstOrDefaultAsync(pc => pc.Title == productCategory && pc.WarehouseUnitId == warehouseUnit.Id, cancellationToken);
-        if (productCategoryEntity == null)
-            throw new KeyNotFoundException($"Категорію продукту {productCategory} не знайдено на складі.");
-        
-
-        // перевірка доступного залишку продукту
-        if (productCategoryEntity.Value == null || productCategoryEntity.Value < productWeight)
+        try
         {
-            throw new InvalidOperationException(
-                $"Недостатньо продукту в категорії '{productCategory}'. " +
-                $"Доступно: {productCategoryEntity.Value ?? 0}, потрібно: {productWeight}."
-            );
+            // Пошук постачальника
+            var supplier = await _repository.GetAll<Supplier>()
+                .FirstOrDefaultAsync(s => s.Title == supplierTitle, cancellationToken);
+            if (supplier == null)
+                throw new KeyNotFoundException($"Постачальника з назвою '{supplierTitle}' не знайдено.");
+
+            var product = await _repository.GetAll<Product>()
+                .FirstOrDefaultAsync(p => p.Title == productTitle, cancellationToken);
+            if (product == null)
+                throw new KeyNotFoundException($"Продукт з назвою '{productTitle}' не знайдено.");
+
+            var warehouseUnit = await _repository.GetAll<WarehouseUnit>()
+                .FirstOrDefaultAsync(w => w.SupplierId == supplier.Id && w.ProductId == product.Id, cancellationToken);
+            if (warehouseUnit == null)
+                throw new KeyNotFoundException($"Складський юніт із Постачальником {supplierTitle} та Продукцією {productTitle} не знайдено.");
+
+            var productCategoryEntity = await _repository.GetAll<WarehouseProductCategory>()
+                .FirstOrDefaultAsync(pc => pc.Title == productCategory && pc.WarehouseUnitId == warehouseUnit.Id, cancellationToken);
+            if (productCategoryEntity == null)
+                throw new KeyNotFoundException($"Категорію продукту {productCategory} не знайдено на складі.");
+
+            if (productCategoryEntity.Value == null || productCategoryEntity.Value < productWeight)
+            {
+                throw new InvalidOperationException(
+                    $"Недостатньо продукту в категорії '{productCategory}'. " +
+                    $"Доступно: {productCategoryEntity.Value ?? 0}, потрібно: {productWeight}."
+                );
+            }
+
+            // Оновлення залишку продукту
+            productCategoryEntity.Value -= productWeight;
+            await _repository.UpdateAsync(productCategoryEntity, cancellationToken);
+
+            // Створення видаткової накладної
+            var outputInvoice = new OutputInvoice
+            {
+                InvoiceNumber = invoiceNumber,
+                ShipmentDate = shipmentDate,
+                VehicleNumber = vehicleNumber,
+                SupplierId = supplier.Id,
+                ProductId = product.Id,
+                ProductCategory = productCategory,
+                ProductWeight = productWeight,
+                WarehouseUnitId = warehouseUnit.Id,
+                CreatedAt = DateTime.UtcNow,
+                CreatedById = createdById,
+            };
+
+            var addedInvoice = await _repository.AddAsync(outputInvoice, cancellationToken);
+
+            // Фіксація транзакції
+            await transaction.CommitAsync(cancellationToken);
+
+            return addedInvoice;
         }
-
-        // зменшення значення категорії продукту
-        productCategoryEntity.Value -= productWeight;
-        await _repository.UpdateAsync(productCategoryEntity, cancellationToken);
-
-        // створення видаткової накладної
-        var outputInvoice = new OutputInvoice
+        catch
         {
-            InvoiceNumber = invoiceNumber,
-            ShipmentDate = shipmentDate,
-            VehicleNumber = vehicleNumber,
-            SupplierId = supplier.Id,
-            ProductId = product.Id,
-            ProductCategory = productCategory,
-            ProductWeight = productWeight,
-            WarehouseUnitId = warehouseUnit.Id,
-            CreatedAt = DateTime.UtcNow,
-            CreatedById = createdById,
-        };
-
-        var addedInvoice = await _repository.AddAsync(outputInvoice, cancellationToken);
-
-        // Коміт транзакції
-        await _repository.CommitTransactionAsync(cancellationToken);
-
-        return addedInvoice;
-    }
-    catch
-    {
-        // Відкат транзакції у випадку відсутності запису
-        await _repository.RollbackTransactionAsync(cancellationToken);
-        throw;
-    }
+            // Відкат транзакції
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
+    });
 }
+
     
     public async Task<IEnumerable<OutputInvoice>> GetOutputInvoices(int page, int size, CancellationToken cancellationToken)
     {

@@ -33,47 +33,51 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         int createdById, 
         CancellationToken cancellationToken)
     {
-        try
+        var executionStrategy = _repository.CreateExecutionStrategy(); // Отримання стратегії повторних спроб
+
+        return await executionStrategy.ExecuteAsync(async () =>
         {
             // початок транзакції
-            await _repository.BeginTransactionAsync(cancellationToken);
+            await using var transaction = await _repository.BeginTransactionAsync(cancellationToken);
             
-            // створення Реєстру (доробка продукції)
-            var newRegister = await CreateRegisterAsync(
-                registerNumber,
-                arrivalDate,
-                supplierTitle, 
-                productTitle, 
-                weedImpurityBase, 
-                moistureBase, 
-                createdById,
-                cancellationToken);
+            try
+            {
+                // створення Реєстру (доробка продукції)
+                var newRegister = await CreateRegisterAsync(
+                    registerNumber,
+                    arrivalDate,
+                    supplierTitle, 
+                    productTitle, 
+                    weedImpurityBase, 
+                    moistureBase, 
+                    createdById,
+                    cancellationToken);
 
-            await _repository.AddAsync(newRegister, cancellationToken);
-            
-            // створення або оновлення складського юніта (переміщення продукції Реєстру на Склад)
-            await _warehouseUnitService.WarehouseTransferAsync(newRegister, createdById, cancellationToken);
-            
-            // фіксація транзакції
-            await _repository.CommitTransactionAsync(cancellationToken);
-            
-            return newRegister;
-        }
-        catch (InvalidOperationException ex)
-        {
-            _logger.LogWarning($"Бізнес-помилка: {ex.Message}");
-            // відкат транзакції в разі помилки
-            await _repository.RollbackTransactionAsync(cancellationToken);
-            throw;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Помилка створення Реєстру: {ex.Message}");
-            // відкат транзакції в разі помилки
-            await _repository.RollbackTransactionAsync(cancellationToken);
-            throw new Exception("Помилка сервісу під час створення Реєстру", ex);
-        }
-        
+                await _repository.AddAsync(newRegister, cancellationToken);
+                
+                // створення або оновлення складського юніта (переміщення продукції Реєстру на Склад)
+                await _warehouseUnitService.WarehouseTransferAsync(newRegister, createdById, cancellationToken);
+                
+                // фіксація транзакції
+                await transaction.CommitAsync(cancellationToken);
+                
+                return newRegister;
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning($"Бізнес-помилка: {ex.Message}");
+                // відкат транзакції в разі помилки
+                await transaction.RollbackAsync(cancellationToken);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Помилка створення Реєстру: {ex.Message}");
+                // відкат транзакції в разі помилки
+                await _repository.RollbackTransactionAsync(cancellationToken);
+                throw new Exception("Помилка сервісу під час створення Реєстру", ex);
+            }
+        }); 
     }
 
     private async Task<InvoiceRegister> CreateRegisterAsync(
@@ -261,14 +265,17 @@ public class InvoiceRegisterService : IInvoiceRegisterService
 
     public async Task<InvoiceRegister> GetInvoiceRegisterByIdAsync(int id, CancellationToken cancellationToken)
     {
-        try
+        var invoiceRegister = await _repository.GetAll<InvoiceRegister>()
+            .Include(ir => ir.ProductionBatches) 
+            .ThenInclude(pb => pb.LaboratoryCard) 
+            .FirstOrDefaultAsync(ir => ir.Id == id, cancellationToken);
+
+        if (invoiceRegister == null)
         {
-            return await _repository.GetByIdAsync<InvoiceRegister>(id, cancellationToken);
+            throw new KeyNotFoundException($"Реєстру з ID {id} не знайдено.");
         }
-        catch (Exception ex)
-        {
-            throw new Exception($"Помилка сервісу при отриманні Реєстру з ID {id}", ex);
-        }
+
+        return invoiceRegister;
     }
 
 
@@ -277,6 +284,8 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         try
         {
             return await _repository.GetAll<InvoiceRegister>()
+                .Include(ir => ir.ProductionBatches) 
+                .ThenInclude(pb => pb.LaboratoryCard)
                 .Skip((page - 1) * size)
                 .Take(size)
                 .ToListAsync(cancellationToken);
@@ -459,6 +468,14 @@ public class InvoiceRegisterService : IInvoiceRegisterService
      
     public async Task<InvoiceRegister> SoftDeleteInvoiceRegisterAsync(InvoiceRegister invoiceRegister, int removedById, CancellationToken cancellationToken)
     {
+        var executionStrategy = _repository.CreateExecutionStrategy(); // Отримання стратегії повторних спроб
+
+        return await executionStrategy.ExecuteAsync(async () =>
+        {
+            // початок транзакції
+            await using var transaction = await _repository.BeginTransactionAsync(cancellationToken);
+        
+        
         try
         {
             // Позначення реєстру як видаленого
@@ -511,6 +528,7 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         {
             throw new Exception($"Помилка сервісу під час видалення Реєстру з ID  {invoiceRegister.Id}", ex);
         }
+        });
     }
     
     public async Task<InvoiceRegister> RestoreRemovedInvoiceRegisterAsync(InvoiceRegister invoiceRegister, int restoredById, CancellationToken cancellationToken)

@@ -30,7 +30,7 @@ builder.Services.AddDbContext<GrainElevatorApiContext>(options =>
         connectionString,
         new MySqlServerVersion(new Version(8, 0, 2)),
         mysqlOptions => mysqlOptions.EnableRetryOnFailure())
-    .UseLazyLoadingProxies(false)
+    .UseLazyLoadingProxies()
 );
 
 builder.Services.AddEndpointsApiExplorer();

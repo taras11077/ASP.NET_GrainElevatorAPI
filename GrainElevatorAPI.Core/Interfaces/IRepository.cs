@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace GrainElevatorAPI.Core.Interfaces;
 
@@ -13,7 +14,9 @@ public interface IRepository
     Task SaveChangesAsync(CancellationToken cancellationToken);
     
     // методи керування транзакціями
-    Task BeginTransactionAsync(CancellationToken cancellationToken);
+    IExecutionStrategy CreateExecutionStrategy();
+    Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken);
+    //Task BeginTransactionAsync(CancellationToken cancellationToken);
     Task CommitTransactionAsync(CancellationToken cancellationToken);
     Task RollbackTransactionAsync(CancellationToken cancellationToken);
 }

@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using GrainElevatorAPI.Core.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace GrainElevator.Storage;
@@ -66,14 +67,28 @@ public class Repository : IRepository
     
     
     // методи керування транзакціями
-    public async Task BeginTransactionAsync(CancellationToken cancellationToken)
+    
+    public IExecutionStrategy CreateExecutionStrategy()
+    {
+        return _context.Database.CreateExecutionStrategy();
+    }
+    
+    public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken)
     {
         if (_currentTransaction != null)
         {
             throw new InvalidOperationException("Поточна транзакція вже активна");
         }
-        _currentTransaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        
+        var strategy = _context.Database.CreateExecutionStrategy();
+
+        return await strategy.ExecuteAsync(async () =>
+        {
+            _currentTransaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+            return _currentTransaction;
+        });
     }
+
 
     public async Task CommitTransactionAsync(CancellationToken cancellationToken)
     {

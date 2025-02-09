@@ -78,8 +78,6 @@ public class CompletionReportService: ICompletionReportService
             });
         }
         
-        
-
         return await _repository.AddAsync(completionReport, cancellationToken);
     }
     catch (ArgumentNullException ex)

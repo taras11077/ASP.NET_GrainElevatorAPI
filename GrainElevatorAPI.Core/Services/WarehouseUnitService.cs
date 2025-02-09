@@ -179,6 +179,8 @@ public class WarehouseUnitService: IWarehouseUnitService
     {
         // перевірка наявності WarehouseUnit із заданими SupplierId і ProductId
         var warehouseUnit = await _repository.GetAll<WarehouseUnit>()
+            .Include(wh => wh.Supplier)
+            .Include(wh => wh.Product)
             .FirstOrDefaultAsync(w => w.SupplierId == register.SupplierId && w.ProductId == register.ProductId);
         
         // пошук категорії для кондиційної продукції
