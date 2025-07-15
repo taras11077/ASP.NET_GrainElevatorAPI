@@ -15,6 +15,7 @@ public class GrainElevatorApiContext : DbContext
     // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     // {
     //     var connectionString =
+    //         //"Server=localhost;Port=3306;Database=agroComplex_2025_db;User=root;Password='';";
     //         "Server=localhost;Port=3306;Database=grainElevatorAPI_db;User=root;Password='';";
     //     var serverVersion = new MySqlServerVersion(new Version(8, 0, 2));
     //

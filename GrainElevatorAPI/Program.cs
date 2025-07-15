@@ -65,7 +65,6 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddAutoMapper(typeof(Program));
 
-
 builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IEmployeeService, EmployeeService>();
@@ -87,7 +86,8 @@ builder.Services.AddTransient<IInputInvoice, InputInvoice>();
 builder.Services.AddTransient<ILaboratoryCard, LaboratoryCard>();
 builder.Services.AddTransient<IProductionBatch, ProductionBatch>();
 builder.Services.AddTransient<IInvoiceRegister, InvoiceRegister>();
-builder.Services.AddTransient<IRegisterCalculator, StandardRegisterCalculator>();
+//builder.Services.AddTransient<IRegisterCalculator, StandardRegisterCalculator>();
+builder.Services.AddTransient<IRegisterCalculator, RegisterCalculatorWithMechanicalLosses>();
 builder.Services.AddTransient<IProduct, Product>();
 builder.Services.AddTransient<ISupplier, Supplier>();
 builder.Services.AddTransient<IRole, Role>();
@@ -197,6 +197,22 @@ builder.Logging.AddSerilog();
 
 
 var app = builder.Build();
+
+
+// застосування міграцій
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<GrainElevatorApiContext>();
+    try
+    {
+        db.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        var scopedLogger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        scopedLogger.LogError(ex, "Не вдалося застосувати міграції до бази даних.");
+    }
+}
 
 // створення адміністратора під час запуску програми
 using (var scope = app.Services.CreateScope())

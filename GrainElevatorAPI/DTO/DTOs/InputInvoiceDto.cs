@@ -28,12 +28,12 @@ public class InputInvoiceDto
     
     [Required(ErrorMessage = "SupplierTitle is required.")]
     [MinLength(2, ErrorMessage = "Title must be at least 2 characters long.")]
-    [MaxLength(20, ErrorMessage = "Title must be at least 20 characters long.")]
+    [MaxLength(50, ErrorMessage = "Title must be at least 50 characters long.")]
     public required string SupplierTitle { get; set; }
     
     [Required(ErrorMessage = "ProductTitle is required.")]
     [MinLength(2, ErrorMessage = "Title must be at least 2 characters long.")]
-    [MaxLength(20, ErrorMessage = "Title must be at least 20 characters long.")]
+    [MaxLength(50, ErrorMessage = "Title must be at least 50 characters long.")]
     public required string ProductTitle { get; set; }
     public string CreatedByName { get; set; }
     
