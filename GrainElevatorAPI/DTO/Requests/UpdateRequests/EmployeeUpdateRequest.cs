@@ -5,12 +5,12 @@ namespace GrainElevatorAPI.DTO.Requests.UpdateRequests;
 public class EmployeeUpdateRequest
 {
     [MinLength(4, ErrorMessage = "FirstName must be at least 4 characters long.")]
-    [MaxLength(20, ErrorMessage = "FirstName must be at least 20 characters long.")]
+    [MaxLength(20, ErrorMessage = "FirstName must be at most 20 characters long.")]
     public string? FirstName { get; set; }
     
     
     [MinLength(4, ErrorMessage = "LastName must be at least 4 characters long.")]
-    [MaxLength(20, ErrorMessage = "LastName must be at least 20 characters long.")]
+    [MaxLength(20, ErrorMessage = "LastName must be at most 20 characters long.")]
     public string? LastName { get; set; }
     
     [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]

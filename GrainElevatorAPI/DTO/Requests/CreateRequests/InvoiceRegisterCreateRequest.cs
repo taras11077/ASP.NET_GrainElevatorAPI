@@ -11,18 +11,18 @@ public class InvoiceRegisterCreateRequest
     
     [Required(ErrorMessage = "RegisterNumber is required.")]
     [MinLength(3, ErrorMessage = "RegisterNumber must be at least 3 characters long.")]
-    [MaxLength(9, ErrorMessage = "RegisterNumber must be at least 9 characters long.")]
+    [MaxLength(9, ErrorMessage = "RegisterNumber must be at most 9 characters long.")]
     public string RegisterNumber { get; set; }
     
     
     [Required(ErrorMessage = "SupplierTitle is required.")]
     [MinLength(3, ErrorMessage = "SupplierTitle must be at least 3 characters long.")]
-    [MaxLength(50, ErrorMessage = "SupplierTitle must be at least 30 characters long.")]
+    [MaxLength(50, ErrorMessage = "SupplierTitle must be at most 30 characters long.")]
     public string SupplierTitle { get; set; }
     
     [Required(ErrorMessage = "ProductTitle is required.")]
     [MinLength(3, ErrorMessage = "ProductTitle must be at least 3 characters long.")]
-    [MaxLength(50, ErrorMessage = "ProductTitle must be at least 30 characters long.")]
+    [MaxLength(50, ErrorMessage = "ProductTitle must be at most 30 characters long.")]
     public string ProductTitle { get; set; }
     
 	

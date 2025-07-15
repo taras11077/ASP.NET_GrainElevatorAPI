@@ -6,12 +6,12 @@ public class EmployeeRegisterRequest : EmployeeLoginRequest
 {
     [Required(ErrorMessage = "FirstName is required.")]
     [MinLength(2, ErrorMessage = "FirstName must be at least 2 characters long.")]
-    [MaxLength(30, ErrorMessage = "FirstName must be at least 30 characters long.")]
+    [MaxLength(30, ErrorMessage = "FirstName must be at most 30 characters long.")]
     public string FirstName { get; set; }
     
     [Required(ErrorMessage = "LastName is required.")]
     [MinLength(2, ErrorMessage = "LastName must be at least 2 characters long.")]
-    [MaxLength(30, ErrorMessage = "LastName must be at least 30 characters long.")]
+    [MaxLength(30, ErrorMessage = "LastName must be at most 30 characters long.")]
     public string LastName { get; set; }
     
     [Required(ErrorMessage = "Email is required.")]

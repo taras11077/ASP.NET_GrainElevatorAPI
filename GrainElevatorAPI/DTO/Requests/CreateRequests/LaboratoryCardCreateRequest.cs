@@ -24,7 +24,7 @@ public class LaboratoryCardCreateRequest
     [Range(0.0, 100.0, ErrorMessage = "GrainImpurity must be between 0.0 and 100.0")]
     public double? GrainImpurity { get; set; }
 
-    [MaxLength(300, ErrorMessage = "SpecialNotes must be at least 300 characters long.")]
+    [MaxLength(300, ErrorMessage = "SpecialNotes must be at most 300 characters long.")]
     public string? SpecialNotes { get; set; }
     
     public bool? IsProduction { get; set; }

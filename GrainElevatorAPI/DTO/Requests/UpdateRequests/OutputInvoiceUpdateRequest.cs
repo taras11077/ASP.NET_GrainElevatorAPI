@@ -5,7 +5,7 @@ namespace GrainElevatorAPI.DTO.Requests.UpdateRequests;
 public class OutputInvoiceUpdateRequest
 {
     [MinLength(3, ErrorMessage = "InvoiceNumber must be at least 3 characters long.")]
-    [MaxLength(9, ErrorMessage = "InvoiceNumber must be at least 9 characters long.")]
+    [MaxLength(9, ErrorMessage = "InvoiceNumber must be at most 9 characters long.")]
     public string? InvoiceNumber { get; set; }
     
     [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
@@ -14,6 +14,6 @@ public class OutputInvoiceUpdateRequest
 
 
     [MinLength(2, ErrorMessage = "VehicleNumber must be at least 3 characters long.")]
-    [MaxLength(10, ErrorMessage = "VehicleNumber must be at least 9 characters long.")]
+    [MaxLength(10, ErrorMessage = "VehicleNumber must be at most 9 characters long.")]
     public string? VehicleNumber { get; set; } 
 }

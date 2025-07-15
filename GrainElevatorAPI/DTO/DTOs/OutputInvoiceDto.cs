@@ -9,7 +9,7 @@ public class OutputInvoiceDto
 	public int Id { get; set; }
 
 	[MinLength(3, ErrorMessage = "InvoiceNumber must be at least 3 characters long.")]
-	[MaxLength(9, ErrorMessage = "InvoiceNumber must be at least 9 characters long.")]
+	[MaxLength(9, ErrorMessage = "InvoiceNumber must be at most 9 characters long.")]
 	public required string InvoiceNumber { get; set; }
 
 	[DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
@@ -18,11 +18,11 @@ public class OutputInvoiceDto
 
 
 	[MinLength(2, ErrorMessage = "VehicleNumber must be at least 3 characters long.")]
-	[MaxLength(10, ErrorMessage = "VehicleNumber must be at least 9 characters long.")]
+	[MaxLength(10, ErrorMessage = "VehicleNumber must be at most 9 characters long.")]
 	public string? VehicleNumber { get; set; }
 
 	[MinLength(2, ErrorMessage = "ProductCategory must be at least 2 characters long.")]
-	[MaxLength(20, ErrorMessage = "ProductCategory must be at least 20 characters long.")]
+	[MaxLength(20, ErrorMessage = "ProductCategory must be at most 20 characters long.")]
 	public required string ProductCategory { get; set; }
 
 	[Required(ErrorMessage = "ProductWeight is required.")]
@@ -30,11 +30,11 @@ public class OutputInvoiceDto
 	public int ProductWeight { get; set; }
 
 	[MinLength(2, ErrorMessage = "Title must be at least 2 characters long.")]
-	[MaxLength(20, ErrorMessage = "Title must be at least 20 characters long.")]
+	[MaxLength(20, ErrorMessage = "Title must be at most 20 characters long.")]
 	public string SupplierTitle { get; set; }
     
 	[MinLength(2, ErrorMessage = "Title must be at least 2 characters long.")]
-	[MaxLength(20, ErrorMessage = "Title must be at least 20 characters long.")]
+	[MaxLength(20, ErrorMessage = "Title must be at most 20 characters long.")]
 	public string ProductTitle { get; set; }
 	
 	public string CreatedByName { get; set; }

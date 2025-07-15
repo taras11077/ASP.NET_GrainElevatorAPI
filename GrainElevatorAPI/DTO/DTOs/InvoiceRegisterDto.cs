@@ -9,7 +9,7 @@ public class InvoiceRegisterDto
 	public int Id { get; set; }
 
 	[MinLength(3, ErrorMessage = "RegisterNumber must be at least 3 characters long.")]
-	[MaxLength(9, ErrorMessage = "RegisterNumber must be at least 9 characters long.")]
+	[MaxLength(9, ErrorMessage = "RegisterNumber must be at most 9 characters long.")]
 	public string RegisterNumber { get; set; }
 	
 	[DataType(DataType.Date, ErrorMessage = "Invalid date format.")]

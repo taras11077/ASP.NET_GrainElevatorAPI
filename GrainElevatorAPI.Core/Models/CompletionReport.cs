@@ -12,7 +12,7 @@ public class CompletionReport : AuditableEntity, ICompletionReport
 	public int Id { get; set; }
 
 	[MinLength(3, ErrorMessage = "ReportNumber must be at least 3 characters long.")]
-	[MaxLength(9, ErrorMessage = "ReportNumber must be at least 9 characters long.")]
+	[MaxLength(9, ErrorMessage = "ReportNumber must be at most 9 characters long.")]
 	public string ReportNumber { get; set; }
 
 	[DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
