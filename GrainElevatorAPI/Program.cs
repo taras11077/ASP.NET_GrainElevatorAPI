@@ -11,6 +11,7 @@ using GrainElevatorAPI.Core.Interfaces.ServiceInterfaces;
 using GrainElevatorAPI.Core.Models;
 using GrainElevatorAPI.Core.Security;
 using GrainElevatorAPI.Core.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
@@ -96,7 +97,17 @@ builder.Services.AddTransient<IWarehouseProductCategory, WarehouseProductCategor
 builder.Services.AddTransient<IOutputInvoice, OutputInvoice>();
 builder.Services.AddTransient<ITechnologicalOperation, TechnologicalOperation>();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    // Додаємо свій фільтр валідації
+    options.Filters.Add<ValidateModelAttribute>();
+});
+
+// Вимикаємо автоматичну валідацію ApiController
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
 
 builder.Services.AddDistributedMemoryCache();
 
@@ -132,8 +143,6 @@ var loggerFactory = LoggerFactory.Create(loggingBuilder =>
 var logger = loggerFactory.CreateLogger<Program>();
 
 logger.LogInformation("CORS Allowed Origins: {Origins}", string.Join(", ", allowedOrigins));
-
-
 
 
 builder.Services.AddCors(options =>
@@ -198,6 +207,8 @@ builder.Logging.AddSerilog();
 
 var app = builder.Build();
 
+// глобальний обробник помилок
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // застосування міграцій
 using (var scope = app.Services.CreateScope())

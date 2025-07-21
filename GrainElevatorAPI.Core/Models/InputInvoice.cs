@@ -11,7 +11,7 @@ public class InputInvoice : AuditableEntity, IInputInvoice
 	public int Id { get; set; }
     
     [MinLength(3, ErrorMessage = "InvoiceNumber must be at least 3 characters long.")]
-    [MaxLength(9, ErrorMessage = "InvoiceNumber must be at least 9 characters long.")]
+    [MaxLength(9, ErrorMessage = "InvoiceNumber must be at most 9 characters long.")]
     public string InvoiceNumber { get; set; }
     
     [Required(ErrorMessage = "ArrivalDate is required.")]
@@ -20,7 +20,7 @@ public class InputInvoice : AuditableEntity, IInputInvoice
     public DateTime ArrivalDate { get; set; }
     
     [MinLength(2, ErrorMessage = "VehicleNumber must be at least 2 characters long.")]
-    [MaxLength(10, ErrorMessage = "VehicleNumber must be at least 9 characters long.")]
+    [MaxLength(10, ErrorMessage = "VehicleNumber must be at most 9 characters long.")]
     public string? VehicleNumber { get; set; } 
     
     [Required(ErrorMessage = "PhysicalWeight is required.")]

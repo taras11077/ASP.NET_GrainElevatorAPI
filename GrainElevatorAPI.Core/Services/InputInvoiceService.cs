@@ -80,7 +80,8 @@ public class InputInvoiceService : IInputInvoiceService
             {
                 // відкат транзакції в разі помилки
                 await transaction.RollbackAsync(cancellationToken);
-                throw new Exception("Помилка сервісу при додаванні Прибуткової накладної", ex);
+                _logger.LogError(ex, "Помилка сервісу під час додавання Прибуткової накладної");
+                throw;
             }
         });
     }
