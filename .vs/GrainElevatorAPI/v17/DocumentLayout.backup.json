@@ -3,20 +3,16 @@
   "WorkspaceRootPath": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{3E2DBCC0-50A7-443D-9FB0-715C589CB826}|GrainElevatorAPI\\GrainElevatorAPI.csproj|e:\\0_step\\00 hw\\000\\grainelevator\\grainelevatorapi\\grainelevatorapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3E2DBCC0-50A7-443D-9FB0-715C589CB826}|GrainElevatorAPI\\GrainElevatorAPI.csproj|solutionrelative:grainelevatorapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3E2DBCC0-50A7-443D-9FB0-715C589CB826}|GrainElevatorAPI\\GrainElevatorAPI.csproj|e:\\0_step\\00 hw\\000\\grainelevator\\grainelevatorapi\\grainelevatorapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{3E2DBCC0-50A7-443D-9FB0-715C589CB826}|GrainElevatorAPI\\GrainElevatorAPI.csproj|solutionrelative:grainelevatorapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{3E2DBCC0-50A7-443D-9FB0-715C589CB826}|GrainElevatorAPI\\GrainElevatorAPI.csproj|e:\\0_step\\00 hw\\000\\grainelevator\\grainelevatorapi\\grainelevatorapi\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{3E2DBCC0-50A7-443D-9FB0-715C589CB826}|GrainElevatorAPI\\GrainElevatorAPI.csproj|solutionrelative:grainelevatorapi\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B347235A-0469-477D-9451-F1F8C7F85603}|GrainElevatorAPI.Storage\\GrainElevatorAPI.Storage.csproj|e:\\0_step\\00 hw\\000\\grainelevator\\grainelevatorapi\\grainelevatorapi.storage\\grainelevatorapicontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B347235A-0469-477D-9451-F1F8C7F85603}|GrainElevatorAPI.Storage\\GrainElevatorAPI.Storage.csproj|solutionrelative:grainelevatorapi.storage\\grainelevatorapicontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{7318DB6F-7BCA-4195-9133-B69B091CC5D6}|GrainElevatorAPI.Core\\GrainElevatorAPI.Core.csproj|e:\\0_step\\00 hw\\000\\grainelevator\\grainelevatorapi\\grainelevatorapi.core\\calculators\\completionreportcalculator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7318DB6F-7BCA-4195-9133-B69B091CC5D6}|GrainElevatorAPI.Core\\GrainElevatorAPI.Core.csproj|solutionrelative:grainelevatorapi.core\\calculators\\completionreportcalculator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3E2DBCC0-50A7-443D-9FB0-715C589CB826}|GrainElevatorAPI\\GrainElevatorAPI.csproj|e:\\0_step\\00 hw\\000\\grainelevator\\grainelevatorapi\\grainelevatorapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3E2DBCC0-50A7-443D-9FB0-715C589CB826}|GrainElevatorAPI\\GrainElevatorAPI.csproj|solutionrelative:grainelevatorapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,7 +22,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 129,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
@@ -42,54 +38,40 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "GrainElevatorApiContext.cs",
-              "DocumentMoniker": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI.Storage\\GrainElevatorApiContext.cs",
-              "RelativeDocumentMoniker": "GrainElevatorAPI.Storage\\GrainElevatorApiContext.cs",
-              "ToolTip": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI.Storage\\GrainElevatorApiContext.cs",
-              "RelativeToolTip": "GrainElevatorAPI.Storage\\GrainElevatorApiContext.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "CompletionReportCalculator.cs",
+              "DocumentMoniker": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI.Core\\Calculators\\CompletionReportCalculator.cs",
+              "RelativeDocumentMoniker": "GrainElevatorAPI.Core\\Calculators\\CompletionReportCalculator.cs",
+              "ToolTip": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI.Core\\Calculators\\CompletionReportCalculator.cs",
+              "RelativeToolTip": "GrainElevatorAPI.Core\\Calculators\\CompletionReportCalculator.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-27T09:48:26.339Z"
+              "WhenOpened": "2025-07-28T08:38:26.554Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "launchSettings.json",
               "DocumentMoniker": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI\\Properties\\launchSettings.json",
               "RelativeDocumentMoniker": "GrainElevatorAPI\\Properties\\launchSettings.json",
               "ToolTip": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI\\Properties\\launchSettings.json",
               "RelativeToolTip": "GrainElevatorAPI\\Properties\\launchSettings.json",
-              "ViewState": "AgIAABkAAAAAAAAAAAAowDMAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAwwCcAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2025-01-26T14:19:39.822Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "Program.cs",
               "DocumentMoniker": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI\\Program.cs",
               "RelativeDocumentMoniker": "GrainElevatorAPI\\Program.cs",
               "ToolTip": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI\\Program.cs",
               "RelativeToolTip": "GrainElevatorAPI\\Program.cs",
-              "ViewState": "AgIAABUAAAAAAAAAAAAAACIAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAHsAAAAAAAAAAAAAAHEAAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-25T19:44:55.68Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI\\appsettings.json",
-              "RelativeDocumentMoniker": "GrainElevatorAPI\\appsettings.json",
-              "ToolTip": "E:\\0_step\\00 HW\\000\\GrainElevator\\GrainElevatorAPI\\GrainElevatorAPI\\appsettings.json",
-              "RelativeToolTip": "GrainElevatorAPI\\appsettings.json",
-              "ViewState": "AgIAAAsAAAAAAAAAAAAqwCUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-01-25T19:25:42.645Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-25T19:44:55.68Z"
             }
           ]
         },

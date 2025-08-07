@@ -17,6 +17,8 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MySQL;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using System.Security.Cryptography.X509Certificates;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -203,9 +205,34 @@ Log.Logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog();
 
+// явне підключення SSL-сертифіката (стандартний шлях до сертифікату, який створює команда:  dotnet dev-certs https --trust.)
+var config = builder.Configuration;
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ConfigureHttpsDefaults(httpsOptions =>
+    {
+        var certPath = config["HttpsCertificate:Path"];
+        var certPassword = config["HttpsCertificate:Password"];
+
+        httpsOptions.ServerCertificate = new X509Certificate2(
+            Environment.ExpandEnvironmentVariables(certPath),
+            certPassword
+        );
+    });
+});
 
 
 var app = builder.Build();
+
+app.Lifetime.ApplicationStarted.Register(() =>
+{
+    Console.WriteLine("Running at:");
+    foreach (var address in app.Urls)
+    {
+        Console.WriteLine(address);
+    }
+});
+
 
 // глобальний обробник помилок
 app.UseMiddleware<ExceptionHandlingMiddleware>();

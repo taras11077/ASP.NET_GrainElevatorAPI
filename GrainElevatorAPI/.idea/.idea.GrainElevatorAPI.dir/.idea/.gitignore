@@ -1,9 +1,9 @@
-# Default ignored files
+﻿# Default ignored files
 /shelf/
 /workspace.xml
 # Rider ignored files
-/.idea.GrainElevatorAPI.iml
 /contentModel.xml
+/.idea.GrainElevatorAPI.iml
 /projectSettingsUpdater.xml
 /modules.xml
 # Editor-based HTTP Client requests
