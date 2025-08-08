@@ -185,82 +185,87 @@ public class InvoiceRegisterService : IInvoiceRegisterService
         int modifiedById, 
         CancellationToken cancellationToken)
     {
-        try
+        var executionStrategy = _repository.CreateExecutionStrategy(); // Отримання стратегії повторних спроб
+
+        return await executionStrategy.ExecuteAsync(async () =>
         {
-            var invoiceRegisterDb = await _repository.GetByIdAsync<InvoiceRegister>(id, cancellationToken)
-                                    ?? throw new InvalidOperationException($"InvoiceRegister with ID {id} not found.");
-            
-            // Отримання ID лабораторних карточок
-            var laboratoryCardIds = invoiceRegisterDb.ProductionBatches?
-                .Select(pb => pb.LaboratoryCardId)
-                .Distinct()
-                .ToList();
-
-            if (laboratoryCardIds == null || !laboratoryCardIds.Any())
-            {
-                throw new InvalidOperationException($"No LaboratoryCards found for Register ID {invoiceRegisterDb.Id}.");
-            }
-
-            // Завантаження лабораторних карточок
-            var laboratoryCards = await _repository.GetAll<LaboratoryCard>()
-                .Where(lc => laboratoryCardIds.Contains(lc.Id))
-                .ToListAsync(cancellationToken);
-
-            if (!laboratoryCards.Any())
-            {
-                throw new InvalidOperationException($"No LaboratoryCards found for Register ID {invoiceRegisterDb.Id}.");
-            }
-            
-            
-            // початок транзакції
-            await _repository.BeginTransactionAsync(cancellationToken);
-            
-            // видалення даних реєстру зі складського юніта
-            await _warehouseUnitService.DeletingRegisterDataFromWarehouseUnitAsync(invoiceRegisterDb, modifiedById, cancellationToken);
-            
-            // видалення виробничих партій Реєстру
-            foreach (var productionBatch in invoiceRegisterDb.ProductionBatches.ToList())
-            {
-                await _repository.DeleteAsync<ProductionBatch>(productionBatch.Id, cancellationToken);
-            }
-            
-            // Оновлення даних Реєстру
-            if (registerNumber != null || weedImpurityBase != null || moistureBase != null)
-            {
-                invoiceRegisterDb.RegisterNumber = registerNumber ?? invoiceRegisterDb.RegisterNumber;
-                invoiceRegisterDb.WeedImpurityBase = weedImpurityBase ?? invoiceRegisterDb.WeedImpurityBase;
-                invoiceRegisterDb.MoistureBase = moistureBase ?? invoiceRegisterDb.MoistureBase;
-                invoiceRegisterDb.ModifiedById = modifiedById;
+             try
+             {
+                 var invoiceRegisterDb = await _repository.GetByIdAsync<InvoiceRegister>(id, cancellationToken)
+                                         ?? throw new InvalidOperationException($"InvoiceRegister with ID {id} not found.");
                 
-                // Скидання обчислюваних полів
-                invoiceRegisterDb.PhysicalWeightReg = 0;
-                invoiceRegisterDb.ShrinkageReg = 0;
-                invoiceRegisterDb.WasteReg = 0;
-                invoiceRegisterDb.AccWeightReg = 0;
-                invoiceRegisterDb.QuantitiesDryingReg = 0; 
-                
-                // Очищення та повторне створення партій
-                invoiceRegisterDb.ProductionBatches = new List<ProductionBatch>();
-                invoiceRegisterDb = MapLabCardsToProductionBatches(laboratoryCards, invoiceRegisterDb);
-            }
-            
-            // оновлення складського юніта (переміщення продукції оновленого Реєстру на Склад)
-            await _warehouseUnitService.WarehouseTransferAsync(invoiceRegisterDb, modifiedById, cancellationToken);
-            
-            // Оновлення реєстру в БД
-            await _repository.UpdateAsync(invoiceRegisterDb, cancellationToken);
-            
-            // фіксація транзакції
-            await _repository.CommitTransactionAsync(cancellationToken);
+                 // Отримання ID лабораторних карточок
+                 var laboratoryCardIds = invoiceRegisterDb.ProductionBatches?
+                     .Select(pb => pb.LaboratoryCardId)
+                     .Distinct()
+                     .ToList();
 
-            return invoiceRegisterDb;
-        }
-        catch (Exception ex)
-        {
-            // відкат транзакції в разі помилки
-            await _repository.RollbackTransactionAsync(cancellationToken);
-            throw new Exception($"Помилка сервісу під час оновлення Реєстру з ID  {id}", ex);
-        }
+                 if (laboratoryCardIds == null || !laboratoryCardIds.Any())
+                 {
+                     throw new InvalidOperationException($"No LaboratoryCards found for Register ID {invoiceRegisterDb.Id}.");
+                 }
+
+                 // Завантаження лабораторних карточок
+                 var laboratoryCards = await _repository.GetAll<LaboratoryCard>()
+                     .Where(lc => laboratoryCardIds.Contains(lc.Id))
+                     .ToListAsync(cancellationToken);
+
+                 if (!laboratoryCards.Any())
+                 {
+                     throw new InvalidOperationException($"No LaboratoryCards found for Register ID {invoiceRegisterDb.Id}.");
+                 }
+                
+                
+                 // початок транзакції
+                 await _repository.BeginTransactionAsync(cancellationToken);
+                
+                 // видалення даних реєстру зі складського юніта
+                 await _warehouseUnitService.DeletingRegisterDataFromWarehouseUnitAsync(invoiceRegisterDb, modifiedById, cancellationToken);
+                
+                 // видалення виробничих партій Реєстру
+                 foreach (var productionBatch in invoiceRegisterDb.ProductionBatches.ToList())
+                 {
+                     await _repository.DeleteAsync<ProductionBatch>(productionBatch.Id, cancellationToken);
+                 }
+                
+                 // Оновлення даних Реєстру
+                 if (registerNumber != null || weedImpurityBase != null || moistureBase != null)
+                 {
+                     invoiceRegisterDb.RegisterNumber = registerNumber ?? invoiceRegisterDb.RegisterNumber;
+                     invoiceRegisterDb.WeedImpurityBase = weedImpurityBase ?? invoiceRegisterDb.WeedImpurityBase;
+                     invoiceRegisterDb.MoistureBase = moistureBase ?? invoiceRegisterDb.MoistureBase;
+                     invoiceRegisterDb.ModifiedById = modifiedById;
+                    
+                     // Скидання обчислюваних полів
+                     invoiceRegisterDb.PhysicalWeightReg = 0;
+                     invoiceRegisterDb.ShrinkageReg = 0;
+                     invoiceRegisterDb.WasteReg = 0;
+                     invoiceRegisterDb.AccWeightReg = 0;
+                     invoiceRegisterDb.QuantitiesDryingReg = 0; 
+                    
+                     // Очищення та повторне створення партій
+                     invoiceRegisterDb.ProductionBatches = new List<ProductionBatch>();
+                     invoiceRegisterDb = MapLabCardsToProductionBatches(laboratoryCards, invoiceRegisterDb);
+                 }
+                
+                 // оновлення складського юніта (переміщення продукції оновленого Реєстру на Склад)
+                 await _warehouseUnitService.WarehouseTransferAsync(invoiceRegisterDb, modifiedById, cancellationToken);
+                
+                 // Оновлення реєстру в БД
+                 await _repository.UpdateAsync(invoiceRegisterDb, cancellationToken);
+                
+                 // фіксація транзакції
+                 await _repository.CommitTransactionAsync(cancellationToken);
+
+                 return invoiceRegisterDb;
+             }
+             catch (Exception ex)
+             {
+                 // відкат транзакції в разі помилки
+                 await _repository.RollbackTransactionAsync(cancellationToken);
+                 throw new Exception($"Помилка сервісу під час оновлення Реєстру з ID  {id}", ex);
+             }
+        });
     }
 
     public async Task<InvoiceRegister> GetInvoiceRegisterByIdAsync(int id, CancellationToken cancellationToken)

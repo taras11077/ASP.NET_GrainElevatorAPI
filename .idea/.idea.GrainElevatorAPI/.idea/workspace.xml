@@ -11,22 +11,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6bf601a0-c9e8-4a37-89af-5f6c3756e964" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.GrainElevatorAPI/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.GrainElevatorAPI/.idea/dataSources.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.GrainElevatorAPI/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GrainElevatorAPI/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/config/applicationhost.config" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vs/GrainElevatorAPI/DesignTimeBuild/.dtbcache.v2" beforeDir="false" afterPath="$PROJECT_DIR$/.vs/GrainElevatorAPI/DesignTimeBuild/.dtbcache.v2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vs/GrainElevatorAPI/FileContentIndex/5760ecde-a415-44f5-af3f-28ad7caea24c.vsidx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vs/GrainElevatorAPI/FileContentIndex/bfe1d6ad-b112-4e81-9913-1234d3900ae5.vsidx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vs/GrainElevatorAPI/FileContentIndex/e43168b8-b1d4-457e-9732-07cca9340420.vsidx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vs/GrainElevatorAPI/v17/.futdcache.v2" beforeDir="false" afterPath="$PROJECT_DIR$/.vs/GrainElevatorAPI/v17/.futdcache.v2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vs/GrainElevatorAPI/v17/.suo" beforeDir="false" afterPath="$PROJECT_DIR$/.vs/GrainElevatorAPI/v17/.suo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vs/GrainElevatorAPI/v17/DocumentLayout.backup.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vs/GrainElevatorAPI/v17/DocumentLayout.backup.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vs/GrainElevatorAPI/v17/DocumentLayout.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vs/GrainElevatorAPI/v17/DocumentLayout.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GrainElevatorAPI/GrainElevatorAPI.csproj.user" beforeDir="false" afterPath="$PROJECT_DIR$/GrainElevatorAPI/GrainElevatorAPI.csproj.user" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GrainElevatorAPI/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GrainElevatorAPI/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GrainElevatorAPI/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/GrainElevatorAPI/appsettings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/certificate.pfx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.GrainElevatorAPI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GrainElevatorAPI/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GrainElevatorAPI.Core/Services/InvoiceRegisterService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GrainElevatorAPI.Core/Services/InvoiceRegisterService.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,22 +49,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;.NET Launch Settings Profile.GrainElevatorAPI: http.executor&quot;: &quot;Debug&quot;,
-    &quot;.NET Launch Settings Profile.GrainElevatorAPI: https.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;usedMySQL&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    ".NET Launch Settings Profile.GrainElevatorAPI: http.executor": "Debug",
+    ".NET Launch Settings Profile.GrainElevatorAPI: https.executor": "Debug",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "usedMySQL",
+    "ignore.virus.scanning.warn.message": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected=".NET Launch Settings Profile.GrainElevatorAPI: https">
     <configuration name="GrainElevatorAPI: IIS Express" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/GrainElevatorAPI/GrainElevatorAPI.csproj" />
@@ -183,7 +169,8 @@
       <workItem from="1754570407171" duration="131000" />
       <workItem from="1754570551649" duration="503000" />
       <workItem from="1754571078121" duration="682000" />
-      <workItem from="1754571779670" duration="790000" />
+      <workItem from="1754571779670" duration="3219000" />
+      <workItem from="1754633198043" duration="3916000" />
     </task>
     <servers />
   </component>
@@ -198,17 +185,17 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/GrainElevatorAPI/Controllers/AuthController.cs</url>
-          <line>70</line>
-          <properties documentPath="E:\0_step\00 HW\000\GrainElevator\GrainElevatorAPI\GrainElevatorAPI\Controllers\AuthController.cs" containingFunctionPresentation="Method 'Login'">
+          <url>file://$PROJECT_DIR$/GrainElevatorAPI.Core/Services/WarehouseUnitService.cs</url>
+          <line>180</line>
+          <properties documentPath="E:\0_step\00 HW\000\GrainElevator\GrainElevatorAPI\GrainElevatorAPI.Core\Services\WarehouseUnitService.cs" containingFunctionPresentation="Method 'DeletingRegisterDataFromWarehouseUnitAsync'">
             <startOffsets>
-              <option value="2356" />
+              <option value="6762" />
             </startOffsets>
             <endOffsets>
-              <option value="3670" />
+              <option value="7015" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="2" />
+          <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
